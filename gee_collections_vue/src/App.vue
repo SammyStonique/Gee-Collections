@@ -28,7 +28,7 @@
 
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto">
-                            <router-link to="/" class="nav-item nav-link active">Home</router-link>
+                            <router-link to="/" class="nav-item nav-link">Home</router-link>
                             <router-link to="/products" class="nav-item nav-link">Products</router-link>
                             <router-link to="product-detail" class="nav-item nav-link">Product Detail</router-link>
                             <router-link to="/cart" class="nav-item nav-link">Cart</router-link>
@@ -190,12 +190,10 @@
         <!-- Footer Bottom End -->       
         
         <!-- Back to Top -->
-        <router-link to="#" class="back-to-top"><i class="fa fa-chevron-up"></i></router-link>
+        <router-link to="#" @click="scrollToTop()" class="back-to-top"><i class="fa fa-chevron-up"></i></router-link>
 
 </template>
 
-<style lang="scss">
-</style>
 <script>
 
 import ProductCard from './components/ProductCard.vue'
@@ -206,21 +204,31 @@ export default {
     data(){
         return{
             items:[],
-            name:null,
-            price:null,
-            description:null,
-            image:null,
-            thumbnail:null,
-            pageOfItems:[],
-            cart:{},
-            quantity:null
+            // name:null,
+            // price:null,
+            // description:null,
+            // image:null,
+            // thumbnail:null,
+            cart:{
+                cartItems:[]
+            },
+            quantity: 1
         }
+    },
+    beforeMount() {
+        this.$store.commit('initializeStore')
+    },
+    mounted(){
+        this.cart = this.$store.state.cart
     },
     computed: {
         totalQuantity() {
-        return Object.values(this.cart).reduce((sum, curr) => {
-            return sum + curr
-        }, 0)
+            let itemQuantity = 0
+
+            for(let i = 0; i<this.cart.cartItems.length; i++ ){
+                itemQuantity += this.cart.cartItems[i].quantity
+            }
+            return itemQuantity
         }
     },
     methods:{
@@ -234,14 +242,35 @@ export default {
                 console.log(error)
             })
         },
-        addToCart(name,quantity){
-            if (!this.cart[name]) this.cart[name] = 0
-            this.cart[name] += this.cart[quantity]
-            console.log(this.cart)
+        addToCart(){
+            let selectedItem = arguments[0];
+            if(isNaN(this.quantity) || this.quantity<1){
+                this.quantity = 1;
+            }
+            // this.$toast.success(`${this.cart[name]} added to cart`)
+            const cartItem={
+                items : this.items[selectedItem],
+                quantity : this.quantity
+            }
+            this.$store.commit('addToCart',cartItem)
+            
         },
         removeItem(name){
             delete this.cart[name]
+        },
+        scrollToTop(){
+            window.scrollTo(0,0);
         }
     }
 }
 </script>
+
+
+<style lang="scss">
+    .router-link-exact-active{
+        color: black !important;
+    }
+    .dropdown-toggle{
+        color: white !important;
+    }
+</style>

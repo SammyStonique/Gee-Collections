@@ -217,6 +217,7 @@
                                     :getProducts="getProducts"
                                     :index="index"
                                     :key="item.id"
+                                    :addToCart="addToCart"
                                     />
                                 </div>
                     </div>    
@@ -363,6 +364,8 @@ export default {
             modules: [Autoplay, Pagination],
             autoplay:{
                 delay:2000,
+                disableOnInteraction:false,
+                pauseOnMouseEnter:true
             },
         })
         swiper.autoplay.start();
@@ -377,6 +380,8 @@ export default {
             autoplay:{
                 speed: 100,
                 delay: 250,
+                disableOnInteraction:false,
+                pauseOnMouseEnter:true
             },
         })
         swiper1.autoplay.start();
@@ -390,6 +395,8 @@ export default {
             modules: [Autoplay],
             autoplay:{
                 delay: 3000,
+                disableOnInteraction:false,
+                pauseOnMouseEnter:true
             },
         })
         swiper2.autoplay.start();
@@ -405,6 +412,8 @@ export default {
             modules: [Autoplay],
             autoplay:{
                 delay: 3000,
+                disableOnInteraction:false,
+                pauseOnMouseEnter:true
             },
         })
         swiper3.autoplay.start();

@@ -15,14 +15,14 @@
                 <img :src="`${item.image}`" alt="Product Image" class="prod-img">
             </a>
             <div class="product-action">
-                <a class="btn"><i class="fa fa-cart-plus"></i></a>
+                <a class="btn" @click="addToCart(index)"><i class="fa fa-cart-plus"></i></a>
                 <a href="#"><i class="fa fa-heart"></i></a>
                 <a href="#"><i class="fa fa-search"></i></a>
             </div>
         </div>
         <div class="product-price">
             <h3 class="prod-price"><span>ksh</span>{{Number(item.price).toLocaleString()}}</h3>
-            <button class="btn btn-cart" @click="addToCart(item.name,item.quantity)"><i class="fa fa-shopping-cart"></i>Buy Now</button>
+            <button class="btn btn-cart" @click="addToCart"><i class="fa fa-shopping-cart"></i>Buy Now</button>
         </div>
     </div>
 </template>
@@ -46,7 +46,5 @@
 <script>
 export default {
     props:['item','getProducts','index','addToCart']
-
 }
-
 </script>
