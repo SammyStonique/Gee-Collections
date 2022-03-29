@@ -204,11 +204,6 @@ export default {
     data(){
         return{
             items:[],
-            // name:null,
-            // price:null,
-            // description:null,
-            // image:null,
-            // thumbnail:null,
             cart:{
                 cartItems:[]
             },
@@ -248,14 +243,13 @@ export default {
             if(isNaN(this.quantity) || this.quantity<1){
                 this.quantity = 1;
             }
-            // this.$toast.success(`${this.cart[name]} added to cart`)
+            
             const cartItem={
                 items : this.items[selectedItem],
                 quantity : this.quantity
             }
-            this.$store.commit('addToCart',cartItem)
-            
-            
+            this.$store.commit('addToCart',cartItem);
+            this.$toast.success(`${this.items[selectedItem].name} added to cart`);
         },
         removeItem(){
             delete this.cartItem
