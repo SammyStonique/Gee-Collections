@@ -29,23 +29,23 @@
                                         </tr>
                                     </thead>
                                     <tbody class="align-middle">
-                                        <tr v-for="prod,i in cart" :key="i">
+                                        <tr v-for="prod,index in cart" :key="index">
                                             <td>
                                                 <div class="img">
-                                                    <a href="#"><img src="@/assets/img/product-1.jpg" alt="Image"></a>
-                                                    <p>{{prod}}</p>
+                                                    <a href="#"><img :src="`${prod.items.image}`" alt="Image"></a>
+                                                    <p>{{prod.items.name}}</p>
                                                 </div>
                                             </td>
-                                            <td>$99</td>
+                                            <td>{{Number(prod.items.price).toLocaleString()}}</td>
                                             <td>
                                                 <div class="qty">
                                                     <button class="btn-minus"><i class="fa fa-minus"></i></button>
-                                                    <input type="number" value="">
+                                                    <input type="text" :value="`${prod.quantity}`">
                                                     <button class="btn-plus"><i class="fa fa-plus"></i></button>
                                                 </div>
                                             </td>
-                                            <td>$99</td>
-                                            <td><button @click="remove(key)"><i class="fa fa-trash"></i></button></td>
+                                            <td>{{Number(cartItemTotal).toLocaleString()}}</td>
+                                            <td><button @click="remove()"><i class="fa fa-trash"></i></button></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -93,7 +93,21 @@ export default {
             myEmoji:'\u{1F6D2}'
         }
     },
-    props:['cart','items','remove']
+    props:['cart','items','remove'],
+    computed:{
+        cartItemTotal(){
+            let itemTotal = 0
+            for(let i = 0; i<this.cart.length; i++){
+                itemTotal = (this.cart[i].quantity * this.cart[i].items.price).toFixed(2)
+            
+            }
+            return itemTotal
+        }
+    },
+    mounted() {
+        
+    },
+    
 }
 </script>
 

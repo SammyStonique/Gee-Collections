@@ -94,7 +94,7 @@
         <router-view
         :getProducts="getProducts"
         :items="items"
-        :cart="cart"
+        :cart="cart.cartItems"
         :remove="removeItem"
         :addToCart="addToCart"
         :totalQuantity="totalQuantity"
@@ -243,6 +243,7 @@ export default {
             })
         },
         addToCart(){
+            //Getting the index of the items in the cart
             let selectedItem = arguments[0];
             if(isNaN(this.quantity) || this.quantity<1){
                 this.quantity = 1;
@@ -254,9 +255,10 @@ export default {
             }
             this.$store.commit('addToCart',cartItem)
             
+            
         },
-        removeItem(name){
-            delete this.cart[name]
+        removeItem(){
+            delete this.cartItem
         },
         scrollToTop(){
             window.scrollTo(0,0);
