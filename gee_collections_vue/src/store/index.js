@@ -41,6 +41,12 @@ export default createStore({
         state.cart.cartItems.push(cartItem)
         localStorage.setItem('cart',JSON.stringify(state.cart));
       }
+    },
+    removeFromCart(state, cartItem){
+        // let itemIndex = state.cart.cartItems.indexOf(cartItem)
+
+        state.cart.cartItems.splice(cartItem,1)
+        localStorage.setItem('cart',JSON.stringify(state.cart));
     }
   },
   actions: {

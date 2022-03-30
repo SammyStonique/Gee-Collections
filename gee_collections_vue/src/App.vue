@@ -95,7 +95,6 @@
         :getProducts="getProducts"
         :items="items"
         :cart="cart.cartItems"
-        :remove="removeItem"
         :addToCart="addToCart"
         :totalQuantity="totalQuantity"
         />
@@ -250,10 +249,9 @@ export default {
             }
             this.$store.commit('addToCart',cartItem);
             this.$toast.success(`${this.items[selectedItem].name} added to cart`);
+            
         },
-        removeItem(){
-            delete this.cartItem
-        },
+        
         scrollToTop(){
             window.scrollTo(0,0);
         }

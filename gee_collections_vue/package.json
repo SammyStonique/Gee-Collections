@@ -12,6 +12,7 @@
     "jquery": "^3.6.0",
     "jw-vue-pagination": "^1.0.3",
     "slick": "^1.12.2",
+    "sweetalert": "^2.1.2",
     "swiper": "^7.4.1",
     "vue": "^3.2.13",
     "vue-axios": "^3.4.1",

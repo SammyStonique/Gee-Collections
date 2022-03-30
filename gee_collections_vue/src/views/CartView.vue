@@ -39,17 +39,17 @@
                                             <td>{{Number(prod.items.price).toLocaleString()}}</td>
                                             <td>
                                                 <div class="qty">
-                                                    <button class="btn-minus"><i class="fa fa-minus"></i></button>
+                                                    <button class="btn-minus" @click="decrementQuantity(index)"><i class="fa fa-minus"></i></button>
                                                     <input type="text" :value="`${prod.quantity}`">
-                                                    <button class="btn-plus"><i class="fa fa-plus"></i></button>
+                                                    <button class="btn-plus" @click="incrementQuantity(index)"><i class="fa fa-plus"></i></button>
                                                 </div>
                                             </td>
-                                            <td>{{Number(cartItemTotal).toLocaleString()}}</td>
-                                            <td><button @click="remove()"><i class="fa fa-trash"></i></button></td>
+                                            <td>{{Number(cartItemTotal[index]).toLocaleString()}}</td>
+                                            <td><button @click="removeFromCart(index)"><i class="fa fa-trash"></i></button></td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <p class="empty-cart" v-if="!Object.keys(cart).length"><em>{{myEmoji}}Ooops,No items in cart</em></p>
+                                <p class="empty-cart" v-if="!Object.keys(cart).length"><em style="font-size: 24px;">{{myEmoji}}</em><em>Ooops,No items in cart</em></p>
                             </div>
                         </div>
                     </div>
@@ -87,22 +87,60 @@
 </template>
 
 <script>
+import swal from 'sweetalert';
 export default {
     data(){
         return{
-            myEmoji:'\u{1F6D2}'
+            myEmoji:'\u{1F62D}',
         }
     },
-    props:['cart','items','remove'],
+    props:['cart','items'],
     computed:{
         cartItemTotal(){
-            let itemTotal = 0
+            let itemTotal = [];
             for(let i = 0; i<this.cart.length; i++){
-                itemTotal = (this.cart[i].quantity * this.cart[i].items.price).toFixed(2)
-            
+                let lineTotal = (this.cart[i].quantity * this.cart[i].items.price).toFixed(2)
+                itemTotal.push(lineTotal);
             }
             return itemTotal
         }
+        
+    },
+    methods:{
+        incrementQuantity(){
+            let selectedItemQuantity = arguments[0];
+            this.cart[selectedItemQuantity].quantity += 1;
+            this.updateCart();
+        },
+        decrementQuantity(){
+            let selectedItemQuantity = arguments[0];
+            this.cart[selectedItemQuantity].quantity -= 1;
+            this.updateCart();
+        },
+        updateCart() {
+            localStorage.setItem('cart', JSON.stringify(this.$store.state.cart))
+        },
+        removeFromCart(){
+            let selectedItem = arguments[0];
+            swal({
+                title: "Are you sure?",
+                text: `Do you wish to remove ${this.cart[selectedItem].items.name} from your cart?`,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                })
+            .then((willDelete) => {
+                if (willDelete) {
+                    this.$store.commit('removeFromCart',selectedItem);
+                    swal("Poof! Item removed succesfully!", {
+                    icon: "success",
+                    });
+                } else {
+                    swal("Your item is safely in the cart!");
+                }
+            });
+        },
+
     },
     mounted() {
         
