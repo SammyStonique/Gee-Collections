@@ -114,7 +114,14 @@ export default {
         },
         decrementQuantity(){
             let selectedItemQuantity = arguments[0];
-            this.cart[selectedItemQuantity].quantity -= 1;
+            if(this.cart[selectedItemQuantity].quantity >=2){
+                this.cart[selectedItemQuantity].quantity -= 1;
+                console.log('Item quantity reduced')
+            }
+            else{
+                this.$store.commit('removeFromCart',selectedItemQuantity);
+                console.log('item removed from cart')
+            }
             this.updateCart();
         },
         updateCart() {
