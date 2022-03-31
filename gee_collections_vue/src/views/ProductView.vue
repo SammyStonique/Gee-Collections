@@ -98,24 +98,12 @@
                                     />
                                     </div>
                         </div>
-                        
-                        <!-- Pagination Start -->
-                        <div class="col-md-12">
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination justify-content-center">
-                                    <li class="page-item disabled">
-                                        <a class="page-link" href="#" tabindex="-1">Previous</a>
-                                    </li>
-                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">Next</a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
-                        <!-- Pagination Start -->
+                        <Pagination
+                        :totalPages="10"
+                        :perPage="10"
+                        :currentPage="currentPage"
+                        @pagechanged="onPageChange"
+                        />
                     </div>           
                     
                     <!-- Side Bar Start -->
@@ -202,18 +190,24 @@
 <script>
 import {Swiper, Autoplay} from 'swiper';
 import ProductCard from '@/components/ProductCard.vue';
+import Pagination from '@/components/Pagination.vue'
 export default {
     props:['getProducts','items','addToCart'],
     components:{
         ProductCard,
-        Swiper
+        Swiper,
+        Pagination
     },
     data(){
         return{
-        
+            currentPage: 1,
         }
     },
     methods:{
+        onPageChange(page) {
+            console.log(page)
+            this.currentPage = page;
+        }
     },
     mounted(){
         this.getProducts();

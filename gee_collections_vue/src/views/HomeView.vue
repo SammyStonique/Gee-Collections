@@ -211,15 +211,15 @@
                 </div>
                 <div class="swiper-featured">
                     <div class="swiper-wrapper">
-                                <div class="swiper-slide" v-for="item,index in items">
-                                    <ProductCard
-                                    :item="item"
-                                    :getProducts="getProducts"
-                                    :index="index"
-                                    :key="item.id"
-                                    :addToCart="addToCart"
-                                    />
-                                </div>
+                        <div class="swiper-slide" v-for="item,index in items">
+                            <ProductCard
+                            :item="item"
+                            :getProducts="getProducts"
+                            :index="index"
+                            :key="item.id"
+                            :addToCart="addToCart"
+                            />
+                        </div>
                     </div>    
                 </div>
             </div>

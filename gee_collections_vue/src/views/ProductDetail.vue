@@ -19,30 +19,9 @@
                     <div class="col-lg-8">
                         <div class="product-detail-top">
                             <div class="row align-items-center">
-                                <div class="col-md-5">
-                                    <div class="swiper-details">
-                                        <div class="swiper-wrapper">
-                                            <div class="swiper-slide"><img src="@/assets/img/product-1.jpg" alt="Product Image"></div>
-                                            <div class="swiper-slide"><img src="@/assets/img/product-3.jpg" alt="Product Image"></div>
-                                            <div class="swiper-slide"><img src="@/assets/img/product-5.jpg" alt="Product Image"></div>
-                                            <div class="swiper-slide"><img src="@/assets/img/product-7.jpg" alt="Product Image"></div>
-                                            <div class="swiper-slide"><img src="@/assets/img/product-9.jpg" alt="Product Image"></div>
-                                            <div class="swiper-slide"><img src="@/assets/img/product-10.jpg" alt="Product Image"></div>
-                                        </div>
-                                    </div>
-                                
-                                    <div class="swiper-nav">
-                                        <div class="product-slider-single-nav normal-slider">
-                                            <div class="swiper-wrapper">
-                                                <div class="swiper-slide slider-nav-img"><img src="@/assets/img/product-1.jpg" alt="Product Image"></div>
-                                                <div class="swiper-slide slider-nav-img"><img src="@/assets/img/product-3.jpg" alt="Product Image"></div>
-                                                <div class="swiper-slide slider-nav-img"><img src="@/assets/img/product-5.jpg" alt="Product Image"></div>
-                                                <div class="swiper-slide slider-nav-img"><img src="@/assets/img/product-7.jpg" alt="Product Image"></div>
-                                                <div class="swiper-slide slider-nav-img"><img src="@/assets/img/product-9.jpg" alt="Product Image"></div>
-                                                <div class="swiper-slide slider-nav-img"><img src="@/assets/img/product-10.jpg" alt="Product Image"></div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="col-md-5 product-detail-slider">  
+                                    <Slider/>                                
+                            
                                 </div>
                                 <div class="col-md-7">
                                     <div class="product-content">
@@ -173,7 +152,7 @@
                             <div class="related-products">
                                 <div class="swiper-related">
                                     <div class="swiper-wrapper">
-                                        <div class="swiper-slide" v-for="item,index in items.slice(3,8)">
+                                        <div class="swiper-slide" v-for="item,index in items.slice(3,6)">
                                             <ProductCard
                                             :item="item"
                                             :getProducts="getProducts"
@@ -185,7 +164,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>    
                         </div>
                     </div>
                     
@@ -265,6 +244,7 @@
 </template>
 
 <script>
+import Slider from '@/components/Slider.vue'
 import ProductCard from '@/components/ProductCard.vue'
 import {Swiper, Autoplay} from 'swiper'
 import 'swiper/scss'
@@ -273,7 +253,8 @@ export default {
     props:['items','getProducts','addToCart'],
     components:{
         ProductCard,
-        Swiper
+        Swiper,
+        Slider
     },
     mounted(){
         this.getProducts();
@@ -295,7 +276,7 @@ export default {
         //Swiper for related products
         const swiper1 = new Swiper('.swiper-related',{
             direction:'horizontal',
-            loop: true,
+            loop: false,
             slidesPerView: 3,
             spaceBetween: 20,
             speed: 700,
@@ -307,34 +288,6 @@ export default {
             },
         })
         swiper1.autoplay.start();
-        //Swiper for product details
-        const swiper2 = new Swiper('.swiper-details',{
-            direction:'horizontal',
-            loop: true,
-            slidesPerView: 1,
-            speed: 700,
-            modules: [Autoplay],
-            autoplay:{
-                delay:5000,
-                disableOnInteraction:false,
-                pauseOnMouseEnter:true
-            },
-        })
-        swiper2.autoplay.start();
-        //Swiper for product nav
-        const swiper3 = new Swiper('.swiper-nav',{
-            direction:'horizontal',
-            loop: true,
-            slidesPerView: 5,
-            speed: 700,
-            modules: [Autoplay],
-            autoplay:{
-                delay:5000,
-                disableOnInteraction:false,
-                pauseOnMouseEnter:true
-            },
-        })
-        swiper3.autoplay.start();
     }
 }
 
@@ -344,5 +297,8 @@ export default {
     .product-detail .product-slider-single-nav {
     margin: 15px 30px 30px 30px;
     border: 3px double #FF6F61;
+    }
+    .product-detail-slider{
+        height: 421px;
     }
 </style>

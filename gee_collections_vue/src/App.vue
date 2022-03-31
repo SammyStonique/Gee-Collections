@@ -97,6 +97,10 @@
         :cart="cart.cartItems"
         :addToCart="addToCart"
         :totalQuantity="totalQuantity"
+        :cartSubTotal="cartSubTotal"
+        :cartItemTotal="cartItemTotal"
+        :cartGrandTotal="cartGrandTotal"
+        :shippingCost="shippingCost"
         />
 
         <!-- Footer Start -->
@@ -107,9 +111,9 @@
                         <div class="footer-widget">
                             <h2>Get in Touch</h2>
                             <div class="contact-info">
-                                <p><i class="fa fa-map-marker"></i>123 E Store, Los Angeles, USA</p>
-                                <p><i class="fa fa-envelope"></i>email@example.com</p>
-                                <p><i class="fa fa-phone"></i>+123-456-7890</p>
+                                <p><i class="fa fa-map-marker"></i>Opposite Jamia Mosque, Siaya</p>
+                                <p><i class="fa fa-envelope"></i>otisamueloti@gmail.com</p>
+                                <p><i class="fa fa-phone"></i>+254-717-423-651</p>
                             </div>
                         </div>
                     </div>
@@ -135,7 +139,7 @@
                             <ul>
                                 <li><router-link to="#">About Us</router-link></li>
                                 <li><router-link to="#">Privacy Policy</router-link></li>
-                                <li><router-link to="#">Terms & Condition</router-link></li>
+                                <li><router-link to="#">Terms & Conditions</router-link></li>
                             </ul>
                         </div>
                     </div>
@@ -144,7 +148,7 @@
                         <div class="footer-widget">
                             <h2>Purchase Info</h2>
                             <ul>
-                                <li><router-link to="#">Pyament Policy</router-link></li>
+                                <li><router-link to="#">Payment Policy</router-link></li>
                                 <li><router-link to="#">Shipping Policy</router-link></li>
                                 <li><router-link to="#">Return Policy</router-link></li>
                             </ul>
@@ -206,7 +210,8 @@ export default {
             cart:{
                 cartItems:[]
             },
-            quantity: 1
+            quantity: 1,
+            shippingCost: 200,
         }
     },
     beforeMount() {
@@ -223,13 +228,37 @@ export default {
                 itemQuantity += this.cart.cartItems[i].quantity
             }
             return itemQuantity
+        },
+        cartItemTotal(){
+            let itemTotal = [];
+            for(let i = 0; i<this.cart.cartItems.length; i++){
+                let lineTotal = (this.cart.cartItems[i].quantity * this.cart.cartItems[i].items.price).toFixed(2)
+                itemTotal.push(lineTotal);
+            }
+            return itemTotal
+        },
+        cartSubTotal(){
+            let itemTotal = [];
+            let cartTotal = 0
+            for(let i = 0; i<this.cart.cartItems.length; i++){
+                let lineTotal = (this.cart.cartItems[i].quantity * this.cart.cartItems[i].items.price).toFixed(2)
+                itemTotal.push(parseFloat(lineTotal));
+                cartTotal = itemTotal.reduce(function(a,b){
+                    return (a+ b);
+                })
+            }
+            return cartTotal
+        },
+        cartGrandTotal(){
+            return parseFloat(this.cartSubTotal) + this.shippingCost
         }
+        
     },
     methods:{
         getProducts(){
             this.axios.get('http://127.0.0.1:8000/api/v1/latest-products/')
             .then((response)=>{
-                console.log(response.data)
+                // console.log(response.data)
                 this.items = response.data;
             })
             .catch((error)=>{

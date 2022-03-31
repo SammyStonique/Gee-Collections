@@ -49,7 +49,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <p class="empty-cart" v-if="!Object.keys(cart).length"><em style="font-size: 24px;">{{myEmoji}}</em><em>Ooops,No items in cart</em></p>
+                                <p class="empty-cart" v-if="!Object.keys(cart).length"><span class="emoji " role="img" aria-label="">😭</span><br/><em class="empty-cart-message">Ooops,No items in cart</em></p>
                             </div>
                         </div>
                     </div>
@@ -66,13 +66,13 @@
                                     <div class="cart-summary">
                                         <div class="cart-content">
                                             <h1>Cart Summary</h1>
-                                            <p>Sub Total<span>$99</span></p>
-                                            <p>Shipping Cost<span>$1</span></p>
-                                            <h2>Grand Total<span>$100</span></h2>
+                                            <p>Sub Total<span>ksh. {{Number(cartSubTotal).toLocaleString()}}</span></p>
+                                            <p>Shipping Cost(varies)<span>ksh. {{Number(shippingCost).toLocaleString()}}</span></p>
+                                            <h2>Grand Total<span>{{Number(cartGrandTotal).toLocaleString()}}</span></h2>
                                         </div>
                                         <div class="cart-btn">
-                                            <button>Update Cart</button>
-                                            <button>Checkout</button>
+                                            <button><router-link to="/products">Update Cart</router-link></button>                      
+                                            <button><router-link to="/checkout" class="checkout">Checkout</router-link></button>
                                         </div>
                                     </div>
                                 </div>
@@ -92,18 +92,11 @@ export default {
     data(){
         return{
             myEmoji:'\u{1F62D}',
+            
         }
     },
-    props:['cart','items'],
+    props:['cart','items','cartGrandTotal','cartItemTotal','cartSubTotal','shippingCost'],
     computed:{
-        cartItemTotal(){
-            let itemTotal = [];
-            for(let i = 0; i<this.cart.length; i++){
-                let lineTotal = (this.cart[i].quantity * this.cart[i].items.price).toFixed(2)
-                itemTotal.push(lineTotal);
-            }
-            return itemTotal
-        }
         
     },
     methods:{
@@ -116,11 +109,9 @@ export default {
             let selectedItemQuantity = arguments[0];
             if(this.cart[selectedItemQuantity].quantity >=2){
                 this.cart[selectedItemQuantity].quantity -= 1;
-                console.log('Item quantity reduced')
             }
             else{
                 this.$store.commit('removeFromCart',selectedItemQuantity);
-                console.log('item removed from cart')
             }
             this.updateCart();
         },
@@ -159,8 +150,18 @@ export default {
 <style scoped>
     .empty-cart{
         text-align: center;
-        font-size: 16px;
+        font-size: 20px;
         font-weight: bold;
         margin: 20px;
+    }
+    .emoji{
+        font-size: 36px;
+        font-style: normal;
+    }
+    .checkout{
+        color: white;
+    }
+    .checkout:hover{
+        color: #FF6F61;
     }
 </style>
