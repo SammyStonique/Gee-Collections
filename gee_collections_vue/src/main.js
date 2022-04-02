@@ -12,5 +12,4 @@ import '@/lib/slick/slick.js';
 import '@/lib/slick/slick.min.js';
 import '@/js/main.js';
 
-
 createApp(App).use(store).use(router).use(VueAxios,axios).use(VueToast,{position:'top'}).mount('#app')

@@ -55,8 +55,8 @@
                                         <input class="form-control" type="text" placeholder="City">
                                     </div>
                                     <div class="col-md-6">
-                                        <label>State</label>
-                                        <input class="form-control" type="text" placeholder="State">
+                                        <label>County</label>
+                                        <input class="form-control" type="text" placeholder="County">
                                     </div>
                                     <div class="col-md-6">
                                         <label>ZIP Code</label>
@@ -114,8 +114,8 @@
                                         <input class="form-control" type="text" placeholder="City">
                                     </div>
                                     <div class="col-md-6">
-                                        <label>State</label>
-                                        <input class="form-control" type="text" placeholder="State">
+                                        <label>County</label>
+                                        <input class="form-control" type="text" placeholder="County">
                                     </div>
                                     <div class="col-md-6">
                                         <label>ZIP Code</label>
