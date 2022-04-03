@@ -49,9 +49,19 @@
                                 <div class="dropdown-menu">
                                     <router-link to="/login" class="dropdown-item">Login</router-link>
                                     <router-link to="/register" class="dropdown-item">Register</router-link>
+                                    <router-link to="/logout" class="dropdown-item">Log Out</router-link>
                                 </div>
                             </div>
                         </div>
+                        <!-- <div class="navbar-nav ml-auto" v-if="isAuthenticated">
+                            <div class="nav-item dropdown">
+                                <router-link to="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{request.user.username}}</router-link>
+                                <div class="dropdown-menu">
+                                    <router-link to="/login" class="dropdown-item">Login</router-link>
+                                    <router-link to="/register" class="dropdown-item">Register</router-link>
+                                </div>
+                            </div>
+                        </div> -->
                     </div>
                 </nav>
             </div>
@@ -101,6 +111,8 @@
         :cartItemTotal="cartItemTotal"
         :cartGrandTotal="cartGrandTotal"
         :shippingCost="shippingCost"
+        :token="token"
+        :isAuthenticated="isAuthenticated"
         />
 
         <!-- Footer Start -->
@@ -198,7 +210,7 @@
 </template>
 
 <script>
-
+import axios from 'axios'
 import ProductCard from './components/ProductCard.vue'
 export default {
     components:{
@@ -212,13 +224,24 @@ export default {
             },
             quantity: 1,
             shippingCost: 200,
+            token: '',
+            isAuthenticated: false,
         }
     },
     beforeMount() {
         this.$store.commit('initializeStore')
+
+        const token = this.$store.state.token
+        if (token) {
+        axios.defaults.headers.common['Authorization'] = "Token " + token
+        } else {
+        axios.defaults.headers.common['Authorization'] = ""
+        }
     },
     mounted(){
         this.cart = this.$store.state.cart
+        this.isAuthenticated = this.$store.state.isAuthenticated
+        console.log(this.isAuthenticated)
     },
     computed: {
         totalQuantity() {
@@ -256,7 +279,7 @@ export default {
     },
     methods:{
         getProducts(){
-            this.axios.get('http://127.0.0.1:8000/api/v1/latest-products/')
+            this.axios.get('/api/v1/latest-products/')
             .then((response)=>{
                 // console.log(response.data)
                 this.items = response.data;

@@ -10,6 +10,7 @@ import LoginView from '../views/LoginView.vue'
 import WishlistView from '../views/WishlistView.vue'
 import ContactView from '../views/ContactView.vue'
 import RegisterView from '../views/RegisterView.vue'
+import LogoutView from '../views/LogoutView.vue'
 
 
 const routes = [
@@ -52,6 +53,11 @@ const routes = [
     path: '/login',
     name: 'login',
     component: LoginView
+  },
+  {
+    path: '/logout',
+    name: 'logout',
+    component: LogoutView
   },
   {
     path: '/wishlist',

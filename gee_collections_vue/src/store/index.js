@@ -4,7 +4,9 @@ export default createStore({
   state: {
     cart:{
       cartItems:[]
-    }
+    },
+    token: '',
+    isAuthenticated: false
   },
   getters: {
 
@@ -18,6 +20,18 @@ export default createStore({
       }else{
         localStorage.setItem('cart',JSON.stringify(state.cart))
       }
+      //Checks if an authentication token is available in local storage
+      if(localStorage.getItem('token')){
+        state.token = localStorage.getItem('token');
+        state.isAuthenticated = true;
+        console.log('token available');
+        console.log(state.isAuthenticated)
+      }else{
+        console.log('no token found')
+        state.token = '';
+        state.isAuthenticated = false;
+      }
+
     },
     addToCart(state, cartItem){
       //Checking if the cart has an item
@@ -47,6 +61,14 @@ export default createStore({
 
         state.cart.cartItems.splice(cartItem,1)
         localStorage.setItem('cart',JSON.stringify(state.cart));
+    },
+    setToken(state,token){
+      state.token = token;
+      state.isAuthenticated = true
+    },
+    removeToken(state){
+      state.token = ''
+      state.isAuthenticated = false
     }
   },
   actions: {
