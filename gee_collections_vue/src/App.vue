@@ -241,7 +241,6 @@ export default {
     mounted(){
         this.cart = this.$store.state.cart
         this.isAuthenticated = this.$store.state.isAuthenticated
-        console.log(this.isAuthenticated)
     },
     computed: {
         totalQuantity() {
@@ -281,7 +280,6 @@ export default {
         getProducts(){
             this.axios.get('/api/v1/latest-products/')
             .then((response)=>{
-                // console.log(response.data)
                 this.items = response.data;
             })
             .catch((error)=>{

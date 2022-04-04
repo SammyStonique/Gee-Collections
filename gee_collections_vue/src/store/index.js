@@ -24,10 +24,7 @@ export default createStore({
       if(localStorage.getItem('token')){
         state.token = localStorage.getItem('token');
         state.isAuthenticated = true;
-        console.log('token available');
-        console.log(state.isAuthenticated)
       }else{
-        console.log('no token found')
         state.token = '';
         state.isAuthenticated = false;
       }

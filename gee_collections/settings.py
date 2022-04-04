@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from corsheaders.defaults import default_methods,default_headers
 
@@ -9,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-br^2@wdx@9%8$&591g-9rk8y&(6vfm@4kbd_8977+24^8_-4y-'
+SECRET_KEY = os.environ.get('SECRET_KEY_GEE')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -156,3 +157,11 @@ REST_FRAMEWORK = {
 DJOSER = {
     
 }
+
+#Email Settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD_GEE')

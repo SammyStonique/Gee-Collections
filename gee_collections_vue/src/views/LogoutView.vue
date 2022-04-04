@@ -31,7 +31,6 @@ export default {
         this.$store.commit('removeToken')
         const token = this.$store.state.token 
         localStorage.setItem('token',token)
-        console.log('token is:',this.$store.state.token)
     },
 }
 </script>

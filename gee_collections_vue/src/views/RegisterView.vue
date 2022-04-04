@@ -27,14 +27,6 @@
                                         <label>Last Name<em>*</em></label>
                                         <input class="form-control" type="text" placeholder="Last Name" v-model="last_name">
                                     </div>
-                                    <!-- <div class="col-md-6">
-                                        <label>Preferred Username<em>*</em></label>
-                                        <input class="form-control" type="text" placeholder="Username" v-model="username">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label>Gender</label>
-                                        <input class="form-control" type="text" placeholder="Gender">
-                                    </div> -->
                                     <div class="col-md-6">
                                         <label>E-mail<em>*</em></label>
                                         <input class="form-control" type="email" placeholder="E-mail" v-model="email">
@@ -95,9 +87,6 @@ export default {
                 if(this.last_name === ''){
                     this.errors.push('Last Name is missing')
                 }
-                // if(this.username === ''){
-                //     this.errors.push('Username is required')
-                // }
                 if(this.email === ''){
                     this.errors.push('Email is missing')
                 }
@@ -120,11 +109,9 @@ export default {
                 let formData = new FormData();
                 formData.append('username', this.email);
                 formData.append('password', this.password);
-                // formData.append('email', this.email);
 
                 this.axios.post('/api/v1/users/', formData)
                 .then((response)=>{
-                    console.log(response);
                     this.$toast.success('Account created succesfully, verification link sent to your email. Please verify',{
                         duration: 10000,
                         dismissible: true
