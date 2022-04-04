@@ -12,3 +12,9 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id','name']
+
+class ProfileSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='user.username')
+    class Meta:
+        model = Profile
+        fields = ['username','first_name','last_name','birthdate','gender','phone_number','city','county','address']

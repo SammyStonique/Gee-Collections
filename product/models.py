@@ -2,6 +2,27 @@ from django.db import models
 from io import BytesIO
 from PIL import Image
 from django.core.files import File
+# from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+
+class User(AbstractUser):
+    CITY = (('','Select your city'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Kisumu','Kisumu'))
+    GENDER = (('','Select Gender'),('Male','Male'),('Female','Female'),('Other','Other')) 
+    COUNTY = (('','Select County'),('Kisumu','Kisumu'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Siaya','Siaya'))
+
+    email = models.EmailField(max_length=250)
+    first_name = models.CharField(max_length=250)
+    last_name = models.CharField(max_length=250)
+    birthdate = models.DateField(null=True,blank=True)
+    gender = models.CharField(max_length=250,choices=GENDER,default='')
+    phone_number = models.CharField(max_length=250)
+    city = models.CharField(max_length=250,choices=CITY,default='')
+    county = models.CharField(max_length=250,choices=COUNTY,default='')
+    address = models.CharField(max_length=250)
+
+    def __str__(self):
+        return f'{self.user.username} Profile'
+
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
@@ -62,5 +83,24 @@ class Product(models.Model):
         thumbnail = File(thumb_io, name=image.name)
 
         return thumbnail
+
+class Profile(models.Model):
+    CITY = (('','Select your city'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Kisumu','Kisumu'))
+    GENDER = (('','Select Gender'),('Male','Male'),('Female','Female'),('Other','Other')) 
+    COUNTY = (('','Select County'),('Kisumu','Kisumu'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Siaya','Siaya'))
+
+
+    user = models.OneToOneField('product.User', related_name='profile', on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=250)
+    last_name = models.CharField(max_length=250)
+    birthdate = models.DateField(null=True,blank=True)
+    gender = models.CharField(max_length=250,choices=GENDER,default='')
+    phone_number = models.CharField(max_length=250)
+    city = models.CharField(max_length=250,choices=CITY,default='')
+    county = models.CharField(max_length=250,choices=COUNTY,default='')
+    address = models.CharField(max_length=250)
+
+    def __str__(self):
+        return f'{self.user.username} Profile'
 
 

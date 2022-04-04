@@ -72,7 +72,7 @@
                                         </div>
                                         <div class="cart-btn">
                                             <button><router-link to="/products">Update Cart</router-link></button>                      
-                                            <button><router-link to="/checkout" class="checkout">Checkout</router-link></button>
+                                            <button v-if="cart.length"><router-link to="/checkout" class="checkout">Checkout</router-link></button>
                                         </div>
                                     </div>
                                 </div>
@@ -92,7 +92,6 @@ export default {
     data(){
         return{
             myEmoji:'\u{1F62D}',
-            
         }
     },
     props:['cart','items','cartGrandTotal','cartItemTotal','cartSubTotal','shippingCost'],

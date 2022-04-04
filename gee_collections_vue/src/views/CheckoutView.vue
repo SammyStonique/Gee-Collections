@@ -4,8 +4,8 @@
         <div class="breadcrumb-wrap">
             <div class="container-fluid">
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item"><a href="#">Products</a></li>
+                    <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
+                    <li class="breadcrumb-item"><router-link to="/cart">Cart</router-link></li>
                     <li class="breadcrumb-item active">Checkout</li>
                 </ul>
             </div>

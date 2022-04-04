@@ -32,36 +32,35 @@
                             <router-link to="/products" class="nav-item nav-link">Products</router-link>
                             <router-link to="product-detail" class="nav-item nav-link">Product Detail</router-link>
                             <router-link to="/cart" class="nav-item nav-link">Cart</router-link>
-                            <router-link to="/checkout" class="nav-item nav-link">Checkout</router-link>
+                            <router-link to="/checkout" class="nav-item nav-link" v-if="this.cart.cartItems.length">Checkout</router-link>
                             <router-link to="/my-account" class="nav-item nav-link">My Account</router-link>
                             <div class="nav-item dropdown">
                                 <router-link to="#" class="nav-link dropdown-toggle" data-toggle="dropdown">More Pages</router-link>
                                 <div class="dropdown-menu">
                                     <router-link to="/wishlist" class="dropdown-item">Wishlist</router-link>
-                                    <router-link to="/login" class="dropdown-item">Login & Register</router-link>
                                     <router-link to="/contact" class="dropdown-item">Contact Us</router-link>
                                 </div>
                             </div>
                         </div>
-                        <div class="navbar-nav ml-auto">
+                        <div class="navbar-nav ml-auto" v-if="!isAuthenticated">
                             <div class="nav-item dropdown">
                                 <router-link to="#" class="nav-link dropdown-toggle" data-toggle="dropdown">User Account</router-link>
                                 <div class="dropdown-menu">
                                     <router-link to="/login" class="dropdown-item">Login</router-link>
                                     <router-link to="/register" class="dropdown-item">Register</router-link>
-                                    <router-link to="/logout" class="dropdown-item">Log Out</router-link>
+                                    <!-- <router-link to="/logout" class="dropdown-item">Log Out</router-link> -->
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="navbar-nav ml-auto" v-if="isAuthenticated">
+                        <div class="navbar-nav ml-auto" v-if="isAuthenticated">
                             <div class="nav-item dropdown">
-                                <router-link to="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{request.user.username}}</router-link>
+                                <router-link to="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{username.username}}</router-link>
                                 <div class="dropdown-menu">
-                                    <router-link to="/login" class="dropdown-item">Login</router-link>
-                                    <router-link to="/register" class="dropdown-item">Register</router-link>
+                                    <router-link to="/logout" class="dropdown-item">Logout</router-link>
+                                    
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                     </div>
                 </nav>
             </div>
@@ -226,6 +225,7 @@ export default {
             shippingCost: 200,
             token: '',
             isAuthenticated: false,
+            username:'',
         }
     },
     beforeMount() {
@@ -237,10 +237,12 @@ export default {
         } else {
         axios.defaults.headers.common['Authorization'] = ""
         }
-    },
-    mounted(){
+        this.getUsername()
         this.cart = this.$store.state.cart
         this.isAuthenticated = this.$store.state.isAuthenticated
+    },
+    mounted(){
+        
     },
     computed: {
         totalQuantity() {
@@ -301,7 +303,16 @@ export default {
             this.$toast.success(`${this.items[selectedItem].name} added to cart`);
             
         },
-        
+        getUsername(){
+            this.axios.get('/api/v1/users/me/')
+            .then((response)=>{
+                this.username = response.data;
+                console.log(this.username)
+            })
+            .catch((error)=>{
+
+            })
+        },        
         scrollToTop(){
             window.scrollTo(0,0);
         }

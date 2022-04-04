@@ -18,15 +18,8 @@
                     <div class="col-lg-12">
                         <form @submit.prevent="createUser">    
                             <div class="register-form">
+                            <h1 style="text-align: center; margin-bottom: 20px;">Sign Up</h1>
                                 <div class="row">
-                                    <div class="col-md-6 ">
-                                        <label>First Name<em>*</em></label>
-                                        <input class="form-control first-name" type="text" placeholder="First Name" v-model="first_name">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label>Last Name<em>*</em></label>
-                                        <input class="form-control" type="text" placeholder="Last Name" v-model="last_name">
-                                    </div>
                                     <div class="col-md-6">
                                         <label>E-mail<em>*</em></label>
                                         <input class="form-control" type="email" placeholder="E-mail" v-model="email">
@@ -47,7 +40,7 @@
                                         <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
                                     </div>
                                     <div class="col-md-12 btn-submit">
-                                        <button class="btn submit-btn">Submit</button>
+                                        <button class="btn submit-btn">Sign Up</button>
                                     </div>
                                 </div>
                             </div>
@@ -65,10 +58,7 @@
 export default {
     data(){
         return{
-            first_name:'',
-            last_name:'',
             email: '',
-            // username:'',
             password: '',
             password2: '',
             phone_number: '',
@@ -78,15 +68,9 @@ export default {
     methods:{
         createUser(){
             this.errors = []
-            if(this.first_name === ''&& this.last_name === ''&&this.email === ''&&this.password === ''&&this.password2 === ''){
+            if(this.email === ''&&this.password === ''&&this.password2 === ''&& this.phone_number===''){
                 this.errors.push('Please fill in the details!')
             }else{
-                if(this.first_name === ''){
-                    this.errors.push('First Name is missing')
-                }
-                if(this.last_name === ''){
-                    this.errors.push('Last Name is missing')
-                }
                 if(this.email === ''){
                     this.errors.push('Email is missing')
                 }
@@ -109,6 +93,7 @@ export default {
                 let formData = new FormData();
                 formData.append('username', this.email);
                 formData.append('password', this.password);
+                formData.append('email', this.email)
 
                 this.axios.post('/api/v1/users/', formData)
                 .then((response)=>{

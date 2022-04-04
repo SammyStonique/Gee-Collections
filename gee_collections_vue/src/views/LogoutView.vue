@@ -13,6 +13,8 @@
             <div class="container-fluid user-login-container">
                 <div class="user-login-form">
                     <h1>You have been logged out</h1>
+                    <p>You have been logged out. Do you want to log back in?</p>
+                    <router-link to="/login"><button class="btn login-btn">Login</button></router-link>
                 </div>     
             </div>
         </div> 
@@ -34,3 +36,16 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+    .user-login-form{
+        background-color: white;
+        height: 250px;
+        margin-bottom: 20px;
+        text-align: center;
+        max-width: 80%;
+    }
+    p{
+        margin:20px;
+    }
+</style>
