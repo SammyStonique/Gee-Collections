@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'djoser',
     'corsheaders',
     'product',
-    'order'
+    'order',
+    'jsonpickle'
 ]
 
 #CORS_ALLOWED_ORIGINS = [
