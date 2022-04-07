@@ -9,7 +9,7 @@ from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin,BaseUse
 
 class CustomAccountManager(BaseUserManager):
 
-    def create_superuser(self, email, username, password, **other_fields):
+    def create_superuser(self, email,phone_number, password, **other_fields):
 
         other_fields.setdefault('is_staff', True)
         other_fields.setdefault('is_superuser', True)
@@ -22,16 +22,16 @@ class CustomAccountManager(BaseUserManager):
             raise ValueError(
                 'Superuser must be assigned to is_superuser=True.')
 
-        return self.create_user(email, username, password, **other_fields)
+        return self.create_user(email,phone_number, password, **other_fields)
 
 
-    def create_user(self, email, username, password, **other_fields):
-
+    def create_user(self, email,phone_number,password, **other_fields):
+        other_fields.setdefault('is_active', True)
         if not email:
             raise ValueError(_('You must provide an email address'))
 
         email = self.normalize_email(email)
-        user = self.model(email=email, username=email, **other_fields)
+        user = self.model(email=email,phone_number=phone_number, **other_fields)
         user.set_password(password)
         user.save()
         return user
@@ -41,7 +41,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     GENDER = (('','Select Gender'),('Male','Male'),('Female','Female'),('Other','Other')) 
     COUNTY = (('','Select County'),('Kisumu','Kisumu'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Siaya','Siaya'))
     
-    username = models.CharField(max_length=250, unique=True)
+    # username = models.CharField(max_length=250, unique=True)
     email = models.EmailField(_('email_address'), unique=True)
     first_name = models.CharField(max_length=250,blank=True)
     last_name = models.CharField(max_length=250,blank=True)
@@ -58,10 +58,10 @@ class User(AbstractBaseUser,PermissionsMixin):
     objects = CustomAccountManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['phone_number']
 
     def __str__(self):
-        return f'{self.username}'
+        return f'{self.email}'
 
 
 class Category(models.Model):
@@ -78,12 +78,13 @@ class Category(models.Model):
         return f'/{self.slug}'
 
 class Product(models.Model):
-    category= models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
+
+    category= models.ForeignKey(Category, related_name='products', on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=255)
     slug = models.SlugField()
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='uploads/', blank=True, null=True)
+    image = models.ImageField(upload_to='uploads/')
     thumbnail = models.ImageField(upload_to='uploads/', blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add = True)
 
@@ -124,23 +125,22 @@ class Product(models.Model):
 
         return thumbnail
 
-# class Profile(models.Model):
-    # CITY = (('','Select your city'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Kisumu','Kisumu'))
-    # GENDER = (('','Select Gender'),('Male','Male'),('Female','Female'),('Other','Other')) 
-    # COUNTY = (('','Select County'),('Kisumu','Kisumu'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Siaya','Siaya'))
+class Profile(models.Model):
+    CITY = (('','Select your city'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Kisumu','Kisumu'))
+    GENDER = (('','Select Gender'),('Male','Male'),('Female','Female'),('Other','Other')) 
+    COUNTY = (('','Select County'),('Kisumu','Kisumu'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Siaya','Siaya'))
 
 
-    # user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
-    # first_name = models.CharField(max_length=250)
-    # last_name = models.CharField(max_length=250)
-    # birthdate = models.DateField(null=True,blank=True)
-    # gender = models.CharField(max_length=250,choices=GENDER,default='')
-    # phone_number = models.CharField(max_length=250)
-    # city = models.CharField(max_length=250,choices=CITY,default='')
-    # county = models.CharField(max_length=250,choices=COUNTY,default='')
-    # address = models.CharField(max_length=250)
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=250)
+    last_name = models.CharField(max_length=250)
+    birthdate = models.DateField(null=True,blank=True)
+    gender = models.CharField(max_length=250,choices=GENDER,default='')
+    city = models.CharField(max_length=250,choices=CITY,default='')
+    county = models.CharField(max_length=250,choices=COUNTY,default='')
+    address = models.CharField(max_length=250)
 
-    # def __str__(self):
-    #     return f'{self.user.username} Profile'
+    def __str__(self):
+        return f'{self.user.email} Profile'
 
 

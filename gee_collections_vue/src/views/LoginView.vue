@@ -16,7 +16,7 @@
                     <form action="" @submit.prevent="userLogin">
                         <div class="col-md-6">
                             <label>Email</label>
-                            <input class="form-control" type="email" placeholder="Enter your email" v-model="username">
+                            <input class="form-control" type="email" placeholder="Enter your email" v-model="email">
                         </div>
                         <div class="col-md-6">
                             <label>Password</label>
@@ -47,7 +47,7 @@ export default {
     props:['token','isAuthenticated'],
     data(){
         return{
-            username:'',
+            email:'',
             password: '',
             errors: [],
         }
@@ -55,13 +55,13 @@ export default {
     methods:{
         userLogin(){
             this.errors = [];
-            if(this.username === '' && this.password === ''){
+            if(this.email === '' && this.password === ''){
                 this.errors.push('Please fill in the details')
-                this.$toast.error('Invalid username and password', {
+                this.$toast.error('Invalid email and password', {
                     duration: 3000
                 })
             }else{
-                if(this.username ===''){
+                if(this.email ===''){
                     this.errors.push('Please enter your email')
                 }
                 if(this.password === ''){
@@ -71,14 +71,13 @@ export default {
 
             if(!this.errors.length){
                 const formData = {
-                    username: this.username,
+                    email: this.email,
                     password: this.password
                 }
 
                 this.axios
                     .post('/api/v1/token/login/', formData)
                     .then((response)=>{
-                        console.log(response.data)
                         const token = response.data.auth_token;       
                         this.$store.commit('setToken', token);
                         axios.defaults.headers.common['Authorization'] = "Token " + token

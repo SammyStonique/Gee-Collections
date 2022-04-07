@@ -152,12 +152,13 @@ DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
+        
     ),
 }
 
 #Djoser settings
 DJOSER = {
-    
+    'LOGIN_FIELD': 'email'
 }
 
 #Email Settings

@@ -91,9 +91,9 @@ export default {
 
             if(!this.errors.length){
                 let formData = new FormData();
-                formData.append('username', this.email);
+                formData.append('email', this.email);
                 formData.append('password', this.password);
-                formData.append('email', this.email)
+                formData.append('phone_number', this.phone_number)
 
                 this.axios.post('/api/v1/users/', formData)
                 .then((response)=>{

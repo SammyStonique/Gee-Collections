@@ -54,7 +54,7 @@
                         </div>
                         <div class="navbar-nav ml-auto" v-if="isAuthenticated">
                             <div class="nav-item dropdown">
-                                <router-link to="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{username.username}}</router-link>
+                                <router-link to="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{userDetails.email}}</router-link>
                                 <div class="dropdown-menu">
                                     <router-link to="/logout" class="dropdown-item">Logout</router-link>
                                     
@@ -112,6 +112,8 @@
         :shippingCost="shippingCost"
         :token="token"
         :isAuthenticated="isAuthenticated"
+        :getUserDetails="getUserDetails"
+        :userDetails="userDetails"
         />
 
         <!-- Footer Start -->
@@ -225,7 +227,7 @@ export default {
             shippingCost: 200,
             token: '',
             isAuthenticated: false,
-            username:'',
+            userDetails:[]
         }
     },
     beforeMount() {
@@ -237,9 +239,9 @@ export default {
         } else {
         axios.defaults.headers.common['Authorization'] = ""
         }
-        this.getUsername()
-        this.cart = this.$store.state.cart
-        this.isAuthenticated = this.$store.state.isAuthenticated
+        this.getUserDetails()
+        this.cart = this.$store.state.cart;
+        this.isAuthenticated = this.$store.state.isAuthenticated;
     },
     mounted(){
         
@@ -303,11 +305,11 @@ export default {
             this.$toast.success(`${this.items[selectedItem].name} added to cart`);
             
         },
-        getUsername(){
+        getUserDetails(){
             this.axios.get('/api/v1/users/me/')
             .then((response)=>{
-                this.username = response.data;
-                console.log(this.username)
+                this.userDetails = response.data;
+                console.log(this.userDetails)
             })
             .catch((error)=>{
 

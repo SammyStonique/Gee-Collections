@@ -111,16 +111,43 @@
                                             <input class="form-control" type="text" placeholder="Last Name" v-model="last_name">
                                         </div>
                                         <div class="col-md-6">
-                                            <input class="form-control" type="email" placeholder="Email" v-model="email">
+                                        <input class="form-control" type="email" placeholder="Email" :value="`${userDetails.email}`" disabled="true">
+                                            <!-- <input class="form-control" type="email" placeholder="Email" :value="`${userDetails.email}`" disabled="true"> -->
                                         </div>
                                         <div class="col-md-6">
-                                            <input class="form-control" type="text" placeholder="Mobile" v-model="phone_number">
+                                            <input class="form-control" type="text" placeholder="Mobile" :value="`${userDetails.phone_number}`" disabled="true">
                                         </div>
                                         <div class="col-md-6">
                                             <input class="form-control" type="text" placeholder="Gender" v-model="gender">
+                                            <!-- <select name="gender" class="form-control" v-model="gender">
+                                                <option value="" disabled="true">--Select your Gender--</option>
+                                                <option>Male</option>
+                                                <option>Female</option>
+                                                <option>Other</option>
+                                            </select> -->
                                         </div>
                                         <div class="col-md-6">
-                                            <input class="form-control" type="text" placeholder="Date of Birth" v-model="birthdate">
+                                            <input class="form-control" type="date" placeholder="Date of Birth" v-model="birthdate">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input class="form-control" type="text" placeholder="City" v-model="city">
+                                            <!-- <select name="city" class="form-control" v-model="city">
+                                                <option value="" disabled="true">--Select your City--</option>
+                                                <option value="">Nairobi</option>
+                                                <option value="kisumu">Kisumu</option>
+                                                <option value="mombasa">Mombasa</option>
+                                                <option value="nakuru">Nakuru</option>
+                                            </select> -->
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input class="form-control" type="text" placeholder="County" v-model="county">
+                                            <!-- <select name="county" class="form-control" v-model="county">
+                                                <option value="" disabled="true">--Select your County--</option>
+                                                <option value="">Siaya</option>
+                                                <option value="">Kisumu</option>
+                                                <option value="">Nairobi</option>
+                                                <option value="">Mombasa</option>
+                                            </select> -->
                                         </div>
                                         <div class="col-md-12">
                                             <input class="form-control" type="text" placeholder="Address" v-model="address">
@@ -161,24 +188,25 @@
 
 <script>
 export default {
+    props:['getUserDetails','userDetails'],
     data(){
         return{
-            first_name:null,
-            last_name: null,
-            email: null,
-            phone_number: null,
-            birthdate: null,
-            address: null,
-            county: null,
-            city: null,
-            gender: null,
+            first_name:'',
+            last_name: '',
+            // email: null,
+            // phone_number: null,
+            birthdate: '',
+            address: '',
+            county: '',
+            city: '',
+            gender: '',
             errors:[]
         }
     },
     methods:{
         postProfileData(){
             this.errors = []
-            if(this.first_name ===''&&this.last_name ===''&&this.phone_number ===''&&this.birthdate ===''&&this.gender ===''&&this.city ===''&&this.county ===''&&this.address ===''){
+            if(this.first_name ===''&&this.last_name ===''&&this.birthdate ===''&&this.gender ===''&&this.city ===''&&this.county ===''&&this.address ===''){
                 this.errors.push('Please fill in the details!')
             }else{
                 if(this.first_name ===''){
@@ -187,9 +215,9 @@ export default {
                 if(this.last_name ===''){
                     this.errors.push('Last Name is missing')
                 }
-                if(this.phone_number ===''){
-                    this.errors.push('Phone Number is missing')
-                }
+                // if(this.phone_number ===''){
+                //     this.errors.push('Phone Number is missing')
+                // }
                 if(this.birthdate ===''){
                     this.errors.push('Date of birth missing')
                 }
@@ -207,18 +235,25 @@ export default {
                 }
             }
             if(!this.errors.length){
-                const formData = {
-                    first_name:this.firstname,
+                let formData = {
+                    first_name:this.first_name,
                     last_name: this.last_name,
-                    email: this.email,
-                    phone_number: this.phone_number,
                     birthdate: this.birthdate,
                     address: this.address,
                     county: this.county,
                     city: this.city,
                     gender: this.gender,                    
                 }
-                this.axios.post('/api/v1/user-profile/', formData)
+                // let formData = new FormData()
+                // formData.append('first_name',this.first_name);
+                // formData.append('last_name',this.last_name);
+                // formData.append('birthdate',this.birthdate);
+                // formData.append('gender',this.gender);
+                // formData.append('city',this.city);
+                // formData.append('county',this.county);
+                // formData.append('address',this.address);
+                
+                this.axios.post(`/api/v1/user-profile/?user=${this.userDetails.email}/`, formData)
                 .then((response)=>{
                     console.log(response.data);
                     this.$toast.success('Profile Succesfully Updated',{
@@ -234,7 +269,7 @@ export default {
         
     },
     mounted(){
-        
+        this.getUserDetails()
     }
 }
 </script>
