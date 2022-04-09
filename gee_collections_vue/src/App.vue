@@ -244,7 +244,7 @@ export default {
         this.isAuthenticated = this.$store.state.isAuthenticated;
     },
     mounted(){
-        
+        this.getUserDetails()
     },
     computed: {
         totalQuantity() {
@@ -309,7 +309,6 @@ export default {
             this.axios.get('/api/v1/users/me/')
             .then((response)=>{
                 this.userDetails = response.data;
-                console.log(this.userDetails)
             })
             .catch((error)=>{
 

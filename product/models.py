@@ -2,7 +2,6 @@ from django.db import models
 from io import BytesIO
 from PIL import Image
 from django.core.files import File
-# from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin,BaseUserManager
 
@@ -41,7 +40,6 @@ class User(AbstractBaseUser,PermissionsMixin):
     GENDER = (('','Select Gender'),('Male','Male'),('Female','Female'),('Other','Other')) 
     COUNTY = (('','Select County'),('Kisumu','Kisumu'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Siaya','Siaya'))
     
-    # username = models.CharField(max_length=250, unique=True)
     email = models.EmailField(_('email_address'), unique=True)
     first_name = models.CharField(max_length=250,blank=True)
     last_name = models.CharField(max_length=250,blank=True)
@@ -58,7 +56,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     objects = CustomAccountManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['phone_number']
+    REQUIRED_FIELDS = ['phone_number','first_name','last_name','birthdate','gender','city','county','address']
 
     def __str__(self):
         return f'{self.email}'
@@ -124,23 +122,5 @@ class Product(models.Model):
         thumbnail = File(thumb_io, name=image.name)
 
         return thumbnail
-
-class Profile(models.Model):
-    CITY = (('','Select your city'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Kisumu','Kisumu'))
-    GENDER = (('','Select Gender'),('Male','Male'),('Female','Female'),('Other','Other')) 
-    COUNTY = (('','Select County'),('Kisumu','Kisumu'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Siaya','Siaya'))
-
-
-    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=250)
-    last_name = models.CharField(max_length=250)
-    birthdate = models.DateField(null=True,blank=True)
-    gender = models.CharField(max_length=250,choices=GENDER,default='')
-    city = models.CharField(max_length=250,choices=CITY,default='')
-    county = models.CharField(max_length=250,choices=COUNTY,default='')
-    address = models.CharField(max_length=250)
-
-    def __str__(self):
-        return f'{self.user.email} Profile'
 
 

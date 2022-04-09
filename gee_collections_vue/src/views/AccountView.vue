@@ -30,7 +30,7 @@
                             <div class="tab-pane fade show active" id="dashboard-tab" role="tabpanel" aria-labelledby="dashboard-nav">
                                 <h4>Dashboard</h4>
                                 <p>
-                                Hello our esteemed customer, we're very excited to have you on board. Gee Collections appreciates your contribution towards 
+                                Hello {{this.first_name}}, we're very excited to have you on board. Gee Collections appreciates your contribution towards 
                                 assisting us grow us a brand. We could not make it this far without you, always feel free to leave a suggestion so that we can 
                                 provide you with quality services. Thank you.
                                 </p> 
@@ -111,43 +111,39 @@
                                             <input class="form-control" type="text" placeholder="Last Name" v-model="last_name">
                                         </div>
                                         <div class="col-md-6">
-                                        <input class="form-control" type="email" placeholder="Email" :value="`${userDetails.email}`" disabled="true">
-                                            <!-- <input class="form-control" type="email" placeholder="Email" :value="`${userDetails.email}`" disabled="true"> -->
+                                            <input class="form-control" type="email" placeholder="Email" v-model="email" disabled="true">
                                         </div>
                                         <div class="col-md-6">
-                                            <input class="form-control" type="text" placeholder="Mobile" :value="`${userDetails.phone_number}`" disabled="true">
+                                            <input class="form-control" type="text" placeholder="Mobile" v-model="phone_number">
                                         </div>
                                         <div class="col-md-6">
-                                            <input class="form-control" type="text" placeholder="Gender" v-model="gender">
-                                            <!-- <select name="gender" class="form-control" v-model="gender">
+                                            <select name="gender" class="form-control" v-model="gender">
                                                 <option value="" disabled="true">--Select your Gender--</option>
                                                 <option>Male</option>
                                                 <option>Female</option>
                                                 <option>Other</option>
-                                            </select> -->
+                                            </select>
                                         </div>
                                         <div class="col-md-6">
                                             <input class="form-control" type="date" placeholder="Date of Birth" v-model="birthdate">
                                         </div>
                                         <div class="col-md-6">
-                                            <input class="form-control" type="text" placeholder="City" v-model="city">
-                                            <!-- <select name="city" class="form-control" v-model="city">
+                                            <select name="city" class="form-control" v-model="city">
                                                 <option value="" disabled="true">--Select your City--</option>
-                                                <option value="">Nairobi</option>
-                                                <option value="kisumu">Kisumu</option>
-                                                <option value="mombasa">Mombasa</option>
-                                                <option value="nakuru">Nakuru</option>
-                                            </select> -->
+                                                <option>Nairobi</option>
+                                                <option>Kisumu</option>
+                                                <option>Mombasa</option>
+                                                <option>Nakuru</option>
+                                            </select>
                                         </div>
                                         <div class="col-md-6">
-                                            <input class="form-control" type="text" placeholder="County" v-model="county">
-                                            <!-- <select name="county" class="form-control" v-model="county">
-                                                <option value="" disabled="true">--Select your County--</option>
-                                                <option value="">Siaya</option>
-                                                <option value="">Kisumu</option>
-                                                <option value="">Nairobi</option>
-                                                <option value="">Mombasa</option>
-                                            </select> -->
+                                            <select name="county" class="form-control" v-model="county">
+                                                <option disabled="true">--Select your County--</option>
+                                                <option>Siaya</option>
+                                                <option>Kisumu</option>
+                                                <option>Nairobi</option>
+                                                <option>Mombasa</option>
+                                            </select>
                                         </div>
                                         <div class="col-md-12">
                                             <input class="form-control" type="text" placeholder="Address" v-model="address">
@@ -191,10 +187,11 @@ export default {
     props:['getUserDetails','userDetails'],
     data(){
         return{
+            id:'',
             first_name:'',
             last_name: '',
-            // email: null,
-            // phone_number: null,
+            email: '',
+            phone_number: '',
             birthdate: '',
             address: '',
             county: '',
@@ -209,30 +206,30 @@ export default {
             if(this.first_name ===''&&this.last_name ===''&&this.birthdate ===''&&this.gender ===''&&this.city ===''&&this.county ===''&&this.address ===''){
                 this.errors.push('Please fill in the details!')
             }else{
-                if(this.first_name ===''){
-                    this.errors.push('First Name is missing')
+                if(this.first_name ===''||this.last_name ===''||this.birthdate ===''||this.gender ===''||this.city ===''||this.county ===''||this.address ===''){
+                this.errors.push('Some details are missing!')
                 }
-                if(this.last_name ===''){
-                    this.errors.push('Last Name is missing')
-                }
-                // if(this.phone_number ===''){
-                //     this.errors.push('Phone Number is missing')
+                // if(this.first_name ===''){
+                //     this.errors.push('First Name is missing')
                 // }
-                if(this.birthdate ===''){
-                    this.errors.push('Date of birth missing')
-                }
-                if(this.gender ===''){
-                    this.errors.push('Please select your gender')
-                }
-                if(this.city ===''){
-                    this.errors.push('Please select your gender')
-                }
-                if(this.county ===''){
-                    this.errors.push('Please select your gender')
-                }
-                if(this.address ===''){
-                    this.errors.push('Address details missing')
-                }
+                // if(this.last_name ===''){
+                //     this.errors.push('Last Name is missing')
+                // }
+                // if(this.birthdate ===''){
+                //     this.errors.push('Date of birth missing')
+                // }
+                // if(this.gender ===''){
+                //     this.errors.push('Please select your gender')
+                // }
+                // if(this.city ===''){
+                //     this.errors.push('Please select your gender')
+                // }
+                // if(this.county ===''){
+                //     this.errors.push('Please select your gender')
+                // }
+                // if(this.address ===''){
+                //     this.errors.push('Address details missing')
+                // }
             }
             if(!this.errors.length){
                 let formData = {
@@ -242,34 +239,58 @@ export default {
                     address: this.address,
                     county: this.county,
                     city: this.city,
-                    gender: this.gender,                    
+                    gender: this.gender,    
+                    phone_number: this.phone_number,
+                    email: this.email               
                 }
-                // let formData = new FormData()
-                // formData.append('first_name',this.first_name);
-                // formData.append('last_name',this.last_name);
-                // formData.append('birthdate',this.birthdate);
-                // formData.append('gender',this.gender);
-                // formData.append('city',this.city);
-                // formData.append('county',this.county);
-                // formData.append('address',this.address);
-                
-                this.axios.post(`/api/v1/user-profile/?user=${this.userDetails.email}/`, formData)
+                this.axios.put('/api/v1/user-list/'+this.id+'/', formData)
                 .then((response)=>{
                     console.log(response.data);
                     this.$toast.success('Profile Succesfully Updated',{
                         duration: 5000,
                         dismissible: true
                     })
+                    this.$router.push('/my-account');
                 })
                 .catch((error)=>{
                     console.log(error);
                 })
             }    
         },
-        
+        getProfileDetails(){
+            this.axios.get('/api/v1/users/me/')
+            .then((response)=>{
+                console.log(response.data)
+                this.phone_number = response.data.phone_number;
+                this.email = response.data.email;
+                this.id = response.data.id;
+                this.first_name = response.data.first_name
+                this.last_name = response.data.last_name
+                this.gender = response.data.gender
+                this.city = response.data.city
+                this.county = response.data.county
+                this.birthdate = response.data.birthdate
+                this.address = response.data.address
+            })
+            .catch((error)=>{
+
+            })
+        },    
     },
     mounted(){
-        this.getUserDetails()
+        this.getProfileDetails()
+
     }
 }
 </script>
+
+<style scoped>
+    input{
+        font-weight: 300;
+        color: black;
+    }
+    select{
+        font-weight: 300;
+        color: black;
+    }
+</style>
