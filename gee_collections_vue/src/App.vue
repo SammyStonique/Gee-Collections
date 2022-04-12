@@ -244,7 +244,7 @@ export default {
         this.isAuthenticated = this.$store.state.isAuthenticated;
     },
     mounted(){
-        this.getUserDetails()
+        // this.getUserDetails()
     },
     computed: {
         totalQuantity() {

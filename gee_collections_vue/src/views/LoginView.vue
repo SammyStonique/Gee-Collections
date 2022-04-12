@@ -86,18 +86,22 @@ export default {
                             duration: 5000
                         })
                         this.$router.push('/')
+                    })    
                     .catch((error)=>{
                         if (error.response) {
                             for (const property in error.response.data) {
-                                this.errors.push(`${property}: ${error.response.data[property]}`)
+                                this.errors.push(`${error.response.data[property]}`)
+                                // this.errors.push(`${property}: ${error.response.data[property]}`)
                             }
                             console.log(JSON.stringify(error.response.data))
+                            this.$toast.error('Invalid Login Credentials!',{
+                                duration:5000
+                            })
                         } else if (error.message) {
                             this.errors.push('Something went wrong. Please try again')
                             console.log(JSON.stringify(error))
                         }
                     })
-                })
             }
             
         }
@@ -105,7 +109,11 @@ export default {
 }
 </script>
 
-<style>
+<style scoped> 
+    input{
+        font-weight: 300;
+        color: black;
+    }
     .user-login-container{
         width: 80%;
     }
@@ -117,5 +125,9 @@ export default {
     }
     .login-form{
         max-width: 80%;
+    }
+    input{
+        font-weight: 300;
+        color: black;
     }
 </style>

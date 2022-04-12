@@ -134,4 +134,8 @@ export default {
     em{
         color: red;
     }
+    input{
+        font-weight: 300;
+        color: black;
+    }
 </style>

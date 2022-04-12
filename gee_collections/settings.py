@@ -158,7 +158,8 @@ REST_FRAMEWORK = {
 
 #Djoser settings
 DJOSER = {
-    'LOGIN_FIELD': 'email'
+    'LOGIN_FIELD': 'email',
+    'ACTIVATION_URL': 'my-account/activate/{uid}/{token}',
 }
 
 #Email Settings
