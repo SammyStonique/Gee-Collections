@@ -265,43 +265,29 @@ export default {
             }
             items.push(obj)
             
-            } 
-            //Daraja Authorisation API
-            // let headers = new Headers();
-            // headers.append("Authorization", "Bearer d0tXZk1Gb24wcTYwRmpQb3BBQVZseUZqU2xiNHJBM006OXZxNEhYWHBkNzZJUFRtaQ");
-
-            this.axios.get("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials")
-            .then((response) =>{
+            }           
+            let formData={
+                first_name:this.first_name,
+                last_name: this.last_name,
+                address: this.address,
+                county: this.county,
+                city: this.city,   
+                phone_number: this.phone_number,
+                email: this.email,
+                items: items,
+                order_total: this.cartSubTotal,
+            }
+            console.log(formData)
+            this.axios.post('/api/v1/checkout/', formData)
+            .then((response)=>{
                 console.log(response.data)
-            })
-            .then((result)=>{
-                console.log(result)
+                this.$store.commit('clearCart')
+                this.$toast.success('Order succesfully placed')
+                this.$router.push('/')
             })
             .catch((error)=>{
                 console.log(error)
-            });           
-            // let formData={
-            //     first_name:this.first_name,
-            //     last_name: this.last_name,
-            //     address: this.address,
-            //     county: this.county,
-            //     city: this.city,   
-            //     phone_number: this.phone_number,
-            //     email: this.email,
-            //     items: items,
-            //     order_total: this.cartSubTotal,
-            // }
-            // console.log(formData)
-            // this.axios.post('/api/v1/checkout/', formData)
-            // .then((response)=>{
-            //     console.log(response.data)
-            //     this.$store.commit('clearCart')
-            //     this.$toast.success('Order succesfully placed')
-            //     this.$router.push('/')
-            // })
-            // .catch((error)=>{
-            //     console.log(error)
-            // })
+            })
         }
     },
     beforeMount() {
