@@ -44,10 +44,10 @@ def lipa_na_mpesa_online(request):
         "Timestamp": LipanaMpesaPpassword.lipa_time,
         "TransactionType": "CustomerPayBillOnline",
         "Amount": 1,
-        "PartyA": 254717423651,  # replace with your phone number to get stk push
+        "PartyA": 254795968217,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
-        "PhoneNumber": 254717423651,  # replace with your phone number to get stk push
-        "CallBackURL": "https://sandbox.safaricom.co.ke/mpesa/",
+        "PhoneNumber": 254795968217,  # replace with your phone number to get stk push
+        "CallBackURL": "https://f055-197-248-34-79.ngrok.io/api/v1/c2b/callback",
         "AccountReference": "SammyB",
         "TransactionDesc": "Testing stk push"
     }
@@ -62,15 +62,27 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Business_short_code,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://fe9a-197-248-34-79.ngrok.io/api/v1/c2b/confirmation",
-               "ValidationURL": "https://fe9a-197-248-34-79.ngrok.io/api/v1/c2b/validation"}
+               "ConfirmationURL": "https://f055-197-248-34-79.ngrok.io/api/v1/c2b/confirmation",
+               "ValidationURL": "https://f055-197-248-34-79.ngrok.io/api/v1/c2b/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     return HttpResponse(response.text)
 
 
 @csrf_exempt
 def call_back(request):
-    pass
+    mpesa_body =request.body.decode('utf-8')
+    mpesa_payment = json.loads(mpesa_body)
+    print('this is the body:',mpesa_body)
+    amount = mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][0].get('Value')
+    print('The amount is:',amount)
+    payment= MpesaPayment(
+        transaction_time=mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][3].get('Value'),
+        amount=mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][0].get('Value'),
+        phone_number=mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][4].get('Value'),
+        transaction_id=mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][1].get('Value'),
+    )
+    payment.save()
+    return JsonResponse(mpesa_body,safe=False)
 
 
 @csrf_exempt
@@ -86,6 +98,7 @@ def validation(request):
 def confirmation(request):
     mpesa_body =request.body.decode('utf-8')
     mpesa_payment = json.loads(mpesa_body)
+    print('this is the confirmation body:',mpesa_body)
     payment = MpesaPayment(
         transaction_type=mpesa_payment['TransactionType'],
         transaction_id=mpesa_payment['TransID'],

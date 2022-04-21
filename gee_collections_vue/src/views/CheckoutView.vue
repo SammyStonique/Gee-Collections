@@ -79,56 +79,55 @@
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="shipto">
+                                                    <input type="checkbox" class="custom-control-input" id="shipto" @click="showShippingDetails">
                                                     <label class="custom-control-label" for="shipto">Ship to different address</label>
+                                                    <div class="shipping-address" v-if="checked" >
+                                                        <h2>Shipping Address</h2>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <label>First Name</label>
+                                                                <input class="form-control" type="text" placeholder="First Name">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label>Last Name</label>
+                                                                <input class="form-control" type="text" placeholder="Last Name">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label>E-mail</label>
+                                                                <input class="form-control" type="text" placeholder="E-mail">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label>Mobile No</label>
+                                                                <input class="form-control" type="text" placeholder="Mobile No">
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <label>Address</label>
+                                                                <input class="form-control" type="text" placeholder="Address">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label>Country</label>
+                                                                <select class="custom-select">
+                                                                    <option selected>Kenya</option>
+                                                                    <option>Tanzania</option>
+                                                                    <option>Uganda</option>
+                                                                    <option>Rwanda</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label>City</label>
+                                                                <input class="form-control" type="text" placeholder="City">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label>County</label>
+                                                                <input class="form-control" type="text" placeholder="County">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label>ZIP Code</label>
+                                                                <input class="form-control" type="text" placeholder="ZIP Code">
+                                                            </div>
+                                                        </div>
+                                                    </div>                                                
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="shipping-address">
-                                        <h2>Shipping Address</h2>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label>First Name</label>
-                                                <input class="form-control" type="text" placeholder="First Name">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label>Last Name</label>
-                                                <input class="form-control" type="text" placeholder="Last Name">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label>E-mail</label>
-                                                <input class="form-control" type="text" placeholder="E-mail">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label>Mobile No</label>
-                                                <input class="form-control" type="text" placeholder="Mobile No">
-                                            </div>
-                                            <div class="col-md-12">
-                                                <label>Address</label>
-                                                <input class="form-control" type="text" placeholder="Address">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label>Country</label>
-                                                <select class="custom-select">
-                                                    <option selected>Kenya</option>
-                                                    <option>Tanzania</option>
-                                                    <option>Uganda</option>
-                                                    <option>Rwanda</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label>City</label>
-                                                <input class="form-control" type="text" placeholder="City">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label>County</label>
-                                                <input class="form-control" type="text" placeholder="County">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label>ZIP Code</label>
-                                                <input class="form-control" type="text" placeholder="ZIP Code">
                                             </div>
                                         </div>
                                     </div>
@@ -144,65 +143,18 @@
                                     </div>
 
                                     <div class="checkout-payment">
-                                        <div class="payment-methods">
-                                            <h1>Payment Methods</h1>
-                                            <div class="payment-method">
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" class="custom-control-input" id="payment-1" name="payment">
-                                                    <label class="custom-control-label" for="payment-1">Paypal</label>
-                                                </div>
-                                                <div class="payment-content" id="payment-1-show">
-                                                    <p>
-                                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tincidunt orci ac eros volutpat maximus lacinia quis diam.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="payment-method">
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" class="custom-control-input" id="payment-2" name="payment">
-                                                    <label class="custom-control-label" for="payment-2">Payoneer</label>
-                                                </div>
-                                                <div class="payment-content" id="payment-2-show">
-                                                    <p>
-                                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tincidunt orci ac eros volutpat maximus lacinia quis diam.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="payment-method">
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" class="custom-control-input" id="payment-3" name="payment">
-                                                    <label class="custom-control-label" for="payment-3">Check Payment</label>
-                                                </div>
-                                                <div class="payment-content" id="payment-3-show">
-                                                    <p>
-                                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tincidunt orci ac eros volutpat maximus lacinia quis diam.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="payment-method">
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" class="custom-control-input" id="payment-4" name="payment">
-                                                    <label class="custom-control-label" for="payment-4">Direct Bank Transfer</label>
-                                                </div>
-                                                <div class="payment-content" id="payment-4-show">
-                                                    <p>
-                                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tincidunt orci ac eros volutpat maximus lacinia quis diam.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="payment-method">
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" class="custom-control-input" id="payment-5" name="payment">
-                                                    <label class="custom-control-label" for="payment-5">Cash on Delivery</label>
-                                                </div>
-                                                <div class="payment-content" id="payment-5-show">
-                                                    <p>
-                                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tincidunt orci ac eros volutpat maximus lacinia quis diam.
-                                                    </p>
-                                                </div>
-                                            </div>
+                                    <h1>Payment Methods</h1>
+                                        <button type="button" class="lipanampesa" @click="showLipaNaMpesa">Lipa Na Mpesa</button>
+                                        <div v-if="lipaNaMpesa">
+                                        <p>To proceed to Lipa Na Mpesa, please enter the phone number you would like to make the payment with.</p>
+                                        <label for="">Phone Number:</label>
+                                        <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX" v-model="payment_number">
+                                        <div class="col-md-12 notification is-danger" v-if="errors.length">
+                                            <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
                                         </div>
-                                        <div class="checkout-btn">
+                                        <button type="button" class="procPayBtn" @click="payViaMpesa">Proceed to Pay</button>
+                                        </div>
+                                        <div class="checkout-btn" >
                                             <button>Place Order</button>
                                         </div>
                                     </div>
@@ -219,6 +171,7 @@
 <script>
 export default {
     props:['cartGrandTotal','cartItemTotal','cartSubTotal','shippingCost'],
+    el:'#selector',
     data(){
         return{
             cart:{
@@ -233,7 +186,11 @@ export default {
             county: '',
             city: '',
             gender: '',
-            errors:[]
+            errors:[],
+            lipaNaMpesa: false,
+            checked: false,
+            errors:[],
+            payment_number: ''
         }
     },
     methods:{
@@ -253,6 +210,40 @@ export default {
             .catch((error)=>{
 
             })
+        },
+        payViaMpesa(){
+            this.errors = []
+            if(this.payment_number === ''){
+                this.errors.push('Please enter phone number');
+                this.$toast.error('Invalid phone number', {
+                    duration: 3000
+                })
+            }
+            if(!this.errors.length){
+                let headers = new Headers();
+                headers.append("Content-Type", "application/json");
+                headers.append("Authorization", "Bearer rzNoq74BaMUOaGGOwPpeUt3BKMlT");
+                const formData = {
+                    "BusinessShortCode": 174379,
+                    "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwNDIxMTcxODIy",
+                    "Timestamp": "20220421171822",
+                    "TransactionType": "CustomerPayBillOnline",
+                    "Amount": 1,
+                    "PartyA": this.payment_number,
+                    "PartyB": 174379,
+                    "PhoneNumber": this.payment_number,
+                    "CallBackURL": "https://f055-197-248-34-79.ngrok.io/api/v1/c2b/callback",
+                    "AccountReference": "Gee Collections",
+                    "TransactionDesc": "Payment of X"
+                }
+                this.axios.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',headers,formData)
+                .then((response)=>{
+                    console.log(response.data)
+                })
+                .catch((error)=>{
+                    console.log(error)
+                })
+            }
         },
         placeOrder(){
             const items = []
@@ -288,6 +279,13 @@ export default {
             .catch((error)=>{
                 console.log(error)
             })
+        },
+        showLipaNaMpesa(){
+            this.lipaNaMpesa = !this.lipaNaMpesa
+        },
+        showShippingDetails(){
+            this.checked = !this.checked
+            console.log(this.checked)
         }
     },
     beforeMount() {
@@ -306,5 +304,38 @@ export default {
     select{
         font-weight: 300;
         color: black;
+    }
+    .lipanampesa{
+        width: 60%;
+        height: 40px;
+        padding: 2px 10px;
+        font-family: 'Source Code Pro', monospace;
+        font-weight: 700;
+        font-size: 18px;
+        text-align: center;
+        color: #000000;
+        background: #228B22;
+        border: none;
+        border-radius: 4px;
+        transition: all .3s;
+        margin-bottom: 20px;
+    }
+    .lipanampesa:hover{
+        background-color: black;
+        color: green;
+    }
+    .procPayBtn{
+        margin: 20px;
+        color:#228B22;
+        background-color: black;
+        border: none;
+        border-radius: 4px;
+        transition: all .3s;
+        font-weight: 700;
+        font-size: 18px;
+    }
+    .procPayBtn:hover{
+        color: white;
+        background-color: green;
     }
 </style>

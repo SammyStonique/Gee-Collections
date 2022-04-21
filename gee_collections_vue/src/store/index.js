@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import axios from 'axios'
 
 export default createStore({
   state: {
@@ -6,7 +7,8 @@ export default createStore({
       cartItems:[]
     },
     token: '',
-    isAuthenticated: false
+    isAuthenticated: false,
+    loggedInUser: []
   },
   getters: {
 
@@ -72,8 +74,20 @@ export default createStore({
 
       localStorage.setItem('cart', JSON.stringify(state.cart))
     },  
+    setLoggedInUser(state, payload){
+      state.loggedInUser = payload
+    }
   },
   actions: {
+    getUserDetails({commit}){
+      axios.get('/api/v1/users/me/')
+      .then((response)=>{
+          commit('setLoggedInUser',response.data)
+      })
+      .catch((error)=>{
+        console.log(error)
+      })
+    },
   },
   modules: {
   }

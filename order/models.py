@@ -74,14 +74,14 @@ class MpesaPayment(BaseModel):
     middle_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=250)
-    organization_balance = models.DecimalField(max_digits=10, decimal_places=2)
+    organization_balance = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     shortcode = models.CharField(max_length=250)
-    third_party_transaction_id = models.CharField(max_length=250,blank=True)
+    third_party_transaction_id = models.CharField(max_length=250)
     class Meta:
         verbose_name = 'Mpesa Payment'
         verbose_name_plural = 'Mpesa Payments'
     def __str__(self):
-        return self.first_name
+        return self.transaction_id
 
     
 

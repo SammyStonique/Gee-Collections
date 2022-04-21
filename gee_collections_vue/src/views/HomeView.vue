@@ -378,8 +378,8 @@ export default {
             cssMode:'linear',
             modules: [Autoplay],
             autoplay:{
-                speed: 100,
-                delay: 250,
+                speed: 200,
+                delay: 800,
                 disableOnInteraction:false,
                 pauseOnMouseEnter:true
             },

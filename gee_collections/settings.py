@@ -18,7 +18,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'fe9a-197-248-34-79.ngrok.io'
+    'f055-197-248-34-79.ngrok.io',
 ]
 
 
@@ -134,7 +134,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR /'media/'
 
 #CORS SETTINGS
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
+
 
 CORS_ALLOW_METHODS = list(default_methods) + []
 

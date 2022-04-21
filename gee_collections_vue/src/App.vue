@@ -227,7 +227,7 @@ export default {
             shippingCost: 200,
             token: '',
             isAuthenticated: false,
-            userDetails:[]
+            // userDetails:[]
         }
     },
     beforeMount() {
@@ -239,12 +239,11 @@ export default {
         } else {
         axios.defaults.headers.common['Authorization'] = ""
         }
-        this.getUserDetails()
         this.cart = this.$store.state.cart;
         this.isAuthenticated = this.$store.state.isAuthenticated;
     },
     mounted(){
-        // this.getUserDetails()
+        this.getUserDetails()
     },
     computed: {
         totalQuantity() {
@@ -277,6 +276,9 @@ export default {
         },
         cartGrandTotal(){
             return parseFloat(this.cartSubTotal) + this.shippingCost
+        },
+        userDetails(){
+            return this.$store.state.loggedInUser;
         }
         
     },
@@ -305,19 +307,28 @@ export default {
             this.$toast.success(`${this.items[selectedItem].name} added to cart`);
             
         },
+        // getUserDetails(){
+        //     this.axios.get('/api/v1/users/me/')
+        //     .then((response)=>{
+        //         this.userDetails = response.data;
+        //     })
+        //     .catch((error)=>{
+
+        //     })
+        // }, 
         getUserDetails(){
-            this.axios.get('/api/v1/users/me/')
+            this.$store.dispatch('getUserDetails')
             .then((response)=>{
-                this.userDetails = response.data;
+                console.log(response)
             })
             .catch((error)=>{
-
+                console.error(error)
             })
-        },        
+        },       
         scrollToTop(){
             window.scrollTo(0,0);
         }
-    }
+    },
 }
 </script>
 
