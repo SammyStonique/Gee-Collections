@@ -8,12 +8,26 @@ export default createStore({
     },
     token: '',
     isAuthenticated: false,
-    loggedInUser: []
+    loggedInUser: [],
+    reloaded: false
   },
   getters: {
 
   },
   mutations: {
+    reloadingPage(state){
+      if (localStorage.getItem('reloaded')) {
+        // The page was just reloaded. Clear the value from local storage
+        // so that it will reload the next time this page is visited.
+        localStorage.removeItem('reloaded');
+        console.log('No reload')
+        } else {
+            // Set a flag so that we know not to reload the page twice.
+            localStorage.setItem('reloaded', 'true');
+            console.log(state.reloaded,'Reload')
+            window.location.reload();
+        }
+    },
     initializeStore(state){
       //Check if the cart exists in the local storage
       if(localStorage.getItem('cart')){

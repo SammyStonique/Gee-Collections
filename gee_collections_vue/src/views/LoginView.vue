@@ -86,6 +86,7 @@ export default {
                             duration: 5000
                         })
                         this.$router.push('/')
+                        this.$store.commit('reloadingPage')
                     })    
                     .catch((error)=>{
                         if (error.response) {

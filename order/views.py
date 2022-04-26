@@ -1,6 +1,8 @@
 import os
 from django.shortcuts import render
 from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from .models import *
 from .serializers import *
 from rest_framework import authentication, permissions
@@ -23,6 +25,11 @@ class CheckOut(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+class OrdersList(APIView):
+    def get(self, request, format=None):
+        orders = Order.objects.filter(user=request.user)
+        serializer = MyOrderSerializer(orders, many=True)
+        return Response(serializer.data)
 
 def getAccessToken(request):
     consumer_key = os.environ.get('CONSUMER_KEY')
@@ -47,7 +54,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": 254795968217,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": 254795968217,  # replace with your phone number to get stk push
-        "CallBackURL": "https://f055-197-248-34-79.ngrok.io/api/v1/c2b/callback",
+        "CallBackURL": "https://55d8-41-81-1-239.ngrok.io/api/v1/c2b/callback",
         "AccountReference": "SammyB",
         "TransactionDesc": "Testing stk push"
     }
@@ -62,8 +69,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Business_short_code,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://f055-197-248-34-79.ngrok.io/api/v1/c2b/confirmation",
-               "ValidationURL": "https://f055-197-248-34-79.ngrok.io/api/v1/c2b/validation"}
+               "ConfirmationURL": "https://55d8-41-81-1-239.ngrok.io/api/v1/c2b/confirmation",
+               "ValidationURL": "https://55d8-41-81-1-239.ngrok.io/api/v1/c2b/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     return HttpResponse(response.text)
 

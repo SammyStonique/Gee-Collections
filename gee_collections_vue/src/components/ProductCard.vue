@@ -22,7 +22,7 @@
         </div>
         <div class="product-price">
             <h3 class="prod-price"><span>ksh</span>{{Number(item.price).toLocaleString()}}</h3>
-            <button class="btn btn-cart" @click="addToCart"><i class="fa fa-shopping-cart"></i>Buy Now</button>
+            <button class="btn btn-cart" @click="addToCart(index)"><i class="fa fa-shopping-cart"></i>Buy Now</button>
         </div>
     </div>
 </template>

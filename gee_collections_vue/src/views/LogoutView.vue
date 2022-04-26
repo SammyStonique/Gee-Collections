@@ -31,7 +31,8 @@ export default {
     },
     beforeMount() {
         this.$store.commit('removeToken')
-        const token = this.$store.state.token 
+        console.log(this.$store.state.reloaded)
+        const token = this.$store.state.token
         localStorage.setItem('token',token)
     },
 }

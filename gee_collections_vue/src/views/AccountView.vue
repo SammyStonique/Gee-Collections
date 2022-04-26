@@ -40,36 +40,18 @@
                                     <table class="table table-bordered">
                                         <thead class="thead-dark">
                                             <tr>
-                                                <th>No</th>
-                                                <th>Product</th>
+                                                <th>#</th>
                                                 <th>Date</th>
-                                                <th>Price</th>
+                                                <th>Order Total</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Product Name</td>
-                                                <td>01 Jan 2020</td>
-                                                <td>$99</td>
-                                                <td>Approved</td>
-                                                <td><button class="btn">View</button></td>
-                                            </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>Product Name</td>
-                                                <td>01 Jan 2020</td>
-                                                <td>$99</td>
-                                                <td>Approved</td>
-                                                <td><button class="btn">View</button></td>
-                                            </tr>
-                                            <tr>
-                                                <td>3</td>
-                                                <td>Product Name</td>
-                                                <td>01 Jan 2020</td>
-                                                <td>$99</td>
+                                            <tr v-for="order,index in myOrders" :key="index">
+                                                <td>{{order.id}}</td>
+                                                <td>{{order.created_at}}</td>
+                                                <td>ksh {{order.order_total}}</td>
                                                 <td>Approved</td>
                                                 <td><button class="btn">View</button></td>
                                             </tr>
@@ -183,6 +165,7 @@
 </template>
 
 <script>
+
 export default {
     props:['getUserDetails','userDetails'],
     data(){
@@ -197,10 +180,21 @@ export default {
             county: '',
             city: '',
             gender: '',
-            errors:[]
+            errors:[],
+            myOrders: []
         }
     },
     methods:{
+        showClientOrders(){
+            this.axios.get('api/v1/my-orders/')
+            .then((response)=>{
+                this.myOrders = response.data
+                console.log(this.myOrders)
+            })
+            .catch((error)=>{
+                console.log(error)
+            })
+        },
         postProfileData(){
             this.errors = []
             if(this.first_name ===''&&this.last_name ===''&&this.birthdate ===''&&this.gender ===''&&this.city ===''&&this.county ===''&&this.address ===''){
@@ -279,7 +273,7 @@ export default {
     },
     mounted(){
         this.getProfileDetails()
-
+        this.showClientOrders()
     }
 }
 </script>

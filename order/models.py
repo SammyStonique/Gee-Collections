@@ -2,11 +2,24 @@ from django.db import models
 from product.models import * 
 from django.contrib.auth import get_user_model
 from product.models import User
+import random
+import string
 
 
 UserModel = get_user_model()
+
+def random_string(letter_count=4, digit_count=3):  
+        str1 = ''.join((random.choice(string.ascii_letters) for x in range(letter_count)))  
+        str1 += ''.join((random.choice(string.digits) for x in range(digit_count)))  
+    
+        sam_list = list(str1) # it converts the string to list.  
+        random.shuffle(sam_list) # It uses a random.shuffle() function to shuffle the string.  
+        final_string = ''.join(sam_list)  
+        return final_string
+
 # Create your models here.
 class Order(models.Model):
+    id = models.CharField(default=random_string,primary_key=True,max_length=100)
     user = models.ForeignKey(UserModel,related_name='orders', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     ordered = models.BooleanField(default=False)
@@ -24,6 +37,7 @@ class Order(models.Model):
     
     def __str__(self):
         return f"{self.user.email} ({'%s' % self.id}) Order"
+
 
 
 class OrderItem(models.Model) :

@@ -231,8 +231,8 @@ export default {
         }
     },
     beforeMount() {
-        this.$store.commit('initializeStore')
-
+        this.$store.commit('initializeStore');
+        
         const token = this.$store.state.token
         if (token) {
         axios.defaults.headers.common['Authorization'] = "Token " + token
@@ -307,15 +307,6 @@ export default {
             this.$toast.success(`${this.items[selectedItem].name} added to cart`);
             
         },
-        // getUserDetails(){
-        //     this.axios.get('/api/v1/users/me/')
-        //     .then((response)=>{
-        //         this.userDetails = response.data;
-        //     })
-        //     .catch((error)=>{
-
-        //     })
-        // }, 
         getUserDetails(){
             this.$store.dispatch('getUserDetails')
             .then((response)=>{
