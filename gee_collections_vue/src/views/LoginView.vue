@@ -85,14 +85,15 @@ export default {
                         this.$toast.success('Login Succesful',{
                             duration: 5000
                         })
+                        // this.$store.commit('reloadingPage')
                         this.$router.push('/')
-                        this.$store.commit('reloadingPage')
+                        // this.$store.commit('reloadingPage')
+                        
                     })    
                     .catch((error)=>{
                         if (error.response) {
                             for (const property in error.response.data) {
                                 this.errors.push(`${error.response.data[property]}`)
-                                // this.errors.push(`${property}: ${error.response.data[property]}`)
                             }
                             console.log(JSON.stringify(error.response.data))
                             this.$toast.error('Invalid Login Credentials!',{

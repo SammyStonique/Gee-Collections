@@ -275,6 +275,7 @@ export default {
                 this.$store.commit('clearCart')
                 this.$toast.success('Order succesfully placed')
                 this.$router.push('/')
+                this.$store.commit('reloadingPage')
             })
             .catch((error)=>{
                 console.log(error)

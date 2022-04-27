@@ -52,9 +52,10 @@
                                                 <td>{{order.id}}</td>
                                                 <td>{{order.created_at.substring(0,10)}}</td>
                                                 <td>ksh {{order.order_total}}</td>
-                                                <td v-if="is_paid">Paid</td>
+                                                <td v-if="order.paid">Paid</td>
                                                 <td v-else>Not Paid</td>
-                                                <td><button class="btn">View</button></td>
+                                                <td v-if="order.paid"><button class="btn">View Order</button></td>
+                                                <td v-else><button class="btn">Make Payment</button></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -183,19 +184,14 @@ export default {
             gender: '',
             errors:[],
             myOrders: [],
-            is_paid: ''
         }
     },
     methods:{
         showClientOrders(){
+            this.paymentStatus = []
             this.axios.get('api/v1/my-orders/')
             .then((response)=>{
                 this.myOrders = response.data
-                for(let i=0 ; i<this.myOrders.length ; i++){
-                    this.is_paid = response.data[i].paid
-                }
-                console.log(this.myOrders)
-                console.log(this.is_paid)
             })
             .catch((error)=>{
                 console.log(error)
