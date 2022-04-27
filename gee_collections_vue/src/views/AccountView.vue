@@ -50,9 +50,10 @@
                                         <tbody>
                                             <tr v-for="order,index in myOrders" :key="index">
                                                 <td>{{order.id}}</td>
-                                                <td>{{order.created_at}}</td>
+                                                <td>{{order.created_at.substring(0,10)}}</td>
                                                 <td>ksh {{order.order_total}}</td>
-                                                <td>Approved</td>
+                                                <td v-if="is_paid">Paid</td>
+                                                <td v-else>Not Paid</td>
                                                 <td><button class="btn">View</button></td>
                                             </tr>
                                         </tbody>
@@ -181,7 +182,8 @@ export default {
             city: '',
             gender: '',
             errors:[],
-            myOrders: []
+            myOrders: [],
+            is_paid: ''
         }
     },
     methods:{
@@ -189,7 +191,11 @@ export default {
             this.axios.get('api/v1/my-orders/')
             .then((response)=>{
                 this.myOrders = response.data
+                for(let i=0 ; i<this.myOrders.length ; i++){
+                    this.is_paid = response.data[i].paid
+                }
                 console.log(this.myOrders)
+                console.log(this.is_paid)
             })
             .catch((error)=>{
                 console.log(error)
@@ -203,27 +209,6 @@ export default {
                 if(this.first_name ===''||this.last_name ===''||this.birthdate ===''||this.gender ===''||this.city ===''||this.county ===''||this.address ===''){
                 this.errors.push('Some details are missing!')
                 }
-                // if(this.first_name ===''){
-                //     this.errors.push('First Name is missing')
-                // }
-                // if(this.last_name ===''){
-                //     this.errors.push('Last Name is missing')
-                // }
-                // if(this.birthdate ===''){
-                //     this.errors.push('Date of birth missing')
-                // }
-                // if(this.gender ===''){
-                //     this.errors.push('Please select your gender')
-                // }
-                // if(this.city ===''){
-                //     this.errors.push('Please select your gender')
-                // }
-                // if(this.county ===''){
-                //     this.errors.push('Please select your gender')
-                // }
-                // if(this.address ===''){
-                //     this.errors.push('Address details missing')
-                // }
             }
             if(!this.errors.length){
                 let formData = {
@@ -270,6 +255,9 @@ export default {
 
             })
         },    
+    },
+    beforeMount() {
+        
     },
     mounted(){
         this.getProfileDetails()

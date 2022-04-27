@@ -14,7 +14,7 @@ class MyOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id','user','first_name','last_name','email','phone_number','county','city','address','items','created_at','order_total']
+        fields = ['id','user','first_name','last_name','email','phone_number','county','city','address','items','created_at','order_total','paid']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -29,7 +29,7 @@ class OrderSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.email')
     class Meta:
         model = Order
-        fields = ['id','user','first_name','last_name','email','phone_number','county','city','address','items','created_at','order_total']
+        fields = ['id','user','first_name','last_name','email','phone_number','county','city','address','items','created_at','order_total','paid']
 
     def create(self, validated_data):
         items_data = validated_data.pop('items')

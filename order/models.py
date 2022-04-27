@@ -22,7 +22,7 @@ class Order(models.Model):
     id = models.CharField(default=random_string,primary_key=True,max_length=100)
     user = models.ForeignKey(UserModel,related_name='orders', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    ordered = models.BooleanField(default=False)
+    paid = models.BooleanField(default=False)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
@@ -31,13 +31,13 @@ class Order(models.Model):
     city = models.CharField(max_length=100)
     county = models.CharField(max_length=100)
     order_total = models.DecimalField(max_digits=8, decimal_places=2)
+    payment_reference = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         ordering = ('-created_at',)
     
     def __str__(self):
         return f"{self.user.email} ({'%s' % self.id}) Order"
-
 
 
 class OrderItem(models.Model) :
