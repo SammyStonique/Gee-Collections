@@ -87,8 +87,8 @@ export default {
                         })
                         // this.$store.commit('reloadingPage')
                         this.$router.push('/')
-                        // this.$store.commit('reloadingPage')
-                        
+                        this.$store.commit('reloadingPage')
+                        // this.$router.push('/')
                     })    
                     .catch((error)=>{
                         if (error.response) {

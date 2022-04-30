@@ -276,6 +276,7 @@ export default {
                 this.$toast.success('Order succesfully placed')
                 this.$router.push('/')
                 this.$store.commit('reloadingPage')
+                this.$router.push('/')
             })
             .catch((error)=>{
                 console.log(error)

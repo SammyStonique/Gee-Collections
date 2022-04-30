@@ -48,19 +48,61 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="order,index in myOrders" :key="index">
+                                            <tr v-for="order in myOrders" :key="index">
                                                 <td>{{order.id}}</td>
                                                 <td>{{order.created_at.substring(0,10)}}</td>
                                                 <td>ksh {{order.order_total}}</td>
                                                 <td v-if="order.paid">Paid</td>
                                                 <td v-else>Not Paid</td>
-                                                <td v-if="order.paid"><button class="btn">View Order</button></td>
+                                                <td v-if="order.paid"><button class="btn" @click="showModal(order.id)">View Order</button></td>
                                                 <td v-else><button class="btn">Make Payment</button></td>
                                             </tr>
                                         </tbody>
                                     </table>
+                                    <p class="empty-order-list" v-if="!Object.keys(myOrders).length"><span class="emoji " role="img" aria-label="">😭</span><br/><em class="empty-cart-message">Ooops,You haven't placed any order yet</em></p>
                                 </div>
                             </div>
+                            <!-- MODAL component -->
+                            <Modal
+                            v-show="isModalVisible"
+                            @close="closeModal"
+                            > 
+                            <template v-slot:header>
+                                My Order Details
+                            </template>
+
+                            <template v-slot:body>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Price</th>
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="align-middle" v-for="order,index in myOrders" :key="index">
+                                            <tr v-for="item in order.items">
+                                                <td>
+                                                    <div class="img">
+                                                        <a href="#"><img :src="`${item.product.image}`" alt="Image"></a>
+                                                        <p>{{item.product.name}}</p>
+                                                    </div>
+                                                </td>
+                                                <td>{{item.price}}</td>
+                                                <td>{{item.quantity}}</td>
+                                                <td>({{item.price}}*{{item.quantity}})</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+
+                            <template v-slot:footer>
+                                This is a new modal footer.
+                            </template>
+                            </Modal>
                             <div class="tab-pane fade" id="payment-tab" role="tabpanel" aria-labelledby="payment-nav">
                                 <h4>Payment Method</h4>
                                 <p>
@@ -167,98 +209,119 @@
 </template>
 
 <script>
+import Modal from "@/components/Modal.vue"
 
 export default {
-    props:['getUserDetails','userDetails'],
-    data(){
-        return{
-            id:'',
-            first_name:'',
-            last_name: '',
-            email: '',
-            phone_number: '',
-            birthdate: '',
-            address: '',
-            county: '',
-            city: '',
-            gender: '',
-            errors:[],
-            myOrders: [],
-        }
+    props: ["getUserDetails", "userDetails"],
+    components:{
+        Modal
     },
-    methods:{
-        showClientOrders(){
-            this.paymentStatus = []
-            this.axios.get('api/v1/my-orders/')
-            .then((response)=>{
-                this.myOrders = response.data
+    data() {
+        return {
+            id: "",
+            first_name: "",
+            last_name: "",
+            email: "",
+            phone_number: "",
+            birthdate: "",
+            address: "",
+            county: "",
+            city: "",
+            gender: "",
+            errors: [],
+            myOrders: [],
+            isModalVisible: false,
+        };
+    },
+    methods: {
+        showClientOrders() {
+            this.axios.get("api/v1/my-orders/")
+                .then((response) => {
+                this.myOrders = response.data;
+                console.log(this.myOrders)
             })
-            .catch((error)=>{
-                console.log(error)
-            })
+                .catch((error) => {
+                console.log(error);
+            });
         },
-        postProfileData(){
-            this.errors = []
-            if(this.first_name ===''&&this.last_name ===''&&this.birthdate ===''&&this.gender ===''&&this.city ===''&&this.county ===''&&this.address ===''){
-                this.errors.push('Please fill in the details!')
-            }else{
-                if(this.first_name ===''||this.last_name ===''||this.birthdate ===''||this.gender ===''||this.city ===''||this.county ===''||this.address ===''){
-                this.errors.push('Some details are missing!')
+        postProfileData() {
+            this.errors = [];
+            if (this.first_name === "" && this.last_name === "" && this.birthdate === "" && this.gender === "" && this.city === "" && this.county === "" && this.address === "") {
+                this.errors.push("Please fill in the details!");
+            }
+            else {
+                if (this.first_name === "" || this.last_name === "" || this.birthdate === "" || this.gender === "" || this.city === "" || this.county === "" || this.address === "") {
+                    this.errors.push("Some details are missing!");
                 }
             }
-            if(!this.errors.length){
+            if (!this.errors.length) {
                 let formData = {
-                    first_name:this.first_name,
+                    first_name: this.first_name,
                     last_name: this.last_name,
                     birthdate: this.birthdate,
                     address: this.address,
                     county: this.county,
                     city: this.city,
-                    gender: this.gender,    
+                    gender: this.gender,
                     phone_number: this.phone_number,
-                    email: this.email               
-                }
-                this.axios.put('/api/v1/user-list/'+this.id+'/', formData)
-                .then((response)=>{
+                    email: this.email
+                };
+                this.axios.put("/api/v1/user-list/" + this.id + "/", formData)
+                    .then((response) => {
                     console.log(response.data);
-                    this.$toast.success('Profile Succesfully Updated',{
+                    this.$toast.success("Profile Succesfully Updated", {
                         duration: 5000,
                         dismissible: true
-                    })
-                    this.$router.push('/my-account');
+                    });
+                    this.$router.push("/my-account");
                 })
-                .catch((error)=>{
+                    .catch((error) => {
                     console.log(error);
-                })
-            }    
+                });
+            }
         },
-        getProfileDetails(){
-            this.axios.get('/api/v1/users/me/')
-            .then((response)=>{
-                console.log(response.data)
+        getProfileDetails() {
+            this.axios.get("/api/v1/users/me/")
+                .then((response) => {
+                console.log(response.data);
                 this.phone_number = response.data.phone_number;
                 this.email = response.data.email;
                 this.id = response.data.id;
-                this.first_name = response.data.first_name
-                this.last_name = response.data.last_name
-                this.gender = response.data.gender
-                this.city = response.data.city
-                this.county = response.data.county
-                this.birthdate = response.data.birthdate
-                this.address = response.data.address
+                this.first_name = response.data.first_name;
+                this.last_name = response.data.last_name;
+                this.gender = response.data.gender;
+                this.city = response.data.city;
+                this.county = response.data.county;
+                this.birthdate = response.data.birthdate;
+                this.address = response.data.address;
+            })
+                .catch((error) => {
+            });
+        },
+        showModal() {
+            this.isModalVisible = true;
+
+            let orderID = arguments[0];
+            console.log(orderID);
+            this.axios.get(`/api/v1/my-orders/${orderID}/`)
+            .then((response)=>{
+                console.log(response.data)
             })
             .catch((error)=>{
-
+                console.log(error)
             })
-        },    
+        },
+        closeModal() {
+            this.isModalVisible = false;
+        }
     },
     beforeMount() {
-        
     },
-    mounted(){
-        this.getProfileDetails()
-        this.showClientOrders()
-    }
+    mounted() {
+        this.getProfileDetails();
+        this.showClientOrders();
+    },
+    components: { Modal }
 }
 </script>
 
@@ -270,5 +333,15 @@ export default {
     select{
         font-weight: 300;
         color: black;
+    }
+    .empty-order-list{
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        margin: 20px;
+    }
+    .emoji{
+        font-size: 36px;
+        font-style: normal;
     }
 </style>
