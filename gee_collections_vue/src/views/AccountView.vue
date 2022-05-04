@@ -48,10 +48,10 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="order in myOrders" :key="index">
+                                            <tr v-for="order,index in myOrders" :key="index">
                                                 <td>{{order.id}}</td>
                                                 <td>{{order.created_at.substring(0,10)}}</td>
-                                                <td>ksh {{order.order_total}}</td>
+                                                <td>ksh {{Number(order.order_total).toLocaleString()}}</td>
                                                 <td v-if="order.paid">Paid</td>
                                                 <td v-else>Not Paid</td>
                                                 <td v-if="order.paid"><button class="btn" @click="showModal(order.id)">View Order</button></td>
@@ -82,17 +82,17 @@
                                                 <th>Total</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="align-middle" v-for="order,index in myOrders" :key="index">
-                                            <tr v-for="item in order.items">
+                                        <tbody class="align-middle">
+                                            <tr v-for="ordDet,index in myOrderDetails.items" :key="index">
                                                 <td>
                                                     <div class="img">
-                                                        <a href="#"><img :src="`${item.product.image}`" alt="Image"></a>
-                                                        <p>{{item.product.name}}</p>
+                                                        <!-- <a href="#"><img :src="`${ordDet.product.image}`" alt="Image"></a> -->
+                                                        <p>{{ordDet.product.name}}</p>
                                                     </div>
                                                 </td>
-                                                <td>{{item.price}}</td>
-                                                <td>{{item.quantity}}</td>
-                                                <td>({{item.price}}*{{item.quantity}})</td>
+                                                <td>ksh. {{Number(ordDet.product.price).toLocaleString()}}</td>
+                                                <td>{{ordDet.quantity}}</td>
+                                                <td>ksh. {{Number(orderItemTotal[index]).toLocaleString()}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -105,9 +105,8 @@
                             </Modal>
                             <div class="tab-pane fade" id="payment-tab" role="tabpanel" aria-labelledby="payment-nav">
                                 <h4>Payment Method</h4>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. In condimentum quam ac mi viverra dictum. In efficitur ipsum diam, at dignissim lorem tempor in. Vivamus tempor hendrerit finibus. Nulla tristique viverra nisl, sit amet bibendum ante suscipit non. Praesent in faucibus tellus, sed gravida lacus. Vivamus eu diam eros. Aliquam et sapien eget arcu rhoncus scelerisque.
-                                </p> 
+                                <h6 style="font-weight:700;">Select from our popular payment options below</h6>
+                                <PaymentMethod/>
                             </div>
                             <div class="tab-pane fade" id="address-tab" role="tabpanel" aria-labelledby="address-nav">
                                 <h4>Address</h4>
@@ -210,11 +209,13 @@
 
 <script>
 import Modal from "@/components/Modal.vue"
+import PaymentMethod from "@/components/PaymentMethod.vue"
 
 export default {
     props: ["getUserDetails", "userDetails"],
     components:{
-        Modal
+        Modal,
+        PaymentMethod
     },
     data() {
         return {
@@ -230,15 +231,25 @@ export default {
             gender: "",
             errors: [],
             myOrders: [],
+            myOrderDetails:[],
             isModalVisible: false,
         };
+    },
+    computed:{
+        orderItemTotal(){
+            let itemTotal = [];
+            for(let i = 0; i<this.myOrderDetails.items.length; i++){
+                let lineTotal = (this.myOrderDetails.items[i].quantity * this.myOrderDetails.items[i].product.price).toFixed(2)
+                itemTotal.push(lineTotal);
+            }
+            return itemTotal
+        },
     },
     methods: {
         showClientOrders() {
             this.axios.get("api/v1/my-orders/")
                 .then((response) => {
                 this.myOrders = response.data;
-                console.log(this.myOrders)
             })
                 .catch((error) => {
                 console.log(error);
@@ -268,7 +279,7 @@ export default {
                 };
                 this.axios.put("/api/v1/user-list/" + this.id + "/", formData)
                     .then((response) => {
-                    console.log(response.data);
+                    console.log(response.data)
                     this.$toast.success("Profile Succesfully Updated", {
                         duration: 5000,
                         dismissible: true
@@ -283,7 +294,6 @@ export default {
         getProfileDetails() {
             this.axios.get("/api/v1/users/me/")
                 .then((response) => {
-                console.log(response.data);
                 this.phone_number = response.data.phone_number;
                 this.email = response.data.email;
                 this.id = response.data.id;
@@ -305,7 +315,8 @@ export default {
             console.log(orderID);
             this.axios.get(`/api/v1/my-orders/${orderID}/`)
             .then((response)=>{
-                console.log(response.data)
+                this.myOrderDetails = response.data
+                console.log(this.myOrderDetails.items[0].product.price)
             })
             .catch((error)=>{
                 console.log(error)
@@ -321,7 +332,7 @@ export default {
         this.getProfileDetails();
         this.showClientOrders();
     },
-    components: { Modal }
+    components: { Modal, PaymentMethod }
 }
 </script>
 

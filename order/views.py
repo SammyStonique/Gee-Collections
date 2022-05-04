@@ -6,24 +6,42 @@ from rest_framework.response import Response
 from .models import *
 from .serializers import *
 from rest_framework import authentication, permissions
-from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.decorators import authentication_classes, permission_classes, api_view
 from django.http import HttpResponse,JsonResponse
 import requests
 from requests.auth import HTTPBasicAuth
 import json
 from . mpesa_credentials import MpesaAccessToken, LipanaMpesaPpassword
 from django.views.decorators.csrf import csrf_exempt
+import smtplib
+from django.core.mail import send_mail
 # Create your views here.
 
-class CheckOut(generics.ListCreateAPIView):
-    authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
+# class CheckOut(generics.ListCreateAPIView):
+#     queryset = Order.objects.all()
+#     serializer_class = OrderSerializer
     
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+#     def perform_create(self, serializer):
+#         email = queryset.filter(email=self.request.user.email) 
+#         recipient = [email]
+#         subject = 'Order succesfully placed'
+#         content = 'Your order has been succesfully placed. Thank you.'
+#         send_mail(subject, content,os.environ.get('EMAIL_HOST_USER'),recipient, fail_silently=False)
+#         serializer.save(user=self.request.user)
+@api_view(['POST'])
+def checkout(request):
+    serializer = OrderSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        qset = Order.objects.filter(user=request.user)
+        email = qset[0].user
+        recipient = [email]
+        subject = 'Order succesfully placed'
+        content = 'Your order has been succesfully placed. Thank you.'
+        send_mail(subject, content,os.environ.get('EMAIL_HOST_USER'),recipient, fail_silently=False) 
+        return Response(serializer.data)
 
 class OrdersList(APIView):
     def get(self, request, format=None):
@@ -31,11 +49,9 @@ class OrdersList(APIView):
         serializer = MyOrderSerializer(orders, many=True)
         return Response(serializer.data)
 
-class OrderDetails(APIView):
-    def retrieve(self, request,format=None):
-        orders = Order.objects.filter(user=request.user)
-        serializer = MyOrderSerializer(orders, many=True)
-        return Response(serializer.data)
+class OrderDetails(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Order.objects.all()
+    serializer_class = MyOrderSerializer
 
 def getAccessToken(request):
     consumer_key = os.environ.get('CONSUMER_KEY')
