@@ -54,7 +54,7 @@
                         </div>
                         <div class="navbar-nav ml-auto" v-if="isAuthenticated">
                             <div class="nav-item dropdown">
-                                <router-link to="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{userDetails.email}}</router-link>
+                                <router-link to="#" class="nav-link dropdown-toggle" data-toggle="dropdown">WELCOME,{{userDetails.email}}</router-link>
                                 <div class="dropdown-menu">
                                     <router-link to="/logout" class="dropdown-item">Logout</router-link>
                                     

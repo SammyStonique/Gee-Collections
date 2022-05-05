@@ -1,4 +1,5 @@
 import os
+import re
 from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -15,20 +16,16 @@ from . mpesa_credentials import MpesaAccessToken, LipanaMpesaPpassword
 from django.views.decorators.csrf import csrf_exempt
 import smtplib
 from django.core.mail import send_mail
+
+#AFRICASTALKING
+import africastalking
+username = os.environ.get('AFRICASTALKING_USERNAME')
+api_key = os.environ.get('AFRICASTALKING_API_KEY')
+africastalking.initialize(username, api_key)  
+sms = africastalking.SMS
+
+
 # Create your views here.
-
-# class CheckOut(generics.ListCreateAPIView):
-#     queryset = Order.objects.all()
-#     serializer_class = OrderSerializer
-    
-
-#     def perform_create(self, serializer):
-#         email = queryset.filter(email=self.request.user.email) 
-#         recipient = [email]
-#         subject = 'Order succesfully placed'
-#         content = 'Your order has been succesfully placed. Thank you.'
-#         send_mail(subject, content,os.environ.get('EMAIL_HOST_USER'),recipient, fail_silently=False)
-#         serializer.save(user=self.request.user)
 @api_view(['POST'])
 def checkout(request):
     serializer = OrderSerializer(data=request.data)
@@ -37,10 +34,22 @@ def checkout(request):
         serializer.save(user=request.user)
         qset = Order.objects.filter(user=request.user)
         email = qset[0].user
+        phone_number = qset[0].phone_number
+        customer_name = qset[0].user.first_name
+        order_id = qset[0].id
+        if(phone_number.startswith("+254")):
+            pn = phone_number
+        elif(phone_number.startswith('0')):
+            pn = re.sub("0","+254",phone_number,1)
+        elif (phone_number.startswith('7') or phone_number.startswith('1')):
+            pn = "+254"+phone_number
+        elif(phone_number.startswith('254')):
+            pn = "+"+phone_number
         recipient = [email]
-        subject = 'Order succesfully placed'
-        content = 'Your order has been succesfully placed. Thank you.'
+        subject = f'Order({order_id}) succesfully placed'
+        content = f'Dear {customer_name},your order {order_id} has succesfully been placed. Thank you.'
         send_mail(subject, content,os.environ.get('EMAIL_HOST_USER'),recipient, fail_silently=False) 
+        sms.send(f'Dear {customer_name},your order {order_id} has succesfully been placed.',[f'{pn}'],callback=checkout)
         return Response(serializer.data)
 
 class OrdersList(APIView):
