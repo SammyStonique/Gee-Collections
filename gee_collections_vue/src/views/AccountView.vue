@@ -1,6 +1,6 @@
 <template>
     <div class="my-account">
-<!-- Breadcrumb Start -->
+        <!-- Breadcrumb Start -->
         <div class="breadcrumb-wrap">
             <div class="container-fluid">
                 <ul class="breadcrumb">
@@ -55,14 +55,14 @@
                                                 <td v-if="order.paid">Paid</td>
                                                 <td v-else>Not Paid</td>
                                                 <td v-if="order.paid"><button class="btn" @click="showModal(order.id)">View Order</button></td>
-                                                <td v-else><button class="btn">Make Payment</button></td>
+                                                <td v-else><button class="btn" @click="showPaymentModal(order.id)">Make Payment</button></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                     <p class="empty-order-list" v-if="!Object.keys(myOrders).length"><span class="emoji " role="img" aria-label="">😭</span><br/><em class="empty-cart-message">Ooops,You haven't placed any order yet</em></p>
                                 </div>
                             </div>
-                            <!-- MODAL component -->
+                            <!-- MODAL component for viewing order details -->
                             <Modal
                             v-show="isModalVisible"
                             @close="closeModal"
@@ -103,10 +103,61 @@
                                 This is a new modal footer.
                             </template>
                             </Modal>
+
+                            <!-- MODAL component for making payment -->
+                            <Modal
+                            v-show="paymentModalVisible"
+                            @close="closeModal"
+                            > 
+                            <template v-slot:header>
+                                Payment Methods
+                            </template>
+
+                            <template v-slot:body>
+                                <div>
+                                    <button type="button" class="lipanampesa" @click="showLipaNaMpesa">Lipa Na Mpesa</button>
+                                    <div v-if="lipaNaMpesa">
+                                    <p>To proceed to Lipa Na Mpesa, please enter the phone number you would like to make the payment with.</p>
+                                    <label for="">Phone Number:</label>
+                                    <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX">
+                                    <!-- <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX" v-model="payment_number"> -->
+                                    <div class="col-md-12 notification is-danger" v-if="errors.length">
+                                        <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
+                                    </div>
+                                    <button type="button" class="procPayBtn" @click="payViaMpesa">Proceed to Pay</button>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template v-slot:footer>
+                                This is a new modal footer.
+                            </template>
+                            </Modal>
                             <div class="tab-pane fade" id="payment-tab" role="tabpanel" aria-labelledby="payment-nav">
                                 <h4>Payment Method</h4>
-                                <h6 style="font-weight:700;">Select from our popular payment options below</h6>
-                                <PaymentMethod/>
+                                <div class="row payment-row">
+                                    <div class="col-md-12">
+                                        <h6 style="font-weight:700;">Select from our popular payment options below</h6>
+                                    </div> 
+                                    <div class="col-md-3 payment-card">
+                                        <h6 style="font-weight:700;">Bank Payment</h6>
+                                        <img src="@/assets/img/bank-icon.jpeg" alt="Bank Icon" class="bank-icon">
+                                        <p>Make payments easily using your debit or credit card</p>
+                                        <button class="btn btn-payment-option">Select Option</button>
+                                    </div>
+                                    <div class="col-md-3 payment-card">
+                                        <h6 style="font-weight:700;">Lipa Na M-pesa</h6>
+                                        <img src="@/assets/img/mpesa.jpeg" alt="M-Pesa"  class="mpesa-icon">
+                                        <p>Make payments easily and efficiently using your M-pesa account</p>
+                                        <button class="btn btn-payment-option">Select Option</button>
+                                    </div>
+                                    <div class="col-md-3 payment-card">
+                                        <h6 style="font-weight:700;">PayPal</h6>
+                                        <img src="@/assets/img/paypal-icon.png" alt="PayPal" class="paypal-icon">
+                                        <p>Make payments easily and efficiently using your PayPal account</p>
+                                        <button class="btn btn-payment-option">Select Option</button>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tab-pane fade" id="address-tab" role="tabpanel" aria-labelledby="address-nav">
                                 <h4>Address</h4>
@@ -209,13 +260,11 @@
 
 <script>
 import Modal from "@/components/Modal.vue"
-import PaymentMethod from "@/components/PaymentMethod.vue"
 
 export default {
     props: ["getUserDetails", "userDetails"],
     components:{
         Modal,
-        PaymentMethod
     },
     data() {
         return {
@@ -233,6 +282,8 @@ export default {
             myOrders: [],
             myOrderDetails:[],
             isModalVisible: false,
+            paymentModalVisible: false,
+            lipaNaMpesa: false,
         };
     },
     computed:{
@@ -312,18 +363,45 @@ export default {
             this.isModalVisible = true;
 
             let orderID = arguments[0];
-            console.log(orderID);
             this.axios.get(`/api/v1/my-orders/${orderID}/`)
             .then((response)=>{
                 this.myOrderDetails = response.data
-                console.log(this.myOrderDetails.items[0].product.price)
             })
             .catch((error)=>{
                 console.log(error)
             })
         },
+        showPaymentModal(){
+            this.paymentModalVisible = true
+        },
         closeModal() {
             this.isModalVisible = false;
+            this.paymentModalVisible = false
+        },
+        showLipaNaMpesa(){
+            this.lipaNaMpesa = !this.lipaNaMpesa
+        },
+        payViaMpesa(){
+            const formData = {
+                    "BusinessShortCode": 174379,
+                    "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwNDIxMTcxODIy",
+                    "Timestamp": "20220421171822",
+                    "TransactionType": "CustomerPayBillOnline",
+                    "Amount": 1,
+                    "PartyA": 254795968217,
+                    "PartyB": 174379,
+                    "PhoneNumber": 254795968217,
+                    "CallBackURL": "https://478f-197-248-34-79.ngrok.io/api/v1/c2b/callback",
+                    "AccountReference": "Gee Collections",
+                    "TransactionDesc": "Payment of X"
+                }
+                this.axios.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',formData)
+                .then((response)=>{
+                    console.log(response.data)
+                })
+                .catch((error)=>{
+                    console.log(error)
+                })
         }
     },
     beforeMount() {
@@ -332,7 +410,6 @@ export default {
         this.getProfileDetails();
         this.showClientOrders();
     },
-    components: { Modal, PaymentMethod }
 }
 </script>
 
@@ -354,5 +431,68 @@ export default {
     .emoji{
         font-size: 36px;
         font-style: normal;
+    }
+    .lipanampesa{
+        width: 60%;
+        height: 40px;
+        padding: 2px 10px;
+        font-family: 'Source Code Pro', monospace;
+        font-weight: 700;
+        font-size: 18px;
+        text-align: center;
+        color: #000000;
+        background: #228B22;
+        border: none;
+        border-radius: 4px;
+        transition: all .3s;
+        margin-bottom: 20px;
+    }
+    .lipanampesa:hover{
+        background-color: black;
+        color: green;
+    }
+    .procPayBtn{
+        margin: 20px;
+        color:#228B22;
+        background-color: black;
+        border: none;
+        border-radius: 4px;
+        transition: all .3s;
+        font-weight: 700;
+        font-size: 18px;
+    }
+    .procPayBtn:hover{
+        color: white;
+        background-color: green;
+    }
+    .payment-card{
+        background-color: white;
+        margin-left:20px;
+        margin-bottom: 30px;
+        margin-top: 20px;
+        align-items: center;
+        padding-bottom: 20px;
+    }
+    .bank-icon{
+        background-color: #f3f6ff;
+        width: 100px;
+        height: 100px;
+        margin-bottom: 20px;
+    }
+    .paypal-icon{
+        height: 100px;
+        margin-bottom: 20px;
+    }
+    .mpesa-icon{
+        height: 50px;
+        margin-top: 50px;
+        margin-bottom: 20px;
+    }
+    .payment-row{
+        background-color: #f3f6ff;
+        margin-top: 20px;
+    }
+    .btn-payment-option{
+        margin-top: 30px;
     }
 </style>

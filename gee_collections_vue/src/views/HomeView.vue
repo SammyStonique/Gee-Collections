@@ -267,18 +267,17 @@
         </div>
         <!-- Recent Product End -->
         
-        <!-- Review Start -->
         <div class="review">
-            <div class="container-fluid">
-                <div class="row align-items-center review-slider normal-slider">
-                    <div class="col-md-6">
-                        <div class="review-slider-item">
+            <div class="container-fluid-review-wrapper">
+                <div class="review-slider">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide review-slider-item">
                             <div class="review-img">
-                                <img src="@/assets/img/review-1.jpg" alt="Image">
+                                <img src="@/assets/img/sammyb-review.jpg" alt="Image" class="review-img">
                             </div>
                             <div class="review-text">
-                                <h2>Customer Name</h2>
-                                <h3>Profession</h3>
+                                <h2>SammyB</h2>
+                                <h3>Software engineer</h3>
                                 <div class="ratting">
                                     <i class="fa fa-star"></i>
                                     <i class="fa fa-star"></i>
@@ -291,15 +290,13 @@
                                 </p>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="review-slider-item">
+                        <div class="swiper-slide review-slider-item">
                             <div class="review-img">
-                                <img src="@/assets/img/review-2.jpg" alt="Image">
+                                <img src="@/assets/img/mary-review.jpg" alt="Image" class="review-img">
                             </div>
                             <div class="review-text">
-                                <h2>Customer Name</h2>
-                                <h3>Profession</h3>
+                                <h2>Mary</h2>
+                                <h3>Financial Analyst</h3>
                                 <div class="ratting">
                                     <i class="fa fa-star"></i>
                                     <i class="fa fa-star"></i>
@@ -312,15 +309,13 @@
                                 </p>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="review-slider-item">
+                        <div class="swiper-slide review-slider-item">
                             <div class="review-img">
-                                <img src="@/assets/img/review-3.jpg" alt="Image">
+                                <img src="@/assets/img/mike-review.jpg" alt="Image" class="review-img">
                             </div>
                             <div class="review-text">
-                                <h2>Customer Name</h2>
-                                <h3>Profession</h3>
+                                <h2>Mike Bavon</h2>
+                                <h3>C.E.O - Ezen</h3>
                                 <div class="ratting">
                                     <i class="fa fa-star"></i>
                                     <i class="fa fa-star"></i>
@@ -333,11 +328,10 @@
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </div>    
                 </div>
             </div>
         </div>
-        <!-- Review End -->
     </div>
     
 </template>
@@ -418,6 +412,20 @@ export default {
         })
         swiper3.autoplay.start();
         // swiper3.setTransition(this,0.3)
+
+        const swiper4 = new Swiper('.review-slider',{
+            direction:'horizontal',
+            loop: true,
+            speed: 700,
+            slidesPerView: 2,
+            spaceBetween: 30,
+            modules: [Autoplay],
+            autoplay:{
+                delay:2000,
+                disableOnInteraction:false,
+                pauseOnMouseEnter:true
+            },
+        })
     }
 }
 </script>
@@ -428,4 +436,14 @@ export default {
         padding-right:60px;
         background-color: white;
     }
+    .review-img{
+        height: 200px;
+        width: 200px;
+    }
+    .container-fluid-review-wrapper{
+        margin-left: 50px;
+        margin-right: 50px;
+        overflow-x: hidden;
+    }
+    
 </style>

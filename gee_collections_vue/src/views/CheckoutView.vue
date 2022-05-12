@@ -232,7 +232,7 @@ export default {
                     "PartyA": this.payment_number,
                     "PartyB": 174379,
                     "PhoneNumber": this.payment_number,
-                    "CallBackURL": "https://f055-197-248-34-79.ngrok.io/api/v1/c2b/callback",
+                    "CallBackURL": "https://478f-197-248-34-79.ngrok.io/api/v1/c2b/callback",
                     "AccountReference": "Gee Collections",
                     "TransactionDesc": "Payment of X"
                 }
