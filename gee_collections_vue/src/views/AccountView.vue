@@ -130,7 +130,7 @@
                             </template>
 
                             <template v-slot:footer>
-                                This is a new modal footer.
+                                Thank you for doing business with us.
                             </template>
                             </Modal>
                             <div class="tab-pane fade" id="payment-tab" role="tabpanel" aria-labelledby="payment-nav">

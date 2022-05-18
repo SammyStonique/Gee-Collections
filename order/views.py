@@ -12,7 +12,7 @@ from django.http import HttpResponse,JsonResponse
 import requests
 from requests.auth import HTTPBasicAuth
 import json
-from . mpesa_credentials import MpesaAccessToken, LipanaMpesaPpassword
+from .mpesa_credentials import MpesaAccessToken, LipanaMpesaPpassword
 from django.views.decorators.csrf import csrf_exempt
 import smtplib
 from django.core.mail import send_mail

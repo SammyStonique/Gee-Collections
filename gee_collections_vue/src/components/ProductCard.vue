@@ -16,7 +16,7 @@
             </a>
             <div class="product-action">
                 <a class="btn" @click="addToCart(index)" title="Add to Cart"><i class="fa fa-cart-plus"></i></a>
-                <a href="#" title="Add to Wishlist"><i class="fa fa-heart"></i></a>
+                <a class="btn" @click="addToWishlist(index)" title="Add to Wishlist"><i class="fa fa-heart"></i></a>
                 <a href="#" title="View Product Details"><i class="fa fa-search"></i></a>
             </div>
         </div>
@@ -45,6 +45,6 @@
 
 <script>
 export default {
-    props:['item','getProducts','index','addToCart']
+    props:['item','addToWishlist','getProducts','index','addToCart']
 }
 </script>

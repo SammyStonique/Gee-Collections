@@ -74,7 +74,7 @@
                     <div class="col-md-3">
                         <div class="logo">
                             <router-link to="/">
-                                <img src="@/assets/img/logo.png" alt="Logo">
+                                <img src="@/assets/img/new-logo.png" alt="Logo" class="new-logo">
                             </router-link>
                         </div>
                     </div>
@@ -88,7 +88,7 @@
                         <div class="user">
                             <router-link to="/wishlist" class="btn wishlist">
                                 <i class="fa fa-heart"></i>
-                                <span>(0)</span>
+                                <span>({{totalWishlistQuantity}})</span>
                             </router-link>
                             <router-link to="/cart" class="btn cart">
                                 <i class="fa fa-shopping-cart"></i>
@@ -103,12 +103,18 @@
         <router-view
         :getProducts="getProducts"
         :items="items"
+        :wishlist="wishlist.wishlistItems"
         :cart="cart.cartItems"
         :addToCart="addToCart"
+        :addToWishlist="addToWishlist"
         :totalQuantity="totalQuantity"
+        :totalWishlistQuantity="totalWishlistQuantity"
         :cartSubTotal="cartSubTotal"
+        :wishlistSubTotal="wishlistSubTotal"
         :cartItemTotal="cartItemTotal"
+        :wishlistItemTotal="wishlistItemTotal"
         :cartGrandTotal="cartGrandTotal"
+        :wishlistGrandTotal="wishlistGrandTotal"
         :shippingCost="shippingCost"
         :token="token"
         :isAuthenticated="isAuthenticated"
@@ -125,7 +131,7 @@
                             <h2>Get in Touch</h2>
                             <div class="contact-info">
                                 <p><i class="fa fa-map-marker"></i>Opposite Jamia Mosque, Siaya</p>
-                                <p><i class="fa fa-envelope"></i>otisamueloti@gmail.com</p>
+                                <p><a href="http://www.gmail.com" target="blank"><i class="fa fa-envelope"></i>otisamueloti@gmail.com</a></p>
                                 <p><i class="fa fa-phone"></i>+254-717-423-651</p>
                             </div>
                         </div>
@@ -136,11 +142,11 @@
                             <h2>Follow Us</h2>
                             <div class="contact-info">
                                 <div class="social">
-                                    <router-link to=""><i class="fab fa-twitter"></i></router-link>
-                                    <router-link to=""><i class="fab fa-facebook-f"></i></router-link>
-                                    <router-link to=""><i class="fab fa-linkedin-in"></i></router-link>
-                                    <router-link to=""><i class="fab fa-instagram"></i></router-link>
-                                    <router-link to=""><i class="fab fa-youtube"></i></router-link>
+                                    <a href="http://www.twitter.com" target="blank" ><i class="fab fa-twitter"></i></a>
+                                    <a href="http://www.facebook.com" target="blank"><i class="fab fa-facebook-f"></i></a>
+                                    <a href="http://www.linkedin.com" target="blank"><i class="fab fa-linkedin-in"></i></a>
+                                    <a href="http://www.instagram.com" target="blank"><i class="fab fa-instagram"></i></a>
+                                    <a href="http://www.youtube.com" target="blank"><i class="fab fa-youtube"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -173,15 +179,15 @@
                     <div class="col-md-6">
                         <div class="payment-method">
                             <h2>We Accept:</h2>
-                            <img src="@/assets/img/payment-method.png" alt="Payment Method" />
+                            <img src="@/assets/img/payment-method.png" style="width: inherit;" alt="Payment Method"/>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="payment-security">
                             <h2>Secured By:</h2>
-                            <img src="@/assets/img/godaddy.svg" alt="Payment Security" />
-                            <img src="@/assets/img/norton.svg" alt="Payment Security" />
-                            <img src="@/assets/img/ssl.svg" alt="Payment Security" />
+                            <img src="@/assets/img/godaddy.svg" style="width: inherit;" alt="Payment Security" />
+                            <img src="@/assets/img/norton.svg" style="width: inherit;" alt="Payment Security" />
+                            <img src="@/assets/img/ssl.svg" style="width: inherit;" alt="Payment Security" />
                         </div>
                     </div>
                 </div>
@@ -194,11 +200,11 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-6 copyright">
-                        <p>Copyright &copy; <router-link to="#">SammyB</router-link>. All Rights Reserved</p>
+                        <p>Copyright &copy; <router-link to="#" style="color: white !important;">SammyB</router-link>. All Rights Reserved</p>
                     </div>
 
                     <div class="col-md-6 template-by">
-                        <p>Template By <router-link to="#">SammyB</router-link></p>
+                        <p>Template By <router-link to="#" style="color: white !important;">SammyB</router-link></p>
                     </div>
                 </div>
             </div>
@@ -223,6 +229,9 @@ export default {
             cart:{
                 cartItems:[]
             },
+            wishlist:{
+                wishlistItems:[]
+            },
             quantity: 1,
             shippingCost: 200,
             token: '',
@@ -240,6 +249,7 @@ export default {
         axios.defaults.headers.common['Authorization'] = ""
         }
         this.cart = this.$store.state.cart;
+        this.wishlist = this.$store.state.wishlist;
         this.isAuthenticated = this.$store.state.isAuthenticated;
     },
     mounted(){
@@ -254,10 +264,26 @@ export default {
             }
             return itemQuantity
         },
+        totalWishlistQuantity() {
+            let itemQuantity = 0
+
+            for(let i = 0; i<this.wishlist.wishlistItems.length; i++ ){
+                itemQuantity += this.wishlist.wishlistItems[i].quantity
+            }
+            return itemQuantity
+        },
         cartItemTotal(){
             let itemTotal = [];
             for(let i = 0; i<this.cart.cartItems.length; i++){
                 let lineTotal = (this.cart.cartItems[i].quantity * this.cart.cartItems[i].items.price).toFixed(2)
+                itemTotal.push(lineTotal);
+            }
+            return itemTotal
+        },
+        wishlistItemTotal(){
+            let itemTotal = [];
+            for(let i = 0; i<this.wishlist.wishlistItems.length; i++){
+                let lineTotal = (this.wishlist.wishlistItems[i].quantity * this.wishlist.wishlistItems[i].items.price).toFixed(2)
                 itemTotal.push(lineTotal);
             }
             return itemTotal
@@ -274,8 +300,23 @@ export default {
             }
             return cartTotal
         },
+        wishlistSubTotal(){
+            let itemTotal = [];
+            let wishlistTotal = 0
+            for(let i = 0; i<this.wishlist.wishlistItems.length; i++){
+                let lineTotal = (this.wishlist.wishlistItems[i].quantity * this.wishlist.wishlistItems[i].items.price).toFixed(2)
+                itemTotal.push(parseFloat(lineTotal));
+                wishlistTotal = itemTotal.reduce(function(a,b){
+                    return (a+ b);
+                })
+            }
+            return wishlistTotal
+        },
         cartGrandTotal(){
             return parseFloat(this.cartSubTotal) + this.shippingCost
+        },
+        wishlistGrandTotal(){
+            return parseFloat(this.wishlistSubTotal) + this.shippingCost
         },
         userDetails(){
             return this.$store.state.loggedInUser;
@@ -307,6 +348,21 @@ export default {
             this.$toast.success(`${this.items[selectedItem].name} added to cart`);
             
         },
+        addToWishlist(){
+            //Getting the index of the items in the wishlist
+            let selectedItem = arguments[0];
+            if(isNaN(this.quantity) || this.quantity<1){
+                this.quantity = 1;
+            }
+            
+            const wishlistItem={
+                items : this.items[selectedItem],
+                quantity : this.quantity
+            }
+            this.$store.commit('addToWishlist',wishlistItem);
+            this.$toast.success(`${this.items[selectedItem].name} added to wishlist`);
+            
+        },
         getUserDetails(){
             this.$store.dispatch('getUserDetails')
             .then((response)=>{
@@ -317,7 +373,7 @@ export default {
             })
         },       
         scrollToTop(){
-            window.scrollTo(0,0);
+            window.scrollTo({top:0,behavior:"smooth"})
         }
     },
 }
@@ -330,5 +386,9 @@ export default {
     }
     .dropdown-toggle{
         color: white !important;
+    }
+    .new-logo{
+        width: 212px;
+        height: 53px;
     }
 </style>

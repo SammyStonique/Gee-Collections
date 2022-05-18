@@ -43,7 +43,8 @@ export default {
     justify-content: center;
     align-items: center;
     max-width: 60%;
-    max-height: 700px;
+    height: fit-content;
+    /* max-height: 700px; */
     margin: 100px;
     margin-left: 300px;
   }
@@ -55,7 +56,8 @@ export default {
     display: flex;
     flex-direction: column;
     max-width: 60%;
-    max-height: 700px;
+    height: fit-content;
+    /* max-height: 100vh; */
     margin: 100px;
     margin-left: 300px;
   }

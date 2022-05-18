@@ -38,17 +38,17 @@
                         <div class="swiper">
                             <div class="swiper-wrapper">
                                 <div class="swiper-slide">
-                                    <img src="@/assets/img/slider-1.jpg" alt="Slider Image" />
+                                    <img src="@/assets/img/main1.jpg" alt="Slider Image" style="width:500px; height:400px"/>
                                     <div class="header-slider-caption">
                                         <p>Some text goes here that describes the image</p>
                                         <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Shop Now</a>
                                     </div>
                                 </div>
                                 <div class="swiper-slide">
-                                    <img src="@/assets/img/slider-2.jpg" alt="Slider Image" />
+                                    <img src="@/assets/img/main2.jpg" alt="Slider Image" style="width:500px; height:400px"/>
                                 </div>
                                 <div class="swiper-slide">
-                                    <img src="@/assets/img/slider-3.jpg" alt="Slider Image" />
+                                    <img src="@/assets/img/main3.jpg" alt="Slider Image" style="width:500px; height:400px"/>
                                 </div>
                             </div>
                        
@@ -99,25 +99,25 @@
                             <i class="fab fa-cc-mastercard"></i>
                             <h2>Secure Payment</h2>
                             <p>
-                                Lorem ipsum dolor sit amet consectetur elit
+                                We offer a wide range of safe and secure payment methods.
                             </p>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 feature-col">
                         <div class="feature-content">
                             <i class="fa fa-truck"></i>
-                            <h2>Worldwide Delivery</h2>
+                            <h2>Nationwide Delivery</h2>
                             <p>
-                                Lorem ipsum dolor sit amet consectetur elit
+                                We offer delivery services to all counties at a favourable price.
                             </p>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 feature-col">
                         <div class="feature-content">
                             <i class="fa fa-sync-alt"></i>
-                            <h2>90 Days Return</h2>
+                            <h2>30 Days Return</h2>
                             <p>
-                                Lorem ipsum dolor sit amet consectetur elit
+                                We give a 30 days warranty for all our products.
                             </p>
                         </div>
                     </div>
@@ -126,7 +126,7 @@
                             <i class="fa fa-comments"></i>
                             <h2>24/7 Support</h2>
                             <p>
-                                Lorem ipsum dolor sit amet consectetur elit
+                                We have a reliable support team that is at your full disposal.
                             </p>
                         </div>
                     </div>
@@ -141,7 +141,7 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="category-item ch-400">
-                            <img src="@/assets/img/category-3.jpg" />
+                            <img src="@/assets/img/gee6.jpg" style="width:400px; height:420px"/>
                             <a class="category-name" href="">
                                 <p>Some text goes here that describes the image</p>
                             </a>
@@ -149,13 +149,13 @@
                     </div>
                     <div class="col-md-3">
                         <div class="category-item ch-250">
-                            <img src="@/assets/img/category-4.jpg" />
+                            <img src="@/assets/img/gee25.jpg" style="width:450px; height:300px"/>
                             <a class="category-name" href="">
                                 <p>Some text goes here that describes the image</p>
                             </a>
                         </div>
                         <div class="category-item ch-150">
-                            <img src="@/assets/img/category-5.jpg" />
+                            <img src="@/assets/img/category-5.jpg"/>
                             <a class="category-name" href="">
                                 <p>Some text goes here that describes the image</p>
                             </a>
@@ -163,13 +163,13 @@
                     </div>
                     <div class="col-md-3">
                         <div class="category-item ch-150">
-                            <img src="@/assets/img/category-6.jpg" />
+                            <img src="@/assets/img/gee3.jpg" style="width:400px; height:150px"/>
                             <a class="category-name" href="">
                                 <p>Some text goes here that describes the image</p>
                             </a>
                         </div>
                         <div class="category-item ch-250">
-                            <img src="@/assets/img/category-7.jpg" />
+                            <img src="@/assets/img/gee32.jpg" style="width:450px; height:300px"/>
                             <a class="category-name" href="">
                                 <p>Some text goes here that describes the image</p>
                             </a>
@@ -177,7 +177,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="category-item ch-400">
-                            <img src="@/assets/img/category-8.jpg" />
+                            <img src="@/assets/img/gee30.jpg" style="width:400px; height:400px" />
                             <a class="category-name" href="">
                                 <p>Some text goes here that describes the image</p>
                             </a>
@@ -218,6 +218,7 @@
                             :index="index"
                             :key="item.id"
                             :addToCart="addToCart"
+                            :addToWishlist="addToWishlist"
                             />
                         </div>
                     </div>    
@@ -246,7 +247,7 @@
         
         <!-- Recent Product Start -->
         <div class="recent-product product">
-            <div class="container-fluid">
+            <div class="container-fluid-review-wrapper">
                 <div class="section-header">
                     <h1>New Arrivals</h1>
                 </div>
@@ -259,6 +260,7 @@
                                 :key="item.id"
                                 :index="index"
                                 :addToCart="addToCart"
+                                :addToWishlist="addToWishlist"
                                 />
                             </div>
                         </div>
@@ -347,7 +349,7 @@ export default {
         ProductCard,
         Swiper
     },
-    props:['items','getProducts','addToCart'],
+    props:['items','getProducts','addToCart','addToWishlist'],
     mounted(){
         this.getProducts();
         Swiper.use(Autoplay, Pagination);
@@ -405,7 +407,7 @@ export default {
             cssMode:'linear',
             modules: [Autoplay],
             autoplay:{
-                delay: 3000,
+                delay: 2000,
                 disableOnInteraction:false,
                 pauseOnMouseEnter:true
             },

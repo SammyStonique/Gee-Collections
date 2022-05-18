@@ -6,6 +6,9 @@ export default createStore({
     cart:{
       cartItems:[]
     },
+    wishlist:{
+      wishlistItems:[]
+    },
     token: '',
     isAuthenticated: false,
     loggedInUser: [],
@@ -45,7 +48,16 @@ export default createStore({
         state.isAuthenticated = false;
       }
 
+      //Check if the wishlist exists in the local storage
+      if(localStorage.getItem('wishlist')){
+        state.wishlist = JSON.parse(localStorage.getItem('wishlist'))
+      //Add the wishlist to local storage if it doesn't exist
+      }else{
+        localStorage.setItem('wishlist',JSON.stringify(state.wishlist))
+      }
+
     },
+    //ADDING AN ITEM TO THE CART
     addToCart(state, cartItem){
       //Checking if the cart has an item
       if(state.cart.cartItems.length > 0){
@@ -69,25 +81,67 @@ export default createStore({
         localStorage.setItem('cart',JSON.stringify(state.cart));
       }
     },
+    //REMOVING AN ITEM FROM THE CART
     removeFromCart(state, cartItem){
         // let itemIndex = state.cart.cartItems.indexOf(cartItem)
 
         state.cart.cartItems.splice(cartItem,1)
         localStorage.setItem('cart',JSON.stringify(state.cart));
     },
+    //ADD ITEM TO WISHLIST
+    addToWishlist(state, wishlistItem){
+      //Checking if the wishlist has an item
+      if(state.wishlist.wishlistItems.length > 0){
+        //Checking if an item exists in a wishlist
+        const exist = state.wishlist.wishlistItems.filter((i) => {
+          return i.items.id === wishlistItem.items.id;
+        })
+        //If the item exists, increment its quantity in the wishlist
+        if(exist.length > 0){
+          exist[0].quantity = parseInt(exist[0].quantity) + parseInt(wishlistItem.quantity)
+        //If the item doesn't exist, push it to the wishlist
+        }else{
+          state.wishlist.wishlistItems.push(wishlistItem)
+        }
+        //Save the wishlist to the local storage
+        localStorage.setItem('wishlist',JSON.stringify(state.wishlist));
+      }
+      //Adding a new item to the wishlist and saving it to the local storage
+      else {
+        state.wishlist.wishlistItems.push(wishlistItem)
+        localStorage.setItem('wishlist',JSON.stringify(state.wishlist));
+      }
+    },
+    //REMOVING ITEM FROM THE WISHLIST
+    removeFromWishlist(state, wishlistItem){
+      // let itemIndex = state.cart.cartItems.indexOf(cartItem)
+
+      state.wishlist.wishlistItems.splice(wishlistItem,1)
+      localStorage.setItem('wishlist',JSON.stringify(state.wishlist));
+  },
+    //SETTING AUTHENTICATION TOKEN
     setToken(state,token){
       state.token = token;
       state.isAuthenticated = true
     },
+    //REMOVING AUTHENTICATION TOKEN
     removeToken(state){
       state.token = ''
       state.isAuthenticated = false
     },
+    //CLEARING THE CART
     clearCart(state) {
       state.cart = { cartItems: [] }
 
       localStorage.setItem('cart', JSON.stringify(state.cart))
-    },  
+    }, 
+    //CLEARING THE WISHLIST
+    clearCart(state) {
+      state.cart = { cartItems: [] }
+
+      localStorage.setItem('cart', JSON.stringify(state.cart))
+    },
+
     setLoggedInUser(state, payload){
       state.loggedInUser = payload
     }
