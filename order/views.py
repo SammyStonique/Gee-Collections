@@ -58,6 +58,12 @@ class OrdersList(APIView):
         serializer = MyOrderSerializer(orders, many=True)
         return Response(serializer.data)
 
+class OrdersPagination(APIView):
+    def get(self,request, format=None):
+        orders = Order.objects.filter(user=request.user)[5:10]
+        serializer = MyOrderSerializer(orders, many=True)
+        return Response(serializer.data)
+
 class OrderDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = MyOrderSerializer

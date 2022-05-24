@@ -146,14 +146,15 @@
                                     <h1>Payment Methods</h1>
                                         <button type="button" class="lipanampesa" @click="showLipaNaMpesa">Lipa Na Mpesa</button>
                                         <div v-if="lipaNaMpesa">
-                                        <p>To proceed to Lipa Na Mpesa, please enter the phone number you would like to make the payment with.</p>
-                                        <label for="">Phone Number:</label>
-                                        <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX" v-model="payment_number">
-                                        <div class="col-md-12 notification is-danger" v-if="errors.length">
-                                            <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
+                                            <p>To proceed to Lipa Na Mpesa, please enter the phone number you would like to make the payment with.</p>
+                                            <label for="">Phone Number:</label>
+                                            <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX" v-model="payment_number">
+                                            <div class="col-md-12 notification is-danger" v-if="errors.length">
+                                                <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
+                                            </div>
+                                            <button type="button" class="procPayBtn" @click="payViaMpesa">Proceed to Pay</button>
                                         </div>
-                                        <button type="button" class="procPayBtn" @click="payViaMpesa">Proceed to Pay</button>
-                                        </div>
+                                        <div id="paypal-button-container"></div>
                                         <div class="checkout-btn" >
                                             <button>Place Order</button>
                                         </div>
@@ -170,7 +171,7 @@
 
 <script>
 export default {
-    props:['cartGrandTotal','cartItemTotal','cartSubTotal','shippingCost'],
+    props:['cartGrandTotal','cartItemTotal','cartSubTotal','shippingCost','cartTotalUSD'],
     el:'#selector',
     data(){
         return{
@@ -288,12 +289,42 @@ export default {
         showShippingDetails(){
             this.checked = !this.checked
             console.log(this.checked)
+        },
+        mountPaypalButton(){
+
         }
     },
     beforeMount() {
         this.getProfileDetails();
         this.cart = this.$store.state.cart;
     },
+    mounted(){
+        paypal.Buttons({
+        // Sets up the transaction when a payment button is clicked
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value: this.cartTotalUSD // Can also reference a variable or function
+              }
+            }]
+          });
+        },
+        // Finalize the transaction after payer approval
+        onApprove: (data, actions) => {
+          return actions.order.capture().then(function(orderData) {
+            // Successful capture! For dev/demo purposes:
+            console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+            const transaction = orderData.purchase_units[0].payments.captures[0];
+            alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+            // When ready to go live, remove the alert and show a success message within this page. For example:
+            // const element = document.getElementById('paypal-button-container');
+            // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+            // Or go to another URL:  actions.redirect('thank_you.html');
+          });
+        }
+      }).render('#paypal-button-container');
+    }
 }
 
 </script>

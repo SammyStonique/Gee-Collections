@@ -59,7 +59,20 @@
                                             </tr>
                                         </tbody>
                                     </table>
+
                                     <p class="empty-order-list" v-if="!Object.keys(myOrders).length"><span class="emoji " role="img" aria-label="">😭</span><br/><em class="empty-cart-message">Ooops,You haven't placed any order yet</em></p>
+
+                                    <!-- PAGINATION -->
+                                    <div class="row">
+                                        <Pagination
+                                            :totalPages="totalPages"
+                                            :perPage="itemsPerPage"
+                                            :currentPage="currentPage"
+                                            :totalItems="totalItems"
+                                            @page-changed="onPageChange"
+                                        />
+                                    </div>
+                                    <!-- pagination end -->
                                 </div>
                             </div>
                             <!-- MODAL component for viewing order details -->
@@ -260,11 +273,13 @@
 
 <script>
 import Modal from "@/components/Modal.vue"
+import Pagination from "@/components/Pagination.vue"
 
 export default {
     props: ["getUserDetails", "userDetails"],
     components:{
         Modal,
+        Pagination,
     },
     data() {
         return {
@@ -284,6 +299,12 @@ export default {
             isModalVisible: false,
             paymentModalVisible: false,
             lipaNaMpesa: false,
+            currentPage: 1,
+            totalItems: 0,
+            itemsPerPage: 2,
+            totalPages: 0,
+            start: 1,
+            limit: 2,
         };
     },
     computed:{
@@ -297,10 +318,27 @@ export default {
         },
     },
     methods: {
+        onPageChange(page){
+            this.currentPage = page
+            this.start += this.limit;
+
+            this.axios.get(`api/v1/my-orders-pagination/`)
+                .then((response)=>{
+                    this.myOrders = response.data;
+                    console.log(this.myOrders)
+                })
+                .catch((error)=>{
+                    console.log(error)
+                })
+        },
         showClientOrders() {
-            this.axios.get("api/v1/my-orders/")
+            this.axios.get("api/v1/my-orders-pagination/")
                 .then((response) => {
                 this.myOrders = response.data;
+                this.totalItems = response.data.length;
+                
+                const pages = ~~(this.totalItems / this.itemsPerPage);
+                this.totalPages = pages;
             })
                 .catch((error) => {
                 console.log(error);
@@ -357,6 +395,7 @@ export default {
                 this.address = response.data.address;
             })
                 .catch((error) => {
+                    console.log(error)
             });
         },
         showModal() {
@@ -410,6 +449,7 @@ export default {
         this.getProfileDetails();
         this.showClientOrders();
     },
+    
 }
 </script>
 

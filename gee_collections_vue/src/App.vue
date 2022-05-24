@@ -114,6 +114,7 @@
         :cartItemTotal="cartItemTotal"
         :wishlistItemTotal="wishlistItemTotal"
         :cartGrandTotal="cartGrandTotal"
+        :cartTotalUSD="cartTotalUSD"
         :wishlistGrandTotal="wishlistGrandTotal"
         :shippingCost="shippingCost"
         :token="token"
@@ -314,6 +315,9 @@ export default {
         },
         cartGrandTotal(){
             return parseFloat(this.cartSubTotal) + this.shippingCost
+        },
+        cartTotalUSD(){
+            return (parseFloat(this.cartGrandTotal) / 110).toFixed(2)
         },
         wishlistGrandTotal(){
             return parseFloat(this.wishlistSubTotal) + this.shippingCost

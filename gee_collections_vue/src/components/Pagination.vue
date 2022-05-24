@@ -1,101 +1,185 @@
 <template>
-    <div>
-        <!-- Pagination Start -->
-        <div class="col-md-12">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item">
-                        <a class="page-link" @click="onClickFirstPage" :disabled="isInFirstPage" href="#">First</a>
+    <div class="section"> 
+        <div class="pull-right">
+            <div class="pagination">
+                <ul>
+                    <!-- <li>
+                        <a
+                            class="btn"
+                            @click.prevent="onClickFirstPage" 
+                            :disabled="isInFirstPage"
+                        >
+                        First
+                        </a>
+                    </li> -->
+                    <li>
+                        <a
+                            class="btn"
+                            @click="onClickPreviousPage" 
+                            :disabled="isInFirstPage"
+                        >
+                        Prev
+                        </a>
                     </li>
-                    <li class="page-item disabled">
-                        <a class="page-link" @click="onClickPreviousPage" :disabled="isInFirstPage" href="#" tabindex="-1">Previous</a>
+
+                    <!-- visible as start -->
+                    <li v-for="page in pages" :key="page.name">
+                        <a
+                            class="btn"
+                            @click="onClickPage(page.name)"
+                            :disabled="page.isDisabled"
+                        >
+                        {{page.name}}
+                        </a>
                     </li>
-                    <li class="page-item" v-for="page in pages" :key="page.name">
-                        <a class="page-link" type="button" @click="onClickPage(page.name)" :disabled="page.isDisabled" :class="{ active: isPageActive(page.name) }">{{ page.name }}</a>
+                    <!-- visible as end -->
+
+                    <li>
+                        <a
+                            class="btn"
+                            @click="onClickNextPage" 
+                            :disabled="isInLastPage"
+                        >
+                        Next
+                        </a>
                     </li>
-                    <li class="page-item">
-                        <a class="page-link" @click="onClickNextPage" :disabled="isInLastPage" href="#">Next</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" @click="onClickLastPage" :disabled="isInLastPage" href="#">Last</a>
-                    </li>
+                    <!-- <li>
+                        <a
+                            class="btn"
+                            @click="onClickLastPage" 
+                            :disabled="isInLastPage"
+                        >
+                        Last
+                        </a>
+                    </li> -->
                 </ul>
-            </nav>
-        </div>
-        <!-- Pagination Start -->
+            </div>
+        </div>                
     </div>
 </template>
 
 <script>
 export default {
-  props: {
-    maxVisibleButtons: {
-      type: Number,
-      required: false,
-      default: 3
-    },    
-    totalPages: {
-      type: Number,
-      required: true
+    props: {
+        maxVisibleButtons: {
+            type: Number,
+            required: false,
+            default: 5
+        },
+        totalPages: {
+            type: Number,
+            required: true,
+        },
+        totalItems: {
+            type: Number,
+            required: true
+        },
+        perPage: {
+            type: Number,
+            required: true,
+        },
+        currentPage: {
+            type: Number,
+            required: true
+        }
     },
-    perPage: {
-      type: Number,
-      required: true
+
+    data() 
+    {
+        return {
+            
+        }
     },
-    currentPage: {
-      type: Number,
-      required: true
+
+    computed: {
+        startPage() 
+        {
+            if(this.currentPage === 1) // while on first page
+            {
+                return 1;
+            }
+            
+            if(this.currentPage === this.totalPages) // while on last page
+            {
+                return this.totalPages - this.maxVisibleButtons + 1;
+                // const start = this.totalPages - (this.maxVisibleButtons - 1);
+
+                // if(start === 0) 
+                // {
+                //     return 1;
+                // }
+                // else 
+                // {
+                //     return start;
+                // }
+            }
+
+            return this.currentPage - 1; // while in between fisrt and last
+        },
+
+        endPage() 
+        {
+            return Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages);
+        },
+
+        pages() 
+        {
+            const pageRange = [];
+            // Math.min(this.startPage + this.maxVisiblePages - 1, this.totalPages) / this.endPage;
+
+            for(let i = this.startPage; i <= Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages); i++)
+            {
+                pageRange.push({
+                    name: i,
+                    isDisabled: i === this.currentPage
+                });
+            }
+
+            return pageRange;
+        },
+
+        // for event listeners
+        isInFirstPage() 
+        {
+            return this.currentPage === 1;
+        },
+        isInLastPage() 
+        {
+            return this.currentPage === this.totalPages;
+        }
+    },
+
+    methods: {
+        onClickFirstPage() 
+        {
+            this.$emit('page-changed', 1);
+        },
+        onClickPreviousPage() 
+        {
+            this.$emit('page-changed', this.currentPage - 1);
+        },
+        onClickPage(page) 
+        {
+            this.$emit('page-changed', page);
+        },
+        onClickNextPage() 
+        {
+            this.$emit('page-changed', this.currentPage + 1);
+        },
+        onClickLastPage() 
+        {
+            this.$emit('page-changed', this.totalPages);
+        },
+    },
+    mounted() 
+    {
+        // console.log(`on pages ::: pages are ::: ${this.totalPages}`)
+    },
+
+    updated() 
+    {
+        
     }
-  },
-  computed: {
-    startPage() {
-      // When on the first page
-      if (this.currentPage === 1) {
-        return 1;
-      }
-      // When on the last page
-      if (this.currentPage === this.totalPages) {
-        return this.totalPages - this.maxVisibleButtons;
-      }
-      // When inbetween
-      return this.currentPage - 1;
-    },
-    pages() {
-      const range = [];
-      for (let i = this.startPage;i <= Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages);i++) {
-        range.push({
-          name: i,
-          isDisabled: i === this.currentPage
-        });
-      }
-      return range;
-    },
-    isInFirstPage() {
-      return this.currentPage === 1;
-    },
-    isInLastPage() {
-      return this.currentPage === this.totalPages;
-    },
-  },
-  methods: {
-    onClickFirstPage() {
-      this.$emit('pagechanged', 1);
-    },
-    onClickPreviousPage() {
-      this.$emit('pagechanged', this.currentPage - 1);
-    },
-    onClickPage(page) {
-      this.$emit('pagechanged', page);
-    },
-    onClickNextPage() {
-      this.$emit('pagechanged', this.currentPage + 1);
-    },
-    onClickLastPage() {
-      this.$emit('pagechanged', this.totalPages);
-    },
-    isPageActive(page) {
-      return this.currentPage === page;
-    }
-  }
-};
+
+}
 </script>
