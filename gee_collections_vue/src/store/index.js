@@ -12,7 +12,7 @@ export default createStore({
     token: '',
     isAuthenticated: false,
     loggedInUser: [],
-    reloaded: false
+    reloaded: false,
   },
   getters: {
 
@@ -144,7 +144,7 @@ export default createStore({
 
     setLoggedInUser(state, payload){
       state.loggedInUser = payload
-    }
+    },
   },
   actions: {
     getUserDetails({commit}){

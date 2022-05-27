@@ -57,15 +57,15 @@
                     <div class="col-md-3">
                         <div class="header-img">
                             <div class="img-item">
-                                <img src="@/assets/img/category-1.jpg" />
+                                <img src="@/assets/img/sleeping-net.jpg" style="width:280px; height:200px" />
                                 <a class="img-text" href="">
-                                    <p>Some text goes here that describes the image</p>
+                                    <p>Try out our modern sleeping net that come in a wide range of colors</p>
                                 </a>
                             </div>
                             <div class="img-item">
-                                <img src="@/assets/img/category-2.jpg" />
+                                <img src="@/assets/img/coffee-maker.jpg" style="width:280px; height:200px"/>
                                 <a class="img-text" href="">
-                                    <p>Some text goes here that describes the image</p>
+                                    <p>It's always a good time to have a cup of coffee, we got you covered.</p>
                                 </a>
                             </div>
                         </div>
@@ -143,7 +143,7 @@
                         <div class="category-item ch-400">
                             <img src="@/assets/img/gee6.jpg" style="width:400px; height:420px"/>
                             <a class="category-name" href="">
-                                <p>Some text goes here that describes the image</p>
+                                <p>Gold coated serving spoons for you and your guests</p>
                             </a>
                         </div>
                     </div>
@@ -151,7 +151,7 @@
                         <div class="category-item ch-250">
                             <img src="@/assets/img/gee25.jpg" style="width:450px; height:300px"/>
                             <a class="category-name" href="">
-                                <p>Some text goes here that describes the image</p>
+                                <p>A state of the art amazing rounded wall mirror </p>
                             </a>
                         </div>
                         <div class="category-item ch-150">
@@ -165,13 +165,13 @@
                         <div class="category-item ch-150">
                             <img src="@/assets/img/gee3.jpg" style="width:400px; height:150px"/>
                             <a class="category-name" href="">
-                                <p>Some text goes here that describes the image</p>
+                                <p>Brand new imported cups and bowls</p>
                             </a>
                         </div>
                         <div class="category-item ch-250">
                             <img src="@/assets/img/gee32.jpg" style="width:450px; height:300px"/>
                             <a class="category-name" href="">
-                                <p>Some text goes here that describes the image</p>
+                                <p>Quality table mats that come in a wide range of colors</p>
                             </a>
                         </div>
                     </div>
@@ -179,7 +179,7 @@
                         <div class="category-item ch-400">
                             <img src="@/assets/img/gee30.jpg" style="width:400px; height:400px" />
                             <a class="category-name" href="">
-                                <p>Some text goes here that describes the image</p>
+                                <p>Baby towels printed with their favourite cartoon character</p>
                             </a>
                         </div>
                     </div>
@@ -218,6 +218,7 @@
                             :index="index"
                             :key="item.id"
                             :addToCart="addToCart"
+                            :getProductDetails="getProductDetails"
                             :addToWishlist="addToWishlist"
                             />
                         </div>
@@ -260,6 +261,7 @@
                                 :key="item.id"
                                 :index="index"
                                 :addToCart="addToCart"
+                                :getProductDetails="getProductDetails"
                                 :addToWishlist="addToWishlist"
                                 />
                             </div>
@@ -349,7 +351,7 @@ export default {
         ProductCard,
         Swiper
     },
-    props:['items','getProducts','addToCart','addToWishlist'],
+    props:['items','getProducts','addToCart','addToWishlist','getProductDetails'],
     mounted(){
         this.getProducts();
         Swiper.use(Autoplay, Pagination);

@@ -19,13 +19,14 @@
                     <div class="col-lg-8">
                         <div class="product-detail-top">
                             <div class="row align-items-center">
-                                <div class="col-md-5 product-detail-slider">  
-                                    <Slider/>                                
-                            
+                                <div class="col-md-5">                                  
+                                    <div class="product-slider-single normal-slider">
+                                        <img :src="`${productDetails.image}`" alt="Product Image">
+                                    </div>
                                 </div>
                                 <div class="col-md-7">
                                     <div class="product-content">
-                                        <div class="title"><h2>Product Name</h2></div>
+                                        <div class="title"><h2>{{productDetails.name}}</h2></div>
                                         <div class="ratting">
                                             <i class="fa fa-star"></i>
                                             <i class="fa fa-star"></i>
@@ -35,7 +36,7 @@
                                         </div>
                                         <div class="price">
                                             <h4>Price:</h4>
-                                            <p>$99 <span>$149</span></p>
+                                            <p>{{productDetails.price}} <span>{{productOriginalPrice.toFixed(2)}}</span></p>
                                         </div>
                                         <div class="quantity">
                                             <h4>Quantity:</h4>
@@ -63,7 +64,7 @@
                                             </div> 
                                         </div>
                                         <div class="action">
-                                            <a class="btn" href="#"><i class="fa fa-shopping-cart"></i>Add to Cart</a>
+                                            <a class="btn" href="#"><i class="fa fa-shopping-cart" @click="addToCart(index)"></i>Add to Cart</a>
                                             <a class="btn" href="#"><i class="fa fa-shopping-bag"></i>Buy Now</a>
                                         </div>
                                     </div>
@@ -88,9 +89,7 @@
                                 <div class="tab-content">
                                     <div id="description" class="container tab-pane active">
                                         <h4>Product description</h4>
-                                        <p>
-                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In condimentum quam ac mi viverra dictum. In efficitur ipsum diam, at dignissim lorem tempor in. Vivamus tempor hendrerit finibus. Nulla tristique viverra nisl, sit amet bibendum ante suscipit non. Praesent in faucibus tellus, sed gravida lacus. Vivamus eu diam eros. Aliquam et sapien eget arcu rhoncus scelerisque. Suspendisse sit amet neque neque. Praesent suscipit et magna eu iaculis. Donec arcu libero, commodo ac est a, malesuada finibus dolor. Aenean in ex eu velit semper fermentum. In leo dui, aliquet sit amet eleifend sit amet, varius in turpis. Maecenas fermentum ut ligula at consectetur. Nullam et tortor leo. 
-                                        </p>
+                                        <p>{{productDetails.description}}</p>
                                     </div>
                                     <div id="specification" class="container tab-pane fade">
                                         <h4>Product specification</h4>
@@ -202,6 +201,8 @@
                                         :key="item.id"
                                         :index="index"
                                         :addToCart="addToCart"
+                                        :addToWishlist="addToWishlist"
+                                        :getProductDetails="getProductDetails"
                                         />
                                     </div>
                                 </div>
@@ -244,17 +245,22 @@
 </template>
 
 <script>
-import Slider from '@/components/Slider.vue'
+
 import ProductCard from '@/components/ProductCard.vue'
 import {Swiper, Autoplay} from 'swiper'
 import 'swiper/scss'
 
 export default {
-    props:['items','getProducts','addToCart'],
+    props:['items','index','getProducts','addToCart','getProductDetails','addToWishlist','productDetails'],
     components:{
         ProductCard,
         Swiper,
-        Slider
+    },
+    computed:{
+        productOriginalPrice(){
+            return (this.productDetails.price - 200)
+        }
+
     },
     mounted(){
         this.getProducts();

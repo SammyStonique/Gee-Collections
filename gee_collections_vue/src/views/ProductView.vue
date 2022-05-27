@@ -95,6 +95,7 @@
                                     :key="item.id"
                                     :index="index"
                                     :addToCart="addToCart"
+                                    :getProductDetails="getProductDetails"
                                     :addToWishlist="addToWishlist"
                                     />
                                     </div>
@@ -142,6 +143,7 @@
                                         :getProducts="getProducts"
                                         :index="index"
                                         :addToCart="addToCart"
+                                        :getProductDetails="getProductDetails"
                                         />
                                     </div>
                                 </div>
@@ -193,7 +195,7 @@ import {Swiper, Autoplay} from 'swiper';
 import ProductCard from '@/components/ProductCard.vue';
 import Pagination from '@/components/Pagination.vue'
 export default {
-    props:['getProducts','items','addToCart','addToWishlist'],
+    props:['getProducts','items','addToCart','addToWishlist','getProductDetails'],
     components:{
         ProductCard,
         Swiper,

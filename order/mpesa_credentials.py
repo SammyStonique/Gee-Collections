@@ -13,17 +13,21 @@ class MpesaC2bCredential:
 
 
 class MpesaAccessToken:
-    # r = requests.get(MpesaC2bCredential.api_URL,
-    #                  auth=HTTPBasicAuth(MpesaC2bCredential.consumer_key, MpesaC2bCredential.consumer_secret))
-    # print('The value of r is:', r)
-    # mpesa_access_token = json.loads(r.text)
-    # validated_mpesa_access_token = mpesa_access_token['access_token']
-    encoded_key = os.environ.get('CONSUMER_KEY')+":"+os.environ.get('CONSUMER_SECRET')
-    encoded_key_bytes = encoded_key.encode("ascii")
-    base64_bytes = base64.b64encode(encoded_key_bytes)
-    base64_string = base64_bytes.decode("ascii")
-    response = requests.request("GET", 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', headers = { 'Authorization': f'Bearer {base64_string}' })
-    print(response.text.encode('utf8'))
+    r = requests.get(MpesaC2bCredential.api_URL,
+                     auth=HTTPBasicAuth(MpesaC2bCredential.consumer_key, MpesaC2bCredential.consumer_secret))
+    print('THe consumer key is:', MpesaC2bCredential.consumer_key)
+    print('THe consumer secret is:', MpesaC2bCredential.consumer_secret)
+    print('The value of r is:', r)
+    mpesa_access_token = json.loads(r.text)
+    validated_mpesa_access_token = mpesa_access_token['access_token']
+    # print('THe consumer key is:', MpesaC2bCredential.consumer_key)
+    # print('THe consumer secret is:', MpesaC2bCredential.consumer_secret)
+    # encoded_key = os.environ.get('CONSUMER_KEY')+":"+os.environ.get('CONSUMER_SECRET')
+    # encoded_key_bytes = encoded_key.encode("ascii")
+    # base64_bytes = base64.b64encode(encoded_key_bytes)
+    # base64_string = base64_bytes.decode("ascii")
+    # response = requests.request("GET", 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', headers = { 'Authorization': f'Bearer {base64_string}' })
+    # print(response.text.encode('utf8'))
 
 class LipanaMpesaPpassword:
     lipa_time = datetime.now().strftime('%Y%m%d%H%M%S')

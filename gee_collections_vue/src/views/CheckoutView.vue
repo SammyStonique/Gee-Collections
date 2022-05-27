@@ -191,7 +191,8 @@ export default {
             lipaNaMpesa: false,
             checked: false,
             errors:[],
-            payment_number: ''
+            payment_number: '',
+            transaction_id:''
         }
     },
     methods:{
@@ -300,30 +301,45 @@ export default {
     },
     mounted(){
         paypal.Buttons({
-        // Sets up the transaction when a payment button is clicked
-        createOrder: (data, actions) => {
-          return actions.order.create({
-            purchase_units: [{
-              amount: {
-                value: this.cartTotalUSD // Can also reference a variable or function
-              }
-            }]
-          });
-        },
-        // Finalize the transaction after payer approval
-        onApprove: (data, actions) => {
-          return actions.order.capture().then(function(orderData) {
-            // Successful capture! For dev/demo purposes:
-            console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
-            const transaction = orderData.purchase_units[0].payments.captures[0];
-            alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
-            // When ready to go live, remove the alert and show a success message within this page. For example:
-            // const element = document.getElementById('paypal-button-container');
-            // element.innerHTML = '<h3>Thank you for your payment!</h3>';
-            // Or go to another URL:  actions.redirect('thank_you.html');
-          });
-        }
-      }).render('#paypal-button-container');
+            //Styling the paypal button
+            style: {
+                color: 'blue',
+                shape: 'pill',
+                label: 'pay',
+                height: 40
+            },
+            // Sets up the transaction when a payment button is clicked
+            createOrder: (data, actions) => {
+            return actions.order.create({
+                purchase_units: [{
+                amount: {
+                    // value: this.cartTotalUSD // Can also reference a variable or function
+                    value: 0.01
+                }
+                }]
+            });
+            },
+            // Finalize the transaction after payer approval
+            onApprove: (data, actions) => {   
+                const my_action = actions.order.capture().then(function(orderData) {
+                    // Successful capture! For dev/demo purposes:
+                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                    this.transaction_id = orderData.purchase_units[0].payments.captures[0].id
+                    console.log('the transaction_id is:', this.transaction_id)
+                    
+                    const transaction = orderData.purchase_units[0].payments.captures[0];
+                    alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+                    
+                    
+                    // this.placeOrder();
+                    // When ready to go live, remove the alert and show a success message within this page. For example:
+                    // const element = document.getElementById('paypal-button-container');
+                    // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+                    // Or go to another URL:  actions.redirect('thank_you.html');
+                });
+                return my_action;
+            }
+        }).render('#paypal-button-container');
     }
 }
 
@@ -339,7 +355,7 @@ export default {
         color: black;
     }
     .lipanampesa{
-        width: 60%;
+        width: 100%;
         height: 40px;
         padding: 2px 10px;
         font-family: 'Source Code Pro', monospace;
@@ -349,9 +365,9 @@ export default {
         color: #000000;
         background: #228B22;
         border: none;
-        border-radius: 4px;
         transition: all .3s;
         margin-bottom: 20px;
+        border-radius: 20px;
     }
     .lipanampesa:hover{
         background-color: black;

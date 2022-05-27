@@ -30,7 +30,7 @@
                         <div class="navbar-nav mr-auto">
                             <router-link to="/" class="nav-item nav-link">Home</router-link>
                             <router-link to="/products" class="nav-item nav-link">Products</router-link>
-                            <router-link to="product-detail" class="nav-item nav-link">Product Detail</router-link>
+                            <router-link to="product-detail" class="nav-item nav-link" v-if="productDetails.length">Product Detail</router-link>
                             <router-link to="/cart" class="nav-item nav-link">Cart</router-link>
                             <router-link to="/checkout" class="nav-item nav-link" v-if="this.cart.cartItems.length">Checkout</router-link>
                             <router-link to="/my-account" class="nav-item nav-link">My Account</router-link>
@@ -103,6 +103,7 @@
         <router-view
         :getProducts="getProducts"
         :items="items"
+        :productDetails="productDetails"
         :wishlist="wishlist.wishlistItems"
         :cart="cart.cartItems"
         :addToCart="addToCart"
@@ -120,6 +121,7 @@
         :token="token"
         :isAuthenticated="isAuthenticated"
         :getUserDetails="getUserDetails"
+        :getProductDetails="getProductDetails"
         :userDetails="userDetails"
         />
 
@@ -237,7 +239,7 @@ export default {
             shippingCost: 200,
             token: '',
             isAuthenticated: false,
-            // userDetails:[]
+            productDetails : []
         }
     },
     beforeMount() {
@@ -328,10 +330,14 @@ export default {
         
     },
     methods:{
-        getProducts(){
+        getProducts(){                  
             this.axios.get('/api/v1/latest-products/')
             .then((response)=>{
                 this.items = response.data;
+                for(let i = 0; i<this.items.length; i++){
+                    this.prodID = this.items[i].id
+                }
+                return this.prodID
             })
             .catch((error)=>{
                 console.log(error)
@@ -370,12 +376,23 @@ export default {
         getUserDetails(){
             this.$store.dispatch('getUserDetails')
             .then((response)=>{
-                console.log(response)
+
             })
             .catch((error)=>{
                 console.error(error)
             })
-        },       
+        },  
+        getProductDetails(productID){
+            this.axios.get(`/api/v1/latest-products/${productID}/`)
+            .then((response)=>{
+                this.productDetails = response.data;
+                this.$router.push("/product-detail");
+                this.scrollToTop()
+            })
+            .catch((error)=>{
+                console.log(error)
+            })
+        },     
         scrollToTop(){
             window.scrollTo({top:0,behavior:"smooth"})
         }

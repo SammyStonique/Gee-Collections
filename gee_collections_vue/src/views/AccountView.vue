@@ -405,6 +405,7 @@ export default {
             this.axios.get(`/api/v1/my-orders/${orderID}/`)
             .then((response)=>{
                 this.myOrderDetails = response.data
+                console.log(this.myOrderDetails)
             })
             .catch((error)=>{
                 console.log(error)
