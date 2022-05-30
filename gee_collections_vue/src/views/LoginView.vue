@@ -16,11 +16,11 @@
                     <form action="" @submit.prevent="userLogin">
                         <div class="col-md-6">
                             <label>Email</label>
-                            <input class="form-control" type="email" placeholder="Enter your email" v-model="email">
+                            <input class="form-control" type="email" placeholder="Enter your email" v-model="email" required>
                         </div>
                         <div class="col-md-6">
                             <label>Password</label>
-                            <input class="form-control" type="password" placeholder="Password" v-model="password">
+                            <input class="form-control" type="password" placeholder="Password" v-model="password" required>
                         </div>
                         <div class="col-md-12 notification is-danger" v-if="errors.length">
                             <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>

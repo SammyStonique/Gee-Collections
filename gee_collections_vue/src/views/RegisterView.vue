@@ -22,19 +22,22 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label>E-mail<em>*</em></label>
-                                        <input class="form-control" type="email" placeholder="E-mail" v-model="email">
+                                        <input class="form-control" type="email" placeholder="E-mail" v-model="email" :style="{borderColor: eStyle }" required>
+                                        <span v-if="watcherMsg.email" :style="{color: eStyle }">{{watcherMsg.email}}</span>
                                     </div>
                                     <div class="col-md-6">
                                         <label>Mobile No<em>*</em></label>
-                                        <input class="form-control" type="text" placeholder="Mobile No" v-model="phone_number">
+                                        <input class="form-control" type="text" placeholder="e.g 07XXXXXXXX" v-model="phone_number" :style="{borderColor: nStyle }" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label>Password<em>*</em></label>
-                                        <input class="form-control" type="password" placeholder="Password" v-model="password">
+                                        <input class="form-control" type="password" placeholder="Password" v-model="password" :style="{borderColor: pStyle }" required>
+                                        <span v-if="watcherMsg.password" :style="{color: pStyle }">{{watcherMsg.password}}</span>
                                     </div>
                                     <div class="col-md-6">
                                         <label>Confirm Password<em>*</em></label>
-                                        <input class="form-control" type="password" placeholder="Password" v-model="password2">
+                                        <input class="form-control" type="password" placeholder="Password" v-model="password2" :style="{borderColor: passStyle }" required>
+                                        <span v-if="watcherMsg.password2" :style="{color: passStyle }">{{watcherMsg.password2}}</span>
                                     </div>
                                     <div class="col-md-12 notification is-danger" v-if="errors.length">
                                         <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
@@ -62,10 +65,74 @@ export default {
             password: '',
             password2: '',
             phone_number: '',
-            errors:[]
+            errors:[],
+            watcherMsg:[],
+            eStyle: null,
+            nStyle: null,
+            pStyle: null,
+            passStyle: null
+        }
+    },
+    watch: {
+        email(value){
+        // binding this to the data value in the email input  
+        this.email = value; 
+        this.validateEmail(value);
+        },
+        phone_number(value){
+            this.phone_number = value;
+            this.validatePhoneNumber(value)
+        },
+        password(value){
+            this.password = value;
+            this.validatePassword(value)
+        },
+        password2(value){
+            this.password2 = value;
+            this.validatePasswordConfirmation(value)
         }
     },
     methods:{
+        validateEmail(value){  
+            if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value)){ 
+                this.watcherMsg['email'] = '';
+                this.eStyle = 'green'
+            } else{ 
+                // this.watcherMsg['email'] = 'Invalid Email Address'; 
+                this.eStyle = 'red'
+            }  
+        }, 
+        validatePhoneNumber(value){
+            if ((/^(?:254|\+254|0)?((?:(?:7(?:(?:[01249][0-9])|(?:5[789])|(?:6[89])))|(?:1(?:[1][0-5])))[0-9]{6})$/.test(value))|| (/^(?:254|\+254|0)?((?:(?:7(?:(?:3[0-9])|(?:5[0-6])|(8[5-9])))|(?:1(?:[0][0-2])))[0-9]{6})$/.test(value))){
+                    this.nStyle = 'green';
+                }else{
+                    this.nStyle = 'red';
+            }
+        },
+        validatePassword(value){
+            if (value.length > 0 && value.length < 8){
+                this.watcherMsg['password'] = 'Must be a minimum of 8 characters!'
+                this.pStyle = 'red'
+            }else{
+                if(value.length == 0){
+                   this.watcherMsg['password'] = ''
+                   this.pStyle = ''
+                }
+            else{
+                    this.pStyle = 'green'
+                    this.watcherMsg['password'] = ''
+                }
+            }
+        }, 
+        validatePasswordConfirmation(value){
+            if (value === this.password){
+                this.passStyle = 'green'
+                this.watcherMsg['password2'] = ''
+            }else{
+                this.watcherMsg['password2'] = 'The passwords do not match'
+                this.passStyle = 'red'
+            }
+        },      
         createUser(){
             this.errors = []
             if(this.email === ''&&this.password === ''&&this.password2 === ''&& this.phone_number===''){
