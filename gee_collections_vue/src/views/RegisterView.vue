@@ -22,25 +22,26 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label>E-mail<em>*</em></label>
-                                        <input class="form-control" type="email" placeholder="E-mail" v-model="email" :style="{borderColor: eStyle }" required>
-                                        <span v-if="watcherMsg.email" :style="{color: eStyle }">{{watcherMsg.email}}</span>
+                                        <input class="form-control" type="email" placeholder="E-mail" v-model="email" :style="{borderColor: eStyle,borderWidth: bWidth+'px' }" required>
+                                        <span v-if="watcherMsg.email" :style="{color: eStyle, fontSize:10 + 'px'}">{{watcherMsg.email}}</span>
                                     </div>
                                     <div class="col-md-6">
                                         <label>Mobile No<em>*</em></label>
-                                        <input class="form-control" type="text" placeholder="e.g 07XXXXXXXX" v-model="phone_number" :style="{borderColor: nStyle }" required>
+                                        <input class="form-control" type="text" placeholder="e.g 07XXXXXXXX" v-model="phone_number" :style="{borderColor: nStyle,borderWidth: bWidth+'px' }" required>
+                                        <span v-if="watcherMsg.phone_number" :style="{color: nStyle, fontSize:10 + 'px'}">{{watcherMsg.phone_number}}</span>
                                     </div>
                                     <div class="col-md-6">
                                         <label>Password<em>*</em></label>
-                                        <input class="form-control" type="password" placeholder="Password" v-model="password" :style="{borderColor: pStyle }" required>
-                                        <span v-if="watcherMsg.password" :style="{color: pStyle }">{{watcherMsg.password}}</span>
+                                        <input class="form-control" type="password" placeholder="Password" v-model="password" :style="{borderColor: pStyle,borderWidth: bWidth+'px' }" required>
+                                        <span v-if="watcherMsg.password" :style="{color: pStyle, fontSize:10 + 'px' }">{{watcherMsg.password}}</span>
                                     </div>
                                     <div class="col-md-6">
                                         <label>Confirm Password<em>*</em></label>
-                                        <input class="form-control" type="password" placeholder="Password" v-model="password2" :style="{borderColor: passStyle }" required>
-                                        <span v-if="watcherMsg.password2" :style="{color: passStyle }">{{watcherMsg.password2}}</span>
+                                        <input class="form-control" type="password" placeholder="Password" v-model="password2" :style="{borderColor: passStyle,borderWidth: bWidth+'px' }" required>
+                                        <span v-if="watcherMsg.password2" :style="{color: passStyle , fontSize:10 + 'px' }">{{watcherMsg.password2}}</span>
                                     </div>
                                     <div class="col-md-12 notification is-danger" v-if="errors.length">
-                                        <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
+                                        <p class="capitalize-first" style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
                                     </div>
                                     <div class="col-md-12 btn-submit">
                                         <button class="btn submit-btn">Sign Up</button>
@@ -70,7 +71,8 @@ export default {
             eStyle: null,
             nStyle: null,
             pStyle: null,
-            passStyle: null
+            passStyle: null,
+            bWidth : null,            
         }
     },
     watch: {
@@ -96,23 +98,45 @@ export default {
         validateEmail(value){  
             if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value)){ 
                 this.watcherMsg['email'] = '';
-                this.eStyle = 'green'
-            } else{ 
-                // this.watcherMsg['email'] = 'Invalid Email Address'; 
-                this.eStyle = 'red'
+                this.eStyle = 'green';
+                this.bWidth = 2
+
+            } else{
+                if(value == ''){
+                    this.watcherMsg['email'] = ''; 
+                    this.eStyle = ''
+
+                }
+                else{
+                    this.watcherMsg['email'] = 'Invalid Email Address'; 
+                    this.eStyle = 'red'
+                    this.bWidth = 2
+                }
             }  
         }, 
         validatePhoneNumber(value){
             if ((/^(?:254|\+254|0)?((?:(?:7(?:(?:[01249][0-9])|(?:5[789])|(?:6[89])))|(?:1(?:[1][0-5])))[0-9]{6})$/.test(value))|| (/^(?:254|\+254|0)?((?:(?:7(?:(?:3[0-9])|(?:5[0-6])|(8[5-9])))|(?:1(?:[0][0-2])))[0-9]{6})$/.test(value))){
                     this.nStyle = 'green';
-                }else{
+                    this.watcherMsg['phone_number'] = ''
+                    this.bWidth = 2
+
+            }else{
+                if(value == ''){
+                    this.nStyle = '';
+                    this.watcherMsg['phone_number'] = ''                        
+                }
+                else{
                     this.nStyle = 'red';
+                    this.watcherMsg['phone_number'] = 'Invalid Phone Number'
+                    this.bWidth = 2
+                }
             }
         },
         validatePassword(value){
             if (value.length > 0 && value.length < 8){
                 this.watcherMsg['password'] = 'Must be a minimum of 8 characters!'
                 this.pStyle = 'red'
+                this.bWidth = 2
             }else{
                 if(value.length == 0){
                    this.watcherMsg['password'] = ''
@@ -121,6 +145,7 @@ export default {
             else{
                     this.pStyle = 'green'
                     this.watcherMsg['password'] = ''
+                    this.bWidth = 2
                 }
             }
         }, 
@@ -128,9 +153,11 @@ export default {
             if (value === this.password){
                 this.passStyle = 'green'
                 this.watcherMsg['password2'] = ''
+                this.bWidth = 2
             }else{
                 this.watcherMsg['password2'] = 'The passwords do not match'
                 this.passStyle = 'red'
+                this.bWidth = 2
             }
         },      
         createUser(){
@@ -164,7 +191,7 @@ export default {
 
                 this.axios.post('/api/v1/users/', formData)
                 .then((response)=>{
-                    this.$toast.success('Account created succesfully, verification link sent to your email. Please verify',{
+                    this.$toast.success('Account Created Succesfully',{
                         duration: 10000,
                         dismissible: true
                     })
@@ -173,7 +200,11 @@ export default {
                 .catch((error)=>{
                     if (error.response) {
                         for (const property in error.response.data) {
-                            this.errors.push(`${property}: ${error.response.data[property]}`)
+                            this.errors.push((`${error.response.data[property]}`).toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' '))
+                            this.$toast.error((`${error.response.data[property]}`).toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' '),{
+                                duration: 5000,
+                                dismissible: true
+                            })
                         }
                         console.log(JSON.stringify(error.response.data))
                     } else if (error.message) {

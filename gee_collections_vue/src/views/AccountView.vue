@@ -194,48 +194,52 @@
                                 <form action="" @submit.prevent="postProfileData">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input class="form-control" type="text" placeholder="First Name" v-model="first_name">
+                                            <input class="form-control" type="text" placeholder="First Name" v-model="first_name" :style="{borderColor: fnStyle,borderWidth: bWidth+'px'}">
+                                            <span v-if="watcherMsg.first_name" :style="{color: fnStyle, fontSize:10 + 'px'}">{{watcherMsg.first_name}}</span>
                                         </div>
                                         <div class="col-md-6">
-                                            <input class="form-control" type="text" placeholder="Last Name" v-model="last_name">
+                                            <input class="form-control" type="text" placeholder="Last Name" v-model="last_name" :style="{borderColor: lnStyle,borderWidth: bWidth+'px'}">
+                                            <span v-if="watcherMsg.last_name" :style="{color: lnStyle, fontSize:10 + 'px'}">{{watcherMsg.last_name}}</span>
                                         </div>
                                         <div class="col-md-6">
                                             <input class="form-control" type="email" placeholder="Email" v-model="email" disabled="true">
                                         </div>
                                         <div class="col-md-6">
-                                            <input class="form-control" type="text" placeholder="Mobile" v-model="phone_number">
+                                            <input class="form-control" type="text" placeholder="Mobile" v-model="phone_number" :style="{borderColor: nStyle,borderWidth: bWidth+'px'}">
+                                            <span v-if="watcherMsg.phone_number" :style="{color: nStyle, fontSize:10 + 'px'}">{{watcherMsg.phone_number}}</span>
                                         </div>
                                         <div class="col-md-6">
-                                            <select name="gender" class="form-control" v-model="gender">
+                                            <select name="gender" class="form-control" v-model="gender" :style="{borderColor: gStyle,borderWidth: bWidth+'px'}">
                                                 <option value="" disabled="true">--Select your Gender--</option>
-                                                <option>Male</option>
-                                                <option>Female</option>
-                                                <option>Other</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                                <option value="Other">Other</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
-                                            <input class="form-control" type="date" placeholder="Date of Birth" v-model="birthdate">
+                                            <input class="form-control" type="date" placeholder="Date of Birth" v-model="birthdate" :style="{borderColor: dStyle,borderWidth: bWidth+'px'}">
                                         </div>
                                         <div class="col-md-6">
-                                            <select name="city" class="form-control" v-model="city">
+                                            <select name="city" class="form-control" v-model="city" :style="{borderColor: cStyle,borderWidth: bWidth+'px'}">
                                                 <option value="" disabled="true">--Select your City--</option>
-                                                <option>Nairobi</option>
-                                                <option>Kisumu</option>
-                                                <option>Mombasa</option>
-                                                <option>Nakuru</option>
+                                                <option value="Nairobi">Nairobi</option>
+                                                <option value="Kisumu">Kisumu</option>
+                                                <option value="Mombasa">Mombasa</option>
+                                                <option value="Nakuru">Nakuru</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
-                                            <select name="county" class="form-control" v-model="county">
-                                                <option disabled="true">--Select your County--</option>
-                                                <option>Siaya</option>
-                                                <option>Kisumu</option>
-                                                <option>Nairobi</option>
-                                                <option>Mombasa</option>
+                                            <select name="county" class="form-control" v-model="county" :style="{borderColor: ccStyle,borderWidth: bWidth+'px'}">
+                                                <option value="" disabled="true">--Select your County--</option>
+                                                <option value="Siaya">Siaya</option>
+                                                <option value="Kisumu">Kisumu</option>
+                                                <option value="Nairobi">Nairobi</option>
+                                                <option value="Mombasa">Mombasa</option>
                                             </select>
                                         </div>
                                         <div class="col-md-12">
-                                            <input class="form-control" type="text" placeholder="Address" v-model="address">
+                                            <input class="form-control" type="text" placeholder="Address" v-model="address" :style="{borderColor: aStyle,borderWidth: bWidth+'px'}">
+                                            <span v-if="watcherMsg.address" :style="{color: aStyle, fontSize:10 + 'px'}">{{watcherMsg.address}}</span>
                                         </div>
                                         <div class="col-md-12 notification is-danger" v-if="errors.length">
                                             <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
@@ -305,7 +309,51 @@ export default {
             totalPages: 0,
             start: 1,
             limit: 2,
+            watcherMsg: [],
+            fnStyle : null,
+            lnStyle : null,
+            nStyle : null,
+            gStyle : null,
+            bWidth : null,
+            dStyle: null,
+            cStyle : null,
+            ccStyle : null,
+            aStyle : null
         };
+    },
+    watch:{
+        first_name(value){
+            this.first_name = value;
+            this.validateFirstName(value);
+        },
+        last_name(value){
+            this.last_name = value;
+            this.validateLastName(value);            
+        },
+        phone_number(value){
+            this.phone_number = value;
+            this.validatePhoneNumber(value)
+        },
+        gender(value){
+            this.gender = value;
+            this.validateGender(value)
+        },    
+        birthdate(value){
+            this.birthdate = value;
+            this.validateBirthdate(value)
+        },
+        city(value){
+            this.city = value;
+            this.validateCity(value)
+        },
+        county(value){
+            this.county = value;
+            this.validateCounty(value)
+        },  
+        address(value){
+            this.address = value;
+            this.validateAddress(value)
+        },                          
     },
     computed:{
         orderItemTotal(){
@@ -318,6 +366,118 @@ export default {
         },
     },
     methods: {
+        validateFirstName(value){
+            if(/\d/.test(value)){
+                this.watcherMsg['first_name'] = 'Name should not contain a number'
+                this.fnStyle = 'red'
+                this.bWidth = 2
+            }
+            else{
+                if(value.length >0 && value.length < 3){
+                this.watcherMsg['first_name'] = 'Name is too short'
+                this.fnStyle = 'red'
+                this.bWidth = 2
+                }
+                else{
+                    if(value.length == 0){
+                    this.watcherMsg['first_name'] = ''
+                    this.fnStyle = ''
+                    }
+                    else{
+                        this.watcherMsg['first_name'] = ''
+                        this.fnStyle = 'green'
+                        this.bWidth = 2
+                    }
+                }
+            }    
+        },
+        validateLastName(value){
+            if(/\d/.test(value)){
+                this.watcherMsg['last_name'] = 'Name should not contain a number'
+                this.lnStyle = 'red'
+                this.bWidth = 2
+            }
+            else{
+                if(value.length >0 && value.length < 3){
+                this.watcherMsg['last_name'] = 'Name is too short'
+                this.lnStyle = 'red'
+                this.bWidth = 2
+                }
+                else{
+                    if(value.length == 0){
+                    this.watcherMsg['last_name'] = ''
+                    this.lnStyle = ''
+                    }
+                    else{
+                        this.watcherMsg['last_name'] = ''
+                        this.lnStyle = 'green'
+                        this.bWidth = 2
+                    }
+                }
+            }    
+        },
+        validatePhoneNumber(value){
+            if ((/^(?:254|\+254|0)?((?:(?:7(?:(?:[01249][0-9])|(?:5[789])|(?:6[89])))|(?:1(?:[1][0-5])))[0-9]{6})$/.test(value))|| (/^(?:254|\+254|0)?((?:(?:7(?:(?:3[0-9])|(?:5[0-6])|(8[5-9])))|(?:1(?:[0][0-2])))[0-9]{6})$/.test(value))){
+                    this.nStyle = 'green';
+                    this.watcherMsg['phone_number'] = ''
+                    this.bWidth = 2
+
+            }else{
+                if(value == ''){
+                    this.nStyle = '';
+                    this.watcherMsg['phone_number'] = ''                        
+                }
+                else{
+                    this.nStyle = 'red';
+                    this.watcherMsg['phone_number'] = 'Invalid Phone Number'
+                    this.bWidth = 2
+                }
+            }
+        },
+        validateGender(value){
+            if(value != ''){
+                this.gStyle = 'green';
+                this.bWidth = 2
+            }
+        }, 
+        validateBirthdate(value){
+            if(value != ''){
+                this.bStyle = 'green';
+                this.bWidth = 2
+            }
+        },
+        validateCity(value){
+            if(value != ''){
+                this.cStyle = 'green';
+                this.bWidth = 2
+            }
+        },
+        validateCounty(value){
+            if(value != ''){
+                this.ccStyle = 'green';
+                this.bWidth = 2
+            }
+        },  
+        validateAddress(value){
+            if(value.length == 0){
+                this.aStyle = '';
+                this.watcherMsg['address'] = ''
+            }
+            else{
+                if(value.length > 0 && value.length < 3){
+                    this.watcherMsg['address'] = 'Address is too short'
+                    this.aStyle = 'red';
+                    this.bWidth = 2                    
+                }
+                else{
+                    if(value != '' && value.length > 3){
+                        this.aStyle = 'green';
+                        this.bWidth = 2;
+                        this.watcherMsg['address'] = ''
+                    }
+                }
+            }
+        },             
         onPageChange(page){
             this.currentPage = page
             this.start += this.limit;
@@ -373,6 +533,12 @@ export default {
                         duration: 5000,
                         dismissible: true
                     });
+                    this.fnStyle = ''
+                    this.lnStyle = ''
+                    this.gStyle = ''
+                    this.cStyle = ''
+                    this.ccStyle = ''
+                    this.aStyle = ''
                     this.$router.push("/my-account");
                 })
                     .catch((error) => {

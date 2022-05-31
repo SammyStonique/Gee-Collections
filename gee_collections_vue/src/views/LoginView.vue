@@ -52,13 +52,13 @@ export default {
             errors: [],
         }
     },
-    methods:{
+    methods:{        
         userLogin(){
             this.errors = [];
             if(this.email === '' && this.password === ''){
                 this.errors.push('Please fill in the details')
                 this.$toast.error('Invalid email and password', {
-                    duration: 3000
+                    duration: 5000
                 })
             }else{
                 if(this.email ===''){
