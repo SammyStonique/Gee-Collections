@@ -34,6 +34,7 @@
                                 assisting us grow us a brand. We could not make it this far without you, always feel free to leave a suggestion so that we can 
                                 provide you with quality services. Thank you.
                                 </p> 
+                                <canvas id="myChart" style="width:100%;max-width:700px;height:300px"></canvas>
                             </div>
                             <div class="tab-pane fade" id="orders-tab" role="tabpanel" aria-labelledby="orders-nav">
                                 <div class="table-responsive">
@@ -278,6 +279,7 @@
 <script>
 import Modal from "@/components/Modal.vue"
 import Pagination from "@/components/Pagination.vue"
+
 
 export default {
     props: ["getUserDetails", "userDetails"],

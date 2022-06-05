@@ -29,7 +29,7 @@ class OrderSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.email')
     class Meta:
         model = Order
-        fields = ['id','user','first_name','last_name','email','phone_number','county','city','address','items','created_at','order_total','paid']
+        fields = ['id','user','first_name','last_name','email','phone_number','county','city','address','items','created_at','order_total','paid','payment_reference']
 
     def create(self, validated_data):
         items_data = validated_data.pop('items')
@@ -39,3 +39,8 @@ class OrderSerializer(serializers.ModelSerializer):
             OrderItem.objects.create(order=order, **item_data)
             
         return order
+
+class MpesaPaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MpesaPayment
+        fields=['transaction_id','phone_number','amount','transaction_time']

@@ -85,9 +85,9 @@ export default {
                         this.$toast.success('Login Succesful',{
                             duration: 5000
                         })
-                        // this.$store.commit('reloadingPage')
                         this.$router.push('/')
                         this.$store.commit('reloadingPage')
+                        // this.$store.commit('reloadingPage')
                         // this.$router.push('/')
                     })    
                     .catch((error)=>{
@@ -103,6 +103,11 @@ export default {
                             this.errors.push('Something went wrong. Please try again')
                             console.log(JSON.stringify(error))
                         }
+                    })
+                    .finally(()=>{
+                        this.$router.push('/')
+                        // this.$store.commit('reloadingPage')
+                        
                     })
             }
             

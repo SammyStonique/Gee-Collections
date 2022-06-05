@@ -153,7 +153,35 @@
                                                 <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
                                             </div>
                                             <button type="button" class="procPayBtn" @click="payViaMpesa">Proceed to Pay</button>
+                                            <p v-if="paymentConfirm">An mpesa prompt has been sent to the number entered above,enter your mpesa PIN then proceed to payment confirmation</p>
+                                            <button type="button" class="procPayBtn" @click="getMpesaPayments" v-if="paymentConfirm">Confirm Payment</button>
                                         </div>
+
+                                         <!-- MODAL component for confirming payment -->
+                                         <Modal
+                                        v-show="isModalVisible"
+                                        @close="closeModal"
+                                        >
+                                        <template v-slot:header>
+                                            M-Pesa Payment Confirmation
+                                        </template>
+
+                                        <template v-slot:body>
+                                        <div>
+                                        <p>Please confirm the details of your payments to succesfully place your order</p>
+                                        <label for="">Phone Number:</label>
+                                        <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX">
+                                        <label for="">Reference Number:</label>
+                                        <input type="text" class="form-control" placeholder="e.g QRYU0U***P1" v-model="mpesaRef">
+                                        <button type="button" class="procPayBtn" @click="confirmPayment">Confirm Payment</button>                                        
+                                        </div>
+                                        </template>
+
+                                        <template v-slot:footer>
+                                            Thank you for doing business with us.
+                                        </template>
+
+                                        </Modal>
                                         <div id="paypal-button-container"></div>
                                         <div class="checkout-btn" >
                                             <button>Place Order</button>
@@ -170,9 +198,13 @@
 </template>
 
 <script>
+import Modal from "@/components/Modal.vue"
 export default {
     props:['cartGrandTotal','cartItemTotal','cartSubTotal','shippingCost','cartTotalUSD'],
     el:'#selector',
+    components:{
+        Modal
+    },
     data(){
         return{
             cart:{
@@ -189,10 +221,16 @@ export default {
             gender: '',
             errors:[],
             lipaNaMpesa: false,
+            paymentConfirm: false,
             checked: false,
             errors:[],
             payment_number: '',
-            transaction_id:''
+            transaction_id:'',
+            isModalVisible: false,
+            mpesaRefs: [],
+            mpesaRef : '',
+            is_paid : false,
+            payment_ref: ''
         }
     },
     methods:{
@@ -213,6 +251,15 @@ export default {
 
             })
         },
+        registerCallbackUrl(){
+            this.axios.get('/api/v1/c2b/register')
+            .then((response)=>{
+                console.log(response.data)
+            })
+            .catch((error)=>{
+                console.log(error)
+            })
+        },
         payViaMpesa(){
             this.errors = []
             if(this.payment_number === ''){
@@ -222,28 +269,48 @@ export default {
                 })
             }
             if(!this.errors.length){
-                let headers = new Headers();
-                headers.append("Content-Type", "application/json");
-                headers.append("Authorization", "Bearer rzNoq74BaMUOaGGOwPpeUt3BKMlT");
-                const formData = {
-                    "BusinessShortCode": 174379,
-                    "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwNDIxMTcxODIy",
-                    "Timestamp": "20220421171822",
-                    "TransactionType": "CustomerPayBillOnline",
-                    "Amount": 1,
-                    "PartyA": this.payment_number,
-                    "PartyB": 174379,
-                    "PhoneNumber": this.payment_number,
-                    "CallBackURL": "https://478f-197-248-34-79.ngrok.io/api/v1/c2b/callback",
-                    "AccountReference": "Gee Collections",
-                    "TransactionDesc": "Payment of X"
-                }
-                this.axios.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',headers,formData)
+                this.axios.post('/api/v1/online/lipa/')
                 .then((response)=>{
                     console.log(response.data)
+                    this.paymentConfirm = true;
                 })
                 .catch((error)=>{
                     console.log(error)
+                })
+                .finally(()=>{
+                    
+                })
+            }
+        },
+        getMpesaPayments(){
+            this.mpesaRefs = []
+            this.axios.get('api/v1/mpesa-payments/')
+            .then((response)=>{
+                // console.log(response.data[0].transaction_id)
+                for(let i=0 ; i<response.data.length ; i++){
+                    let trans_id = response.data[i].transaction_id
+                    this.mpesaRefs.push(trans_id)
+                    
+                }
+                console.log(this.mpesaRefs)
+                this.isModalVisible = true;
+            })
+            .catch((error)=>{
+                console.log(error)
+            })
+        },
+        confirmPayment(){
+            if(this.mpesaRefs.includes(this.mpesaRef)){
+               this.is_paid = true;
+               this.payment_ref = this.mpesaRef;
+               this.$toast.success('Payment Confirmation Succesful', {
+                    duration: 3000
+                }) 
+                this.placeOrder();
+            }
+            else{
+                this.$toast.error('Invalid Reference Number', {
+                    duration: 3000
                 })
             }
         },
@@ -269,6 +336,8 @@ export default {
                 email: this.email,
                 items: items,
                 order_total: this.cartSubTotal,
+                payment_reference: this.payment_ref,
+                paid : this.is_paid
             }
             console.log(formData)
             this.axios.post('/api/v1/checkout/', formData)
@@ -291,6 +360,9 @@ export default {
             this.checked = !this.checked
             console.log(this.checked)
         },
+        closeModal() {
+            this.isModalVisible = false;
+        },        
         mountPaypalButton(){
 
         }
@@ -300,6 +372,7 @@ export default {
         this.cart = this.$store.state.cart;
     },
     mounted(){
+        this.registerCallbackUrl()
         paypal.Buttons({
             //Styling the paypal button
             style: {

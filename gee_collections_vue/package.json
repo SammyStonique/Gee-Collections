@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "axios": "^0.26.1",
+    "chart.js": "^3.8.0",
     "core-js": "^3.8.3",
     "jquery": "^3.6.0",
     "jw-vue-pagination": "^1.0.3",
@@ -16,6 +17,7 @@
     "swiper": "^7.4.1",
     "vue": "^3.2.13",
     "vue-axios": "^3.4.1",
+    "vue-chartjs": "^4.1.1",
     "vue-router": "^4.0.3",
     "vue-toast-notification": "^3.0.0",
     "vuex": "^4.0.2"

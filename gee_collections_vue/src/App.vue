@@ -239,11 +239,12 @@ export default {
             shippingCost: 200,
             token: '',
             isAuthenticated: false,
-            productDetails : []
+            productDetails : [],
         }
     },
     beforeMount() {
         this.$store.commit('initializeStore');
+        this.$store.commit('reloadingPage');
         
         const token = this.$store.state.token
         if (token) {
@@ -257,6 +258,7 @@ export default {
     },
     mounted(){
         this.getUserDetails()
+        console.log('login Auth is:',this.isAuthenticated)
     },
     computed: {
         totalQuantity() {
