@@ -13,7 +13,7 @@
 
         <footer class="modal-footer">
           <slot name="footer">This is the default footer!</slot>
-          <button type="button" class="btn-green" @click="close" aria-label="Close modal">Close Modal</button>
+          <button type="button" class="btn-green" @click="close" aria-label="Close modal">Close</button>
         </footer>
       </div>
     </div>

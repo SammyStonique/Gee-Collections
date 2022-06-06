@@ -34,7 +34,7 @@
                                 assisting us grow us a brand. We could not make it this far without you, always feel free to leave a suggestion so that we can 
                                 provide you with quality services. Thank you.
                                 </p> 
-                                <canvas id="myChart" style="width:100%;max-width:700px;height:300px"></canvas>
+                                <DoughnutChart/>
                             </div>
                             <div class="tab-pane fade" id="orders-tab" role="tabpanel" aria-labelledby="orders-nav">
                                 <div class="table-responsive">
@@ -50,7 +50,7 @@
                                         </thead>
                                         <tbody>
                                             <tr v-for="order,index in myOrders" :key="index">
-                                                <td>{{order.id}}</td>
+                                                <td>{{order.id.substring(0,7)}}</td>
                                                 <td>{{order.created_at.substring(0,10)}}</td>
                                                 <td>ksh {{Number(order.order_total).toLocaleString()}}</td>
                                                 <td v-if="order.paid">Paid</td>
@@ -114,7 +114,7 @@
                             </template>
 
                             <template v-slot:footer>
-                                This is a new modal footer.
+                                Thank you for doing business with us.
                             </template>
                             </Modal>
 
@@ -279,14 +279,16 @@
 <script>
 import Modal from "@/components/Modal.vue"
 import Pagination from "@/components/Pagination.vue"
+import DoughnutChart from "@/components/DoughnutChart.vue"
 
 
 export default {
     props: ["getUserDetails", "userDetails"],
     components:{
-        Modal,
-        Pagination,
-    },
+    Modal,
+    Pagination,
+    DoughnutChart,
+},
     data() {
         return {
             id: "",
@@ -484,7 +486,7 @@ export default {
             this.currentPage = page
             this.start += this.limit;
 
-            this.axios.get(`api/v1/my-orders-pagination/`)
+            this.axios.get(`api/v1/my-orders/`)
                 .then((response)=>{
                     this.myOrders = response.data;
                     console.log(this.myOrders)
@@ -494,10 +496,11 @@ export default {
                 })
         },
         showClientOrders() {
-            this.axios.get("api/v1/my-orders-pagination/")
+            this.axios.get("api/v1/my-orders/")
                 .then((response) => {
-                this.myOrders = response.data;
-                this.totalItems = response.data.length;
+                this.myOrders = response.data.data;
+                console.log(this.myOrders);
+                this.totalItems = response.data.data.length;
                 
                 const pages = ~~(this.totalItems / this.itemsPerPage);
                 this.totalPages = pages;
@@ -690,6 +693,7 @@ export default {
     }
     .paypal-icon{
         height: 100px;
+        width: 100%;
         margin-bottom: 20px;
     }
     .mpesa-icon{

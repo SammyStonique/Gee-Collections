@@ -158,6 +158,7 @@
                                             :key="item.id"
                                             :index="index"
                                             :addToCart="addToCart"
+                                            :getProductDetails="getProductDetails"
                                             />
                                     
                                         </div>

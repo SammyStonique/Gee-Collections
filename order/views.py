@@ -1,7 +1,7 @@
 import os
 import re
 from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics,status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
@@ -16,6 +16,7 @@ from .mpesa_credentials import MpesaAccessToken, LipanaMpesaPpassword
 from django.views.decorators.csrf import csrf_exempt
 import smtplib
 from django.core.mail import send_mail
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 #AFRICASTALKING
 import africastalking
@@ -54,9 +55,28 @@ def checkout(request):
 
 class OrdersList(APIView):
     def get(self, request, format=None):
+        data = []
+        nextPage = 1
+        previousPage = 1
         orders = Order.objects.filter(user=request.user)
-        serializer = MyOrderSerializer(orders, many=True)
-        return Response(serializer.data)
+        page = request.GET.get('page', 1)
+        paginator = Paginator(orders, 5)
+        try:
+            data = paginator.page(page)
+        except PageNotAnInteger:
+            data = paginator.page(1)
+        except EmptyPage:
+            data = paginator.page(paginator.num_pages)
+
+        serializer = MyOrderSerializer(data,context={'request': request} ,many=True)
+        if data.has_next():
+            nextPage = data.next_page_number()
+        if data.has_previous():
+            previousPage = data.previous_page_number()
+        return Response({'data': serializer.data , 'count': paginator.count, 'numpages' : paginator.num_pages, 'nextlink': '/api/v1/my-orders/?page=' + str(nextPage), 'prevlink': '/api/v1/my-orders/?page=' + str(previousPage)})
+        # orders = Order.objects.filter(user=request.user)
+        # serializer = MyOrderSerializer(orders, many=True)
+        # return Response(serializer.data)
 
 class OrdersPagination(APIView):
     def get(self,request, format=None):
@@ -95,7 +115,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": 254717423651,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": 254717423651,  # replace with your phone number to get stk push
-        "CallBackURL": "https://3928-105-163-0-175.ngrok.io/api/v1/c2b/callback",
+        "CallBackURL": "https://2412-197-248-34-79.ngrok.io/api/v1/c2b/callback",
         "AccountReference": "SammyB",
         "TransactionDesc": "Testing stk push"
     }
@@ -110,8 +130,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Business_short_code,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://3928-105-163-0-175.ngrok.io/api/v1/c2b/confirmation",
-               "ValidationURL": "https://3928-105-163-0-175.ngrok.io/api/v1/c2b/validation"}
+               "ConfirmationURL": "https://2412-197-248-34-79.ngrok.io/api/v1/c2b/confirmation",
+               "ValidationURL": "https://2412-197-248-34-79.ngrok.io/api/v1/c2b/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     return HttpResponse(response.text)
 
@@ -164,8 +184,8 @@ def confirmation(request):
         shortcode=mpesa_payment['BusinessShortCode'],
         third_party_transaction_id=mpesa_payment['ThirdPartyTransID'],
         first_name=mpesa_payment['FirstName'],
-        middle_name=mpesa_payment['MiddleName'],
-        last_name=mpesa_payment['LastName'],
+        # middle_name=mpesa_payment['MiddleName'],
+        # last_name=mpesa_payment['LastName'],
     )
     payment.save()
     context = {

@@ -145,11 +145,11 @@
                             <h2>Follow Us</h2>
                             <div class="contact-info">
                                 <div class="social">
-                                    <a href="http://www.twitter.com" target="blank" ><i class="fab fa-twitter"></i></a>
-                                    <a href="http://www.facebook.com" target="blank"><i class="fab fa-facebook-f"></i></a>
-                                    <a href="http://www.linkedin.com" target="blank"><i class="fab fa-linkedin-in"></i></a>
-                                    <a href="http://www.instagram.com" target="blank"><i class="fab fa-instagram"></i></a>
-                                    <a href="http://www.youtube.com" target="blank"><i class="fab fa-youtube"></i></a>
+                                    <a href="http://www.twitter.com" title="Twitter" target="blank" ><i class="fab fa-twitter"></i></a>
+                                    <a href="http://www.facebook.com/grace.adhiambo.1" title="Facebook" target="blank"><i class="fab fa-facebook-f"></i></a>
+                                    <a href="http://www.linkedin.com" title="LinkedIn" target="blank"><i class="fab fa-linkedin-in"></i></a>
+                                    <a href="http://www.instagram.com" title="Instagram" target="blank"><i class="fab fa-instagram"></i></a>
+                                    <a href="http://www.youtube.com" title="YouTube" target="blank"><i class="fab fa-youtube"></i></a>
                                 </div>
                             </div>
                         </div>
