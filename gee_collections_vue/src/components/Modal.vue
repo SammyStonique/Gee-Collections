@@ -58,7 +58,7 @@ export default {
     max-width: 60%;
     height: fit-content;
     /* max-height: 100vh; */
-    margin: 100px;
+    margin: 60px;
     margin-left: 300px;
   }
 
@@ -85,6 +85,8 @@ export default {
     position: relative;
     padding: 20px 10px;
     color:black;
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
   }
 
   .btn-close {

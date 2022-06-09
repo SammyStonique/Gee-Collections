@@ -87,8 +87,6 @@ export default {
                         })
                         this.$router.push('/')
                         this.$store.commit('reloadingPage')
-                        // this.$store.commit('reloadingPage')
-                        // this.$router.push('/')
                     })    
                     .catch((error)=>{
                         if (error.response) {
@@ -105,8 +103,6 @@ export default {
                         }
                     })
                     .finally(()=>{
-                        this.$router.push('/')
-                        // this.$store.commit('reloadingPage')
                         
                     })
             }

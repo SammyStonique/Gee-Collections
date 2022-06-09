@@ -148,7 +148,8 @@
                                         <div v-if="lipaNaMpesa">
                                             <p>To proceed to Lipa Na Mpesa, please enter the phone number you would like to make the payment with.</p>
                                             <label for="">Phone Number:</label>
-                                            <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX" v-model="payment_number">
+                                            <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX" v-model="payment_number" :style="{borderColor: p2Style,borderWidth: bWidth+'px'}">
+                                            <span v-if="watcherMsg.payment_number" :style="{color: p2Style, fontSize:10 + 'px'}">{{watcherMsg.payment_number}}</span>
                                             <div class="col-md-12 notification is-danger" v-if="errors.length">
                                                 <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
                                             </div>
@@ -170,9 +171,11 @@
                                         <div>
                                         <p>Please confirm the details of your payments to succesfully place your order</p>
                                         <label for="">Phone Number:</label>
-                                        <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX">
+                                        <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX" :style="{borderColor: pStyle,borderWidth: bWidth+'px'}">
+                                        <span v-if="watcherMsg.payment_number2" :style="{color: pStyle, fontSize:10 + 'px'}">{{watcherMsg.payment_number2}}</span>
                                         <label for="">Reference Number:</label>
-                                        <input type="text" class="form-control" placeholder="e.g QRYU0U***P1" v-model="mpesaRef">
+                                        <input type="text" class="form-control" placeholder="e.g QRYU0U***P1" v-model="mpesaRef" :style="{borderColor: rfStyle,borderWidth: bWidth+'px'}">
+                                        <span v-if="watcherMsg.mpesaRef" :style="{color: rfStyle, fontSize:10 + 'px'}">{{watcherMsg.mpesaRef}}</span>
                                         <button type="button" class="procPayBtn" @click="confirmPayment">Confirm Payment</button>                                        
                                         </div>
                                         </template>
@@ -230,10 +233,80 @@ export default {
             mpesaRefs: [],
             mpesaRef : '',
             is_paid : false,
-            payment_ref: ''
+            payment_ref: '',
+            watcherMsg: [],
+            rfStyle : null,
+            bWidth : null,
+            payment_number2: '',
+            pStyle: null,
+            p2Style: null
         }
     },
+    watch:{
+        mpesaRef(value){
+            this.mpesaRef = value;
+            this.validatePaymentRef(value);
+        },
+        payment_number2(value){
+            this.payment_number2 = value;
+            this.validatePhoneNumber(value)
+        },   
+        payment_number(value){
+            this.payment_number = value;
+            this.validatePhoneNumber2(value)
+        },      
+    },
     methods:{
+        validatePaymentRef(value){
+            if(value.length == ''){
+                this.watcherMsg['mpesaRef'] = '';
+                this.rfStyle = '';
+                this.bWidth = 1;
+            }
+            else{
+                if(value.length > 0 && value.length < 10){
+                    this.rfStyle = 'red';
+                    this.watcherMsg['mpesaRef'] = 'Incomplete Reference Number';
+                    this.bWidth = 2;
+                }
+                else{
+                    if(/^[A-Z0-9]$/.test(value) && value.length > 9){
+                        this.rfStyle = 'green';
+                        this.watcherMsg['mpesaRef'] = '';
+                        this.bWidth = 2;
+                    }
+                }
+            }
+        },
+        validatePhoneNumber2(value){
+            if(value == ''){
+                this.p2Style = '';
+                this.watcherMsg['payment_number'] = ''                        
+            }
+            else{
+                if ((/^(?:254)?((?:(?:7(?:(?:[01249][0-9])|(?:5[789])|(?:6[89])))|(?:1(?:[1][0-5])))[0-9]{6})$/.test(value))|| (/^(?:254|\+254|0)?((?:(?:7(?:(?:3[0-9])|(?:5[0-6])|(8[5-9])))|(?:1(?:[0][0-2])))[0-9]{6})$/.test(value))){
+                    this.p2Style = 'green';
+                    this.watcherMsg['payment_number'] = ''
+                    this.bWidth = 2
+                }
+                else{
+                    this.p2Style = 'red';
+                    this.watcherMsg['payment_number'] = 'Invalid Phone Number'
+                    this.bWidth = 2
+                }
+            }
+        },
+        validatePhoneNumber(value){
+            if(value == this.payment_number){
+                this.pStyle = 'green';
+                this.watcherMsg['payment_number2'] = ''                        
+            }
+            else{
+                this.pStyle = 'red';
+                this.watcherMsg['payment_number2'] = 'Invalid Phone Number'
+            }
+            
+        },
         getProfileDetails(){
             this.axios.get('/api/v1/users/me/')
             .then((response)=>{
@@ -286,7 +359,6 @@ export default {
             this.mpesaRefs = []
             this.axios.get('api/v1/mpesa-payments/')
             .then((response)=>{
-                // console.log(response.data[0].transaction_id)
                 for(let i=0 ; i<response.data.length ; i++){
                     let trans_id = response.data[i].transaction_id
                     this.mpesaRefs.push(trans_id)
@@ -342,7 +414,6 @@ export default {
             console.log(formData)
             this.axios.post('/api/v1/checkout/', formData)
             .then((response)=>{
-                console.log(response.data)
                 this.$store.commit('clearCart')
                 this.$toast.success('Order succesfully placed')
                 this.$router.push('/')

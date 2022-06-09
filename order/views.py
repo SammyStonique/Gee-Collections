@@ -115,7 +115,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": 254717423651,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": 254717423651,  # replace with your phone number to get stk push
-        "CallBackURL": "https://2412-197-248-34-79.ngrok.io/api/v1/c2b/callback",
+        "CallBackURL": "https://deb8-197-248-34-79.ngrok.io/api/v1/c2b/callback",
         "AccountReference": "SammyB",
         "TransactionDesc": "Testing stk push"
     }
@@ -130,8 +130,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Business_short_code,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://2412-197-248-34-79.ngrok.io/api/v1/c2b/confirmation",
-               "ValidationURL": "https://2412-197-248-34-79.ngrok.io/api/v1/c2b/validation"}
+               "ConfirmationURL": "https://deb8-197-248-34-79.ngrok.io/api/v1/c2b/confirmation",
+               "ValidationURL": "https://deb8-197-248-34-79.ngrok.io/api/v1/c2b/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     return HttpResponse(response.text)
 
@@ -141,12 +141,9 @@ def call_back(request):
     mpesa_body =request.body.decode('utf-8')
     mpesa_payment = json.loads(mpesa_body)
     print('this is the body:',mpesa_body)
-    # try:
-    #     mpesa_payment = json.loads(request.body).decode('utf-8')
-    #     resultcode = mpesa_payment['Body']['stkCallback']['ResultCode']
     amount = mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][0].get('Value')
+    phone_number=mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][4].get('Value')
     print('The amount is:',amount)
-    # print('The reference number is:',resultcode)
     payment= MpesaPayment(
         transaction_time=mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][3].get('Value'),
         amount=mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][0].get('Value'),
@@ -154,9 +151,8 @@ def call_back(request):
         transaction_id=mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][1].get('Value'),
     )
     payment.save()
+    sms.send(f'Confirmed,we have received your payment of {amount}. Thank you for doing business with us.',[f'+{phone_number}'],callback=call_back)
     return JsonResponse(mpesa_body,safe=False)
-    # except ValueError as v:
-    #     print('ERROR!!')
 
 @csrf_exempt
 def validation(request):

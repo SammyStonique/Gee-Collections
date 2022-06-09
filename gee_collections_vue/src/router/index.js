@@ -59,7 +59,10 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: LoginView
+    component: LoginView,
+    meta:{
+      alreadyAuthenticated : true,
+    }
   },
   {
     path: '/logout',
@@ -97,6 +100,13 @@ router.beforeEach((to, from, next) => {
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.emptyCart) && !store.state.cart.cartItems.length) {
     next({ name: 'cart', query: { to: to.path } });
+  } else {
+    next()
+  }
+})
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.alreadyAuthenticated) && store.state.isAuthenticated) {
+    next({ name: 'home', query: { to: to.path } });
   } else {
     next()
   }

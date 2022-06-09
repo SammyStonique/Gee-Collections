@@ -11,7 +11,7 @@ export const doughnutChartData = {
           borderWidth: 3
         },
         {
-          label: "Amounts Purchased",
+          label: "Amounts Purchased(x10)",
           data: [450,0,630,500,580,810,970,880],
           backgroundColor: "rgba(71, 183,132,.5)",
           borderColor: "#47b784",

@@ -41,20 +41,25 @@
                                     <table class="table table-bordered">
                                         <thead class="thead-dark">
                                             <tr>
-                                                <th>#</th>
+                                                <th>No</th>
+                                                <th>#ID</th>
                                                 <th>Date</th>
                                                 <th>Order Total</th>
                                                 <th>Status</th>
+                                                <th>Payment Ref</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="order,index in myOrders" :key="index">
+                                                <td>{{index + 1}}</td>
                                                 <td>{{order.id.substring(0,7)}}</td>
                                                 <td>{{order.created_at.substring(0,10)}}</td>
                                                 <td>ksh {{Number(order.order_total).toLocaleString()}}</td>
-                                                <td v-if="order.paid">Paid</td>
-                                                <td v-else>Not Paid</td>
+                                                <td v-if="order.paid" style="color:green;">Paid</td>
+                                                <td v-else style="color:red;">Not Paid</td>
+                                                <td v-if="order.paid">{{order.payment_reference}}</td>
+                                                <td v-else>N/A</td>
                                                 <td v-if="order.paid"><button class="btn" @click="showModal(order.id)">View Order</button></td>
                                                 <td v-else><button class="btn" @click="showPaymentModal(order.id)">Make Payment</button></td>
                                             </tr>
@@ -86,6 +91,7 @@
                             </template>
 
                             <template v-slot:body>
+                            <div class="myorders-page">
                                 <div class="table-responsive">
                                     <table class="table table-bordered">
                                         <thead class="thead-dark">
@@ -100,7 +106,7 @@
                                             <tr v-for="ordDet,index in myOrderDetails.items" :key="index">
                                                 <td>
                                                     <div class="img">
-                                                        <!-- <a href="#"><img :src="`${ordDet.product.image}`" alt="Image"></a> -->
+                                                        <a href="#"><img :src="`${ordDet.product.image}`" alt="Image"></a>                                                     
                                                         <p>{{ordDet.product.name}}</p>
                                                     </div>
                                                 </td>
@@ -111,6 +117,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
                             </template>
 
                             <template v-slot:footer>
@@ -133,14 +140,44 @@
                                     <div v-if="lipaNaMpesa">
                                     <p>To proceed to Lipa Na Mpesa, please enter the phone number you would like to make the payment with.</p>
                                     <label for="">Phone Number:</label>
-                                    <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX">
-                                    <!-- <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX" v-model="payment_number"> -->
+                                    <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX" v-model="payment_number" :style="{borderColor: pStyle,borderWidth: bWidth+'px'}">
+                                    <span v-if="watcherMsg.payment_number" :style="{color: pStyle, fontSize:10 + 'px'}">{{watcherMsg.payment_number}}</span>
                                     <div class="col-md-12 notification is-danger" v-if="errors.length">
                                         <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
                                     </div>
                                     <button type="button" class="procPayBtn" @click="payViaMpesa">Proceed to Pay</button>
+                                    <p v-if="paymentConfirm">An mpesa prompt has been sent to the number entered above,enter your mpesa PIN then proceed to payment confirmation</p>
+                                    <button type="button" class="procPayBtn" @click="getMpesaPayments" v-if="paymentConfirm">Confirm Payment</button>
                                     </div>
                                 </div>
+                                <!-- MODAL component for confirming payment -->
+                                <Modal
+                                v-show="isPayModalVisible"
+                                @close="closeModal"
+                                >
+                                <template v-slot:header>
+                                    M-Pesa Payment Confirmation
+                                </template>
+
+                                <template v-slot:body>
+                                <div>
+                                <p>Please confirm the details of your payments to succesfully place your order</p>
+                                <label for="">Phone Number:</label>
+                                <input type="text" class="form-control" placeholder="e.g 2547XXXXXXXX" v-model="payment_number2" :style="{borderColor: p2Style,borderWidth: bWidth+'px'}">
+                                <span v-if="watcherMsg.payment_number2" :style="{color: p2Style, fontSize:10 + 'px'}">{{watcherMsg.payment_number2}}</span>
+                                <label for="">Reference Number:</label>
+                                <input type="text" class="form-control" placeholder="e.g QRYU0U***P1" v-model="mpesaRef" :style="{borderColor: rfStyle,borderWidth: bWidth+'px'}">
+                                <span v-if="watcherMsg.mpesaRef" :style="{color: rfStyle, fontSize:10 + 'px'}">{{watcherMsg.mpesaRef}}</span>
+                                <button type="button" class="procPayBtn" @click="confirmPayment">Confirm Payment</button>                                        
+                                </div>
+                                </template>
+
+                                <template v-slot:footer>
+                                    Thank you for doing business with us.
+                                </template>
+
+                                </Modal>
+                                <div id="paypal-button-container"></div>
                             </template>
 
                             <template v-slot:footer>
@@ -305,6 +342,7 @@ export default {
             myOrders: [],
             myOrderDetails:[],
             isModalVisible: false,
+            isPayModalVisible: false,
             paymentModalVisible: false,
             lipaNaMpesa: false,
             currentPage: 1,
@@ -322,7 +360,16 @@ export default {
             dStyle: null,
             cStyle : null,
             ccStyle : null,
-            aStyle : null
+            aStyle : null,
+            pStyle: null,
+            p2Style: null,
+            rfStyle : null,
+            payment_number: '',
+            payment_number2: '',
+            mpesaRefs : [],
+            mpesaRef : '',
+            paymentConfirm : false,
+            myOrderID: '',
         };
     },
     watch:{
@@ -357,7 +404,19 @@ export default {
         address(value){
             this.address = value;
             this.validateAddress(value)
-        },                          
+        },  
+        payment_number(value){
+            this.payment_number = value;
+            this.validatePaymentNumber(value)
+        },
+         payment_number2(value){
+            this.payment_number2 = value;
+            this.confirmPaymentNumber(value)
+        },
+        mpesaRef(value){
+            this.mpesaRef = value;
+            this.validatePaymentRef(value)
+        }                       
     },
     computed:{
         orderItemTotal(){
@@ -371,10 +430,10 @@ export default {
     },
     methods: {
         validateFirstName(value){
-            if(/\d/.test(value)){
-                this.watcherMsg['first_name'] = 'Name should not contain a number'
-                this.fnStyle = 'red'
-                this.bWidth = 2
+            if(value.length == 0){
+                this.watcherMsg['first_name'] = ''
+                this.fnStyle = ''
+                this.bWidth = 1
             }
             else{
                 if(value.length >0 && value.length < 3){
@@ -383,10 +442,11 @@ export default {
                 this.bWidth = 2
                 }
                 else{
-                    if(value.length == 0){
-                    this.watcherMsg['first_name'] = ''
-                    this.fnStyle = ''
-                    }
+                    if(/\d/.test(value)){
+                        this.watcherMsg['first_name'] = 'Name should not contain a number'
+                        this.fnStyle = 'red'
+                        this.bWidth = 2
+                    }               
                     else{
                         this.watcherMsg['first_name'] = ''
                         this.fnStyle = 'green'
@@ -396,10 +456,10 @@ export default {
             }    
         },
         validateLastName(value){
-            if(/\d/.test(value)){
-                this.watcherMsg['last_name'] = 'Name should not contain a number'
-                this.lnStyle = 'red'
-                this.bWidth = 2
+            if(value.length == 0){
+                this.watcherMsg['last_name'] = ''
+                this.lnStyle = ''
+                this.bWidth = 1
             }
             else{
                 if(value.length >0 && value.length < 3){
@@ -408,10 +468,11 @@ export default {
                 this.bWidth = 2
                 }
                 else{
-                    if(value.length == 0){
-                    this.watcherMsg['last_name'] = ''
-                    this.lnStyle = ''
-                    }
+                    if(/\d/.test(value)){
+                        this.watcherMsg['last_name'] = 'Name should not contain a number'
+                        this.lnStyle = 'red'
+                        this.bWidth = 2
+                    }                  
                     else{
                         this.watcherMsg['last_name'] = ''
                         this.lnStyle = 'green'
@@ -421,15 +482,15 @@ export default {
             }    
         },
         validatePhoneNumber(value){
-            if ((/^(?:254|\+254|0)?((?:(?:7(?:(?:[01249][0-9])|(?:5[789])|(?:6[89])))|(?:1(?:[1][0-5])))[0-9]{6})$/.test(value))|| (/^(?:254|\+254|0)?((?:(?:7(?:(?:3[0-9])|(?:5[0-6])|(8[5-9])))|(?:1(?:[0][0-2])))[0-9]{6})$/.test(value))){
+            if(value == ''){
+                this.nStyle = '';
+                this.watcherMsg['phone_number'] = ''                        
+            }
+            else{
+                if ((/^(?:254|\+254|0)?((?:(?:7(?:(?:[01249][0-9])|(?:5[789])|(?:6[89])))|(?:1(?:[1][0-5])))[0-9]{6})$/.test(value))|| (/^(?:254|\+254|0)?((?:(?:7(?:(?:3[0-9])|(?:5[0-6])|(8[5-9])))|(?:1(?:[0][0-2])))[0-9]{6})$/.test(value))){
                     this.nStyle = 'green';
                     this.watcherMsg['phone_number'] = ''
                     this.bWidth = 2
-
-            }else{
-                if(value == ''){
-                    this.nStyle = '';
-                    this.watcherMsg['phone_number'] = ''                        
                 }
                 else{
                     this.nStyle = 'red';
@@ -481,7 +542,65 @@ export default {
                     }
                 }
             }
-        },             
+        },  
+        validatePaymentNumber(value){
+            if(value == ''){
+                    this.watcherMsg['payment_number'] = '';
+                    this.pStyle = '';
+                    this.bWidth = 1
+            }
+            else{
+                if(/^(?:254)?((?:(?:7(?:(?:[01249][0-9])|(?:5[789])|(?:6[89])))|(?:1(?:[1][0-5])))[0-9]{6})$/.test(value)){
+                    this.watcherMsg['payment_number'] = '';
+                    this.pStyle = 'green';
+                    this.bWidth = 2
+                }else{
+                    this.watcherMsg['payment_number'] = 'Invalid Phone Number';
+                    this.pStyle = 'red';
+                    this.bWidth = 2
+                    }
+            }
+        }, 
+        confirmPaymentNumber(value){
+            if(value == ''){
+                this.watcherMsg['payment_number2'] = ''
+                this.p2Style = ''
+                this.bWidth = 1
+            }
+            else{
+                if(value == this.payment_number){
+                    this.watcherMsg['payment_number2'] = ''
+                    this.p2Style = 'green'
+                    this.bWidth = 2
+                }
+                else{
+                    this.watcherMsg['payment_number2'] = 'Invalid Phone Number'
+                    this.p2Style = 'red'
+                    this.bWidth = 2
+                }
+            }
+        },
+        validatePaymentRef(value){
+            if(value.length == 0){
+                this.watcherMsg['mpesaRef'] = '';
+                this.rfStyle = '';
+                this.bWidth = 1;
+            }
+            else{
+                if(value.length > 0 && value.length < 10){
+                    this.rfStyle = 'red';
+                    this.watcherMsg['mpesaRef'] = 'Incomplete Reference Number';
+                    this.bWidth = 2;
+                }
+                else{
+                    if(/^[A-Z0-9]$/.test(value)){
+                        this.rfStyle = 'green';
+                        this.watcherMsg['mpesaRef'] = '';
+                        this.bWidth = 2;
+                    }
+                }
+            }
+        },         
         onPageChange(page){
             this.currentPage = page
             this.start += this.limit;
@@ -489,7 +608,6 @@ export default {
             this.axios.get(`api/v1/my-orders/`)
                 .then((response)=>{
                     this.myOrders = response.data;
-                    console.log(this.myOrders)
                 })
                 .catch((error)=>{
                     console.log(error)
@@ -499,7 +617,6 @@ export default {
             this.axios.get("api/v1/my-orders/")
                 .then((response) => {
                 this.myOrders = response.data.data;
-                console.log(this.myOrders);
                 this.totalItems = response.data.data.length;
                 
                 const pages = ~~(this.totalItems / this.itemsPerPage);
@@ -533,7 +650,6 @@ export default {
                 };
                 this.axios.put("/api/v1/user-list/" + this.id + "/", formData)
                     .then((response) => {
-                    console.log(response.data)
                     this.$toast.success("Profile Succesfully Updated", {
                         duration: 5000,
                         dismissible: true
@@ -569,6 +685,50 @@ export default {
                     console.log(error)
             });
         },
+        getMpesaPayments(){
+            this.mpesaRefs = []
+            this.axios.get('api/v1/mpesa-payments/')
+            .then((response)=>{
+                for(let i=0 ; i<response.data.length ; i++){
+                    let trans_id = response.data[i].transaction_id
+                    this.mpesaRefs.push(trans_id)
+                    
+                }
+                console.log(this.mpesaRefs)
+                this.isPayModalVisible = true;
+            })
+            .catch((error)=>{
+                console.log(error)
+            })
+        },
+        confirmPayment(){
+            if(this.mpesaRefs.includes(this.mpesaRef)){
+
+                let formData = {
+                    paid : true,
+                    payment_reference : this.mpesaRef,
+                }
+               this.axios.patch(`/api/v1/my-orders/${this.myOrderID}/`,formData)
+               .then((response)=>{
+                    this.$toast.success('Payment Confirmation Succesful', {
+                        duration: 3000
+                    }) 
+                    this.mpesaRef = ''
+                    this.payment_number2 = ''
+                    this.$router.push('/my-account')
+                    this.$store.commit('reloadingPage')
+               })
+               .catch((error)=>{
+                   console.log(error)
+               })
+
+            }
+            else{
+                this.$toast.error('Invalid Reference Number', {
+                    duration: 3000
+                })
+            }
+        },
         showModal() {
             this.isModalVisible = true;
 
@@ -583,7 +743,16 @@ export default {
             })
         },
         showPaymentModal(){
-            this.paymentModalVisible = true
+            this.paymentModalVisible = true;
+            let orderID = arguments[0];
+            this.axios.get(`/api/v1/my-orders/${orderID}/`)
+            .then((response)=>{
+                this.myOrderID = orderID;
+                console.log(this.myOrderID)
+            })
+            .catch((error)=>{
+                console.log(error)
+            })
         },
         closeModal() {
             this.isModalVisible = false;
@@ -593,33 +762,74 @@ export default {
             this.lipaNaMpesa = !this.lipaNaMpesa
         },
         payViaMpesa(){
-            const formData = {
-                    "BusinessShortCode": 174379,
-                    "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwNDIxMTcxODIy",
-                    "Timestamp": "20220421171822",
-                    "TransactionType": "CustomerPayBillOnline",
-                    "Amount": 1,
-                    "PartyA": 254795968217,
-                    "PartyB": 174379,
-                    "PhoneNumber": 254795968217,
-                    "CallBackURL": "https://478f-197-248-34-79.ngrok.io/api/v1/c2b/callback",
-                    "AccountReference": "Gee Collections",
-                    "TransactionDesc": "Payment of X"
-                }
-                this.axios.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',formData)
+            this.paymentConfirm = true;
+            this.errors = []
+            if(this.payment_number === ''){
+                this.errors.push('Please enter phone number');
+                this.$toast.error('Invalid phone number', {
+                    duration: 3000
+                })
+            }
+            if(!this.errors.length && this.pStyle == 'green'){
+                this.axios.post('/api/v1/online/lipa/')
                 .then((response)=>{
                     console.log(response.data)
+                    this.paymentConfirm = true;
                 })
                 .catch((error)=>{
                     console.log(error)
                 })
-        }
+                .finally(()=>{
+                    
+                })
+            }
+        },
     },
     beforeMount() {
     },
     mounted() {
         this.getProfileDetails();
         this.showClientOrders();
+        paypal.Buttons({
+            //Styling the paypal button
+            style: {
+                color: 'blue',
+                shape: 'pill',
+                label: 'pay',
+                height: 40
+            },
+            // Sets up the transaction when a payment button is clicked
+            createOrder: (data, actions) => {
+            return actions.order.create({
+                purchase_units: [{
+                amount: {
+                    // value: this.cartTotalUSD // Can also reference a variable or function
+                    value: 0.01
+                }
+                }]
+            });
+            },
+            // Finalize the transaction after payer approval
+            onApprove: (data, actions) => {   
+                const my_action = actions.order.capture().then(function(orderData) {
+                    // Successful capture! For dev/demo purposes:
+                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                    this.transaction_id = orderData.purchase_units[0].payments.captures[0].id
+                    console.log('the transaction_id is:', this.transaction_id)
+                    
+                    const transaction = orderData.purchase_units[0].payments.captures[0];
+                    alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+                    
+                    
+                    // this.placeOrder();
+                    // When ready to go live, remove the alert and show a success message within this page. For example:
+                    // const element = document.getElementById('paypal-button-container');
+                    // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+                    // Or go to another URL:  actions.redirect('thank_you.html');
+                });
+                return my_action;
+            }
+        }).render('#paypal-button-container');
     },
     
 }
@@ -645,7 +855,7 @@ export default {
         font-style: normal;
     }
     .lipanampesa{
-        width: 60%;
+        width: 95%;
         height: 40px;
         padding: 2px 10px;
         font-family: 'Source Code Pro', monospace;
@@ -655,9 +865,9 @@ export default {
         color: #000000;
         background: #228B22;
         border: none;
-        border-radius: 4px;
         transition: all .3s;
         margin-bottom: 20px;
+        border-radius: 20px;
     }
     .lipanampesa:hover{
         background-color: black;
@@ -707,5 +917,21 @@ export default {
     }
     .btn-payment-option{
         margin-top: 30px;
+    }
+    .myorders-page .table .img {
+    display: flex;
+    align-items: center;
+    }
+
+    .myorders-page .table .img img {
+        max-width: 60px;
+        max-height: 60px;
+        margin-right: 15px;
+    }
+
+    .myorders-page .table .img p {
+        display: inline-block;
+        text-align: left;
+        margin: 0;
     }
 </style>
