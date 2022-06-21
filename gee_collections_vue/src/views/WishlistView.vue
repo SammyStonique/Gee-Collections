@@ -65,8 +65,8 @@
                                             <h2>Grand Total<span>{{Number(wishlistGrandTotal).toLocaleString()}}</span></h2>
                                         </div>
                                         <div class="cart-btn">
-                                            <button><router-link to="/products">Update Wishlist</router-link></button>                      
-                                            <button v-if="wishlist.length"><router-link to="/checkout" class="checkout">Checkout</router-link></button>
+                                            <!-- <button><router-link to="/products">Update Wishlist</router-link></button>                       -->
+                                            <button v-if="wishlist.length"><router-link to="/checkout" class="checkout">Proceed To Checkout</router-link></button>
                                         </div>
                                     </div>
                                 </div>
@@ -140,9 +140,18 @@ export default {
         font-style: normal;
     }
     .checkout{
-        color: white;
+        color:#FF6F61;
+        font-size: 20px;
+        font-weight: bold;
+        font-family: 'Source Code Pro', monospace;
     }
     .checkout:hover{
-        color: #FF6F61;
+        color: black;
+    }
+    .cart-btn:hover{
+        color:black !important;
+    }
+    .cart-btn{
+        width: 600px;
     }
 </style>

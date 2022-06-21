@@ -48,7 +48,6 @@
                                 <div class="dropdown-menu">
                                     <router-link to="/login" class="dropdown-item">Login</router-link>
                                     <router-link to="/register" class="dropdown-item">Register</router-link>
-                                    <!-- <router-link to="/logout" class="dropdown-item">Log Out</router-link> -->
                                 </div>
                             </div>
                         </div>
@@ -80,7 +79,10 @@
                     </div>
                     <div class="col-md-6">
                         <div class="search">
-                            <input type="text" placeholder="Search">
+                            <!-- <input type="text" placeholder="Search"> -->
+                            <SearchAutoComplete
+                                :items="items"
+                            />
                             <button><i class="fa fa-search"></i></button>
                         </div>
                     </div>
@@ -107,6 +109,7 @@
         :wishlist="wishlist.wishlistItems"
         :cart="cart.cartItems"
         :addToCart="addToCart"
+        :buyNow="buyNow"
         :addToWishlist="addToWishlist"
         :totalQuantity="totalQuantity"
         :totalWishlistQuantity="totalWishlistQuantity"
@@ -123,6 +126,7 @@
         :getUserDetails="getUserDetails"
         :getProductDetails="getProductDetails"
         :userDetails="userDetails"
+        :scrollToTop="scrollToTop"
         />
 
         <!-- Footer Start -->
@@ -222,9 +226,11 @@
 <script>
 import axios from 'axios'
 import ProductCard from './components/ProductCard.vue'
+import SearchAutoComplete from './components/SearchAutoComplete.vue'
 export default {
     components:{
-        ProductCard
+        ProductCard,
+        SearchAutoComplete
     },
     data(){
         return{
@@ -240,11 +246,14 @@ export default {
             token: '',
             isAuthenticated: false,
             productDetails : [],
+
         }
     },
     beforeMount() {
         this.$store.commit('initializeStore');
         this.$store.commit('reloadingPage');
+        // this.$store.commit('removeFromCart');
+        // this.$store.commit('removeFromWishlist');
         
         const token = this.$store.state.token
         if (token) {
@@ -258,7 +267,6 @@ export default {
     },
     mounted(){
         this.getUserDetails()
-        console.log('login Auth is:',this.isAuthenticated)
     },
     computed: {
         totalQuantity() {
@@ -360,6 +368,20 @@ export default {
             this.$toast.success(`${this.items[selectedItem].name} added to cart`);
             
         },
+        buyNow(){
+            let selectedItem = arguments[0];
+            if(isNaN(this.quantity) || this.quantity<1){
+                this.quantity = 1;
+            }
+            
+            const cartItem={
+                items : this.items[selectedItem],
+                quantity : this.quantity
+            }
+            this.$store.commit('addToCart',cartItem);
+            this.$router.push('/checkout')
+            this.scrollToTop()
+        },
         addToWishlist(){
             //Getting the index of the items in the wishlist
             let selectedItem = arguments[0];
@@ -388,6 +410,7 @@ export default {
             this.axios.get(`/api/v1/latest-products/${productID}/`)
             .then((response)=>{
                 this.productDetails = response.data;
+                console.log('product details are',this.productDetails)
                 this.$router.push("/product-detail");
                 this.scrollToTop()
             })

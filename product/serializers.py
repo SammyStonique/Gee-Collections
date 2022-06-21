@@ -14,6 +14,7 @@ class ProductSerializer(serializers.ModelSerializer):
     category = jsonpickle.encode(serializers.ChoiceField(choices=categories))   
     class Meta:
         model = Product
+        lookup_field = 'name'
         fields = ['id','name','slug','description','category','price','image','thumbnail',
             'date_added','get_absolute_url']
         

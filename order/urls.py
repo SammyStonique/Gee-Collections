@@ -7,7 +7,7 @@ urlpatterns = [
     path('checkout/', views.checkout),
     path('mpesa-payments/',views.MpesaDetails.as_view()),
     path('my-orders/', views.OrdersList.as_view()),
-    path('my-orders-pagination/', views.OrdersPagination.as_view()),
+    # path('my-orders-pagination/', views.OrdersPagination.as_view()),
     path('my-orders/<str:pk>/', views.OrderDetails.as_view()),
     path('access/token/',views.getAccessToken),
     path('online/lipa/', views.lipa_na_mpesa_online, name='lipa_na_mpesa'),
@@ -16,4 +16,5 @@ urlpatterns = [
     path('c2b/confirmation', views.confirmation, name="confirmation"),
     path('c2b/validation', views.validation, name="validation"),
     path('c2b/callback', views.call_back, name="call_back"),
+    path('view_pdf/<str:order_id>/',views.ViewPDF.as_view()),
 ]

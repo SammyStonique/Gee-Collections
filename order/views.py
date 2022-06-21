@@ -1,6 +1,6 @@
 import os
 import re
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from rest_framework import generics,status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,9 +14,17 @@ from requests.auth import HTTPBasicAuth
 import json
 from .mpesa_credentials import MpesaAccessToken, LipanaMpesaPpassword
 from django.views.decorators.csrf import csrf_exempt
+##Send Email
 import smtplib
-from django.core.mail import send_mail
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.mail import send_mail 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger ##pagination
+
+# PDF REQUIREMENTS
+from io import BytesIO
+from django.contrib.auth.decorators import login_required
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.views import View
 
 #AFRICASTALKING
 import africastalking
@@ -55,31 +63,6 @@ def checkout(request):
 
 class OrdersList(APIView):
     def get(self, request, format=None):
-        data = []
-        nextPage = 1
-        previousPage = 1
-        orders = Order.objects.filter(user=request.user)
-        page = request.GET.get('page', 1)
-        paginator = Paginator(orders, 5)
-        try:
-            data = paginator.page(page)
-        except PageNotAnInteger:
-            data = paginator.page(1)
-        except EmptyPage:
-            data = paginator.page(paginator.num_pages)
-
-        serializer = MyOrderSerializer(data,context={'request': request} ,many=True)
-        if data.has_next():
-            nextPage = data.next_page_number()
-        if data.has_previous():
-            previousPage = data.previous_page_number()
-        return Response({'data': serializer.data , 'count': paginator.count, 'numpages' : paginator.num_pages, 'nextlink': '/api/v1/my-orders/?page=' + str(nextPage), 'prevlink': '/api/v1/my-orders/?page=' + str(previousPage)})
-        # orders = Order.objects.filter(user=request.user)
-        # serializer = MyOrderSerializer(orders, many=True)
-        # return Response(serializer.data)
-
-class OrdersPagination(APIView):
-    def get(self,request, format=None):
         orders = Order.objects.filter(user=request.user)
         serializer = MyOrderSerializer(orders, many=True)
         return Response(serializer.data)
@@ -115,7 +98,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": 254717423651,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": 254717423651,  # replace with your phone number to get stk push
-        "CallBackURL": "https://deb8-197-248-34-79.ngrok.io/api/v1/c2b/callback",
+        "CallBackURL": "https://5bf3-197-248-34-79.ngrok.io/api/v1/c2b/callback",
         "AccountReference": "SammyB",
         "TransactionDesc": "Testing stk push"
     }
@@ -130,8 +113,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Business_short_code,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://deb8-197-248-34-79.ngrok.io/api/v1/c2b/confirmation",
-               "ValidationURL": "https://deb8-197-248-34-79.ngrok.io/api/v1/c2b/validation"}
+               "ConfirmationURL": "https://5bf3-197-248-34-79.ngrok.io/api/v1/c2b/confirmation",
+               "ValidationURL": "https://5bf3-197-248-34-79.ngrok.io/api/v1/c2b/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     return HttpResponse(response.text)
 
@@ -151,7 +134,7 @@ def call_back(request):
         transaction_id=mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][1].get('Value'),
     )
     payment.save()
-    sms.send(f'Confirmed,we have received your payment of {amount}. Thank you for doing business with us.',[f'+{phone_number}'],callback=call_back)
+    # sms.send(f'Confirmed,we have received your payment of {amount}. Thank you for doing business with us.',[f'+{phone_number}'],callback=call_back)
     return JsonResponse(mpesa_body,safe=False)
 
 @csrf_exempt
@@ -189,3 +172,39 @@ def confirmation(request):
         "ResultDesc": "Accepted"
     }
     return JsonResponse(dict(context))
+
+#PDF Generator
+def render_to_pdf(template_src, context_dict={}):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    
+    return None
+
+
+
+@login_required
+def admin_order_pdf(request, order_id):
+    if request.user.is_superuser:
+        order = get_object_or_404(Order, id=order_id)
+        pdf = render_to_pdf('order/order_pdf.html', {'order': order})
+
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            content = "attachment; filename=%s.pdf" % order_id
+            response['Content-Disposition'] = content
+
+            return response
+
+    return HttpResponse("Not found")
+
+class ViewPDF(View):
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, pk=order_id)
+        pdf = render_to_pdf('order/order_pdf.html', {'order': order})
+
+        return HttpResponse(pdf, content_type='application/pdf')

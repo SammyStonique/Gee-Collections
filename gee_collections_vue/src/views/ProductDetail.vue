@@ -36,14 +36,14 @@
                                         </div>
                                         <div class="price">
                                             <h4>Price:</h4>
-                                            <p>{{productDetails.price}} <span>{{productOriginalPrice.toFixed(2)}}</span></p>
+                                            <p>ksh. {{Number(productDetails.price).toLocaleString()}} <span>ksh. {{(Number(productOriginalPrice).toLocaleString())}}</span></p>
                                         </div>
                                         <div class="quantity">
                                             <h4>Quantity:</h4>
                                             <div class="qty">
-                                                <button class="btn-minus"><i class="fa fa-minus"></i></button>
-                                                <input type="text" value="1">
-                                                <button class="btn-plus"><i class="fa fa-plus"></i></button>
+                                                <button class="btn-minus" @click="decrementQuantity()"><i class="fa fa-minus"></i></button>
+                                                <input type="text" v-model="quantity">
+                                                <button class="btn-plus" @click="incrementQuantity()"><i class="fa fa-plus"></i></button>
                                             </div>
                                         </div>
                                         <div class="p-size">
@@ -64,7 +64,7 @@
                                             </div> 
                                         </div>
                                         <div class="action">
-                                            <a class="btn" href="#"><i class="fa fa-shopping-cart" @click="addToCart(index)"></i>Add to Cart</a>
+                                            <a class="btn" href="#"><i class="fa fa-shopping-cart" @click="proaddToCart()"></i>Add to Cart</a>
                                             <a class="btn" href="#"><i class="fa fa-shopping-bag"></i>Buy Now</a>
                                         </div>
                                     </div>
@@ -159,6 +159,7 @@
                                             :index="index"
                                             :addToCart="addToCart"
                                             :getProductDetails="getProductDetails"
+                                            :buyNow="buyNow"
                                             />
                                     
                                         </div>
@@ -204,6 +205,7 @@
                                         :addToCart="addToCart"
                                         :addToWishlist="addToWishlist"
                                         :getProductDetails="getProductDetails"
+                                        :buyNow="buyNow"
                                         />
                                     </div>
                                 </div>
@@ -252,19 +254,44 @@ import {Swiper, Autoplay} from 'swiper'
 import 'swiper/scss'
 
 export default {
-    props:['items','index','getProducts','addToCart','getProductDetails','addToWishlist','productDetails'],
+    props:['items','index','getProducts','addToCart','getProductDetails','addToWishlist','productDetails','buyNow'],
     components:{
         ProductCard,
         Swiper,
     },
+    data(){
+        return{
+            quantity: 1,
+        }
+    },
     computed:{
         productOriginalPrice(){
-            return (this.productDetails.price - 200)
+            return this.productDetails.price -(-200);
         }
+
+    },
+    methods:{
+        incrementQuantity(){
+            this.quantity += 1;
+        },
+        decrementQuantity(){
+            if(isNaN(this.quantity) || this.quantity<1){
+                this.quantity = 1;
+            }
+            else{
+                if(this.quantity > 1){
+                    this.quantity -= 1;
+                }
+            }
+        },
+    },
+    beforeMount(){
 
     },
     mounted(){
         this.getProducts();
+        this.quantity = 1;
+ 
         Swiper.use(Autoplay);
         //Swiper for additional products
         const swiper = new Swiper('.swiper',{

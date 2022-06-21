@@ -1,185 +1,130 @@
 <template>
-    <div class="section"> 
-        <div class="pull-right">
-            <div class="pagination">
-                <ul>
-                    <!-- <li>
-                        <a
-                            class="btn"
-                            @click.prevent="onClickFirstPage" 
-                            :disabled="isInFirstPage"
-                        >
-                        First
-                        </a>
-                    </li> -->
-                    <li>
-                        <a
-                            class="btn"
-                            @click="onClickPreviousPage" 
-                            :disabled="isInFirstPage"
-                        >
-                        Prev
-                        </a>
-                    </li>
-
-                    <!-- visible as start -->
-                    <li v-for="page in pages" :key="page.name">
-                        <a
-                            class="btn"
-                            @click="onClickPage(page.name)"
-                            :disabled="page.isDisabled"
-                        >
-                        {{page.name}}
-                        </a>
-                    </li>
-                    <!-- visible as end -->
-
-                    <li>
-                        <a
-                            class="btn"
-                            @click="onClickNextPage" 
-                            :disabled="isInLastPage"
-                        >
-                        Next
-                        </a>
-                    </li>
-                    <!-- <li>
-                        <a
-                            class="btn"
-                            @click="onClickLastPage" 
-                            :disabled="isInLastPage"
-                        >
-                        Last
-                        </a>
-                    </li> -->
-                </ul>
-            </div>
-        </div>                
+    <div class="row container">
+        <div class="col-md-8">
+            <ul v-if="pager.pages && pager.pages.length" class="pagination" :style="ulStyles">
+                <li class="page-item first" :class="{'disabled': pager.currentPage === 1}" :style="liStyles">
+                    <a class="page-link" @click="setPage(1)" :style="aStyles">{{labels.first}}</a>
+                </li>
+                <li class="page-item previous" :class="{'disabled': pager.currentPage === 1}" :style="liStyles">
+                    <a class="page-link" @click="setPage(pager.currentPage - 1)" :style="aStyles">{{labels.previous}}</a>
+                </li>
+                <li v-for="page in pager.pages" :key="page" class="page-item page-number" :class="{'active': pager.currentPage === page}" :style="liStyles">
+                    <a class="page-link" @click="setPage(page)" :style="aStyles">{{page}}</a>
+                </li>
+                <li class="page-item next" :class="{'disabled': pager.currentPage === pager.totalPages}" :style="liStyles">
+                    <a class="page-link" @click="setPage(pager.currentPage + 1)" :style="aStyles">{{labels.next}}</a>
+                </li>
+                <li class="page-item last" :class="{'disabled': pager.currentPage === pager.totalPages}" :style="liStyles">
+                    <a class="page-link" @click="setPage(pager.totalPages)" :style="aStyles">{{labels.last}}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-4" v-if="pager.pages.length">
+            <p style="font-size: 12px;">Showing page {{pager.currentPage}} of {{pager.pages.length}}</p>
+        </div>
     </div>
 </template>
 
 <script>
-export default {
-    props: {
-        maxVisibleButtons: {
-            type: Number,
-            required: false,
-            default: 5
+    import paginate from 'jw-paginate';
+    const defaultLabels = {
+        first: 'First',
+        last: 'Last',
+        previous: 'Previous',
+        next: 'Next'
+    };
+    const defaultStyles = {
+        ul: {
+            margin: 0,
+            padding: 0,
+            display: 'inline-block'
         },
-        totalPages: {
-            type: Number,
-            required: true,
+        li: {
+            listStyle: 'none',
+            display: 'inline',
+            textAlign: 'center'
         },
-        totalItems: {
-            type: Number,
-            required: true
-        },
-        perPage: {
-            type: Number,
-            required: true,
-        },
-        currentPage: {
-            type: Number,
-            required: true
+        a: {
+            cursor: 'pointer',
+            padding: '6px 12px',
+            display: 'block',
+            float: 'left'
         }
-    },
-
-    data() 
-    {
-        return {
-            
+    };
+    export default {
+        props: {
+            items: {
+                type: Array,
+                required: true
+            },
+            initialPage: {
+                type: Number,
+                default: 1
+            },
+            pageSize: {
+                type: Number,
+                default: 10
+            },
+            maxPages: {
+                type: Number,
+                default: 10
+            },
+            labels: {
+                type: Object,
+                default: () => defaultLabels
+            },
+            styles: {
+                type: Object
+            },
+            disableDefaultStyles: {
+                type: Boolean,
+                default: false
+            }
+        },
+        data () {
+            return {
+                pager: {},
+                ulStyles: {},
+                liStyles: {},
+                aStyles: {}
+            }
+        },
+        created () {
+            // if (!this.$listeners.changePage) {
+            //     throw 'Missing required event listener: "changePage"';
+            // }
+            // set default styles unless disabled
+            if (!this.disableDefaultStyles) {
+                this.ulStyles = defaultStyles.ul;
+                this.liStyles = defaultStyles.li;
+                this.aStyles = defaultStyles.a;
+            }
+            // merge custom styles with default styles
+            if (this.styles) {
+                this.ulStyles = { ...this.ulStyles, ...this.styles.ul };
+                this.liStyles = { ...this.liStyles, ...this.styles.li };
+                this.aStyles = { ...this.aStyles, ...this.styles.a };
+            }
+            // set to initial page
+            this.setPage(this.initialPage);
+        },
+        methods: {
+            setPage(page) {
+                const { items, pageSize, maxPages } = this;
+                // get new pager object for specified page
+                const pager = paginate(items.length, page, pageSize, maxPages);
+                // get new page of items from items array
+                const pageOfItems = items.slice(pager.startIndex, pager.endIndex + 1);
+                // update pager
+                this.pager = pager;
+                // emit change page event to parent component
+                this.$emit('changePage', pageOfItems);
+            }
+        },
+        watch: {
+            items () {
+                this.setPage(this.initialPage);
+            }
         }
-    },
-
-    computed: {
-        startPage() 
-        {
-            if(this.currentPage === 1) // while on first page
-            {
-                return 1;
-            }
-            
-            if(this.currentPage === this.totalPages) // while on last page
-            {
-                return this.totalPages - this.maxVisibleButtons + 1;
-                // const start = this.totalPages - (this.maxVisibleButtons - 1);
-
-                // if(start === 0) 
-                // {
-                //     return 1;
-                // }
-                // else 
-                // {
-                //     return start;
-                // }
-            }
-
-            return this.currentPage - 1; // while in between fisrt and last
-        },
-
-        endPage() 
-        {
-            return Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages);
-        },
-
-        pages() 
-        {
-            const pageRange = [];
-            // Math.min(this.startPage + this.maxVisiblePages - 1, this.totalPages) / this.endPage;
-
-            for(let i = this.startPage; i <= Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages); i++)
-            {
-                pageRange.push({
-                    name: i,
-                    isDisabled: i === this.currentPage
-                });
-            }
-
-            return pageRange;
-        },
-
-        // for event listeners
-        isInFirstPage() 
-        {
-            return this.currentPage === 1;
-        },
-        isInLastPage() 
-        {
-            return this.currentPage === this.totalPages;
-        }
-    },
-
-    methods: {
-        onClickFirstPage() 
-        {
-            this.$emit('page-changed', 1);
-        },
-        onClickPreviousPage() 
-        {
-            this.$emit('page-changed', this.currentPage - 1);
-        },
-        onClickPage(page) 
-        {
-            this.$emit('page-changed', page);
-        },
-        onClickNextPage() 
-        {
-            this.$emit('page-changed', this.currentPage + 1);
-        },
-        onClickLastPage() 
-        {
-            this.$emit('page-changed', this.totalPages);
-        },
-    },
-    mounted() 
-    {
-        // console.log(`on pages ::: pages are ::: ${this.totalPages}`)
-    },
-
-    updated() 
-    {
-        
     }
-
-}
 </script>

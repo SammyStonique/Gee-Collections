@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
 from .models import *
@@ -8,11 +8,12 @@ from djoser.views import UserViewSet
 
 class LatestProduct(generics.ListCreateAPIView):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    serializer_class = ProductSerializer 
 
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    lookup_field = 'name'
 
 class ProductCategory(generics.ListCreateAPIView):
     queryset = Category.objects.all()

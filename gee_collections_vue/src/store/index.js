@@ -13,11 +13,15 @@ export default createStore({
     isAuthenticated: false,
     loggedInUser: [],
     reloaded: false,
+    productSearch: ''
   },
   getters: {
 
   },
   mutations: {
+    searchItem(state){
+      localStorage.setItem('productSearch',state.productSearch)
+    },
     reloadingPage(state){
       if (localStorage.getItem('reloaded')) {
         // The page was just reloaded. Clear the value from local storage

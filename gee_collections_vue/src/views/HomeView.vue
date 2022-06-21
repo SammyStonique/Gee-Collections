@@ -220,6 +220,7 @@
                             :addToCart="addToCart"
                             :getProductDetails="getProductDetails"
                             :addToWishlist="addToWishlist"
+                            :buyNow="buyNow"
                             />
                         </div>
                     </div>    
@@ -263,6 +264,7 @@
                                 :addToCart="addToCart"
                                 :getProductDetails="getProductDetails"
                                 :addToWishlist="addToWishlist"
+                                :buyNow="buyNow"
                                 />
                             </div>
                         </div>
@@ -351,7 +353,7 @@ export default {
         ProductCard,
         Swiper
     },
-    props:['items','getProducts','addToCart','addToWishlist','getProductDetails'],
+    props:['items','getProducts','addToCart','addToWishlist','getProductDetails','buyNow'],
     mounted(){
         this.getProducts();
         Swiper.use(Autoplay, Pagination);
@@ -363,7 +365,19 @@ export default {
             autoplay:{
                 delay:2000,
                 disableOnInteraction:false,
-                pauseOnMouseEnter:true
+                pauseOnMouseEnter:true,
+                el:'.swiper-slide',
+            },
+            on: {
+                init() {
+                this.el.addEventListener('mouseenter', () => {
+                    this.autoplay.stop();
+                });
+
+                this.el.addEventListener('mouseleave', () => {
+                    this.autoplay.start();
+                });
+                }
             },
         })
         swiper.autoplay.start();
@@ -379,7 +393,19 @@ export default {
                 speed: 200,
                 delay: 800,
                 disableOnInteraction:false,
-                pauseOnMouseEnter:true
+                pauseOnMouseEnter:true,
+                el:'.swiper-slide',
+            on: {
+                init() {
+                this.el.addEventListener('mouseenter', () => {
+                    this.autoplay.stop();
+                });
+
+                this.el.addEventListener('mouseleave', () => {
+                    this.autoplay.start();
+                });
+                }
+            },
             },
         })
         swiper1.autoplay.start();
@@ -394,11 +420,22 @@ export default {
             autoplay:{
                 delay: 3000,
                 disableOnInteraction:false,
-                pauseOnMouseEnter:true
+                pauseOnMouseEnter:true,
+                el:'.swiper-slide',
+            },
+            on: {
+                init() {
+                this.el.addEventListener('mouseenter', () => {
+                    this.autoplay.stop();
+                });
+
+                this.el.addEventListener('mouseleave', () => {
+                    this.autoplay.start();
+                });
+                }
             },
         })
         swiper2.autoplay.start();
-        // swiper2.setTransition(this,0.3)
 
         const swiper3 = new Swiper('.swiper-recent',{
             direction:'horizontal',
@@ -411,11 +448,22 @@ export default {
             autoplay:{
                 delay: 2000,
                 disableOnInteraction:false,
-                pauseOnMouseEnter:true
+                pauseOnMouseEnter:true,
+                el:'.swiper-slide',
             },
+            on: {
+                init() {
+                this.el.addEventListener('mouseenter', () => {
+                    this.autoplay.stop();
+                });
+
+                this.el.addEventListener('mouseleave', () => {
+                    this.autoplay.start();
+                });
+                }
+            },           
         })
         swiper3.autoplay.start();
-        // swiper3.setTransition(this,0.3)
 
         const swiper4 = new Swiper('.review-slider',{
             direction:'horizontal',
@@ -427,7 +475,19 @@ export default {
             autoplay:{
                 delay:2000,
                 disableOnInteraction:false,
-                pauseOnMouseEnter:true
+                pauseOnMouseEnter:true,
+                el:'.swiper-slide',
+            },
+            on: {
+                init() {
+                this.el.addEventListener('mouseenter', () => {
+                    this.autoplay.stop();
+                });
+
+                this.el.addEventListener('mouseleave', () => {
+                    this.autoplay.start();
+                });
+                }
             },
         })
     }

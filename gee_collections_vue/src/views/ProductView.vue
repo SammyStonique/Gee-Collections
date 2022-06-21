@@ -29,7 +29,7 @@
                                         <div class="col-md-4">
                                             <div class="product-short">
                                                 <div class="dropdown">
-                                                    <div class="dropdown-toggle" data-toggle="dropdown">Product short by</div>
+                                                    <div class="dropdown-toggle" data-toggle="dropdown" style="color:black !important;">Product sort by</div>
                                                     <div class="dropdown-menu dropdown-menu-right">
                                                         <a href="#" class="dropdown-item">Newest</a>
                                                         <a href="#" class="dropdown-item">Popular</a>
@@ -41,7 +41,7 @@
                                         <div class="col-md-4">
                                             <div class="product-price-range">
                                                 <div class="dropdown">
-                                                    <div class="dropdown-toggle" data-toggle="dropdown">Product price range</div>
+                                                    <div class="dropdown-toggle" data-toggle="dropdown" style="color:black !important;">Product price range</div>
                                                     <div class="dropdown-menu dropdown-menu-right">
                                                         <a href="#" class="dropdown-item">$0 to $50</a>
                                                         <a href="#" class="dropdown-item">$51 to $100</a>
@@ -62,33 +62,7 @@
                             </div>
                         </div>
                         <div class="row">   
-                                    <div class="col-md-4" v-for="(item,index) in items">
-                                        <!-- <div class="product-item">
-                                            <div class="product-title">
-                                                <a href="#">{{item.name}}</a>
-                                                <div class="ratting">
-                                                    <i class="fa fa-star"></i>
-                                                    <i class="fa fa-star"></i>
-                                                    <i class="fa fa-star"></i>
-                                                    <i class="fa fa-star"></i>
-                                                    <i class="fa fa-star"></i>
-                                                </div>
-                                            </div>
-                                            <div class="product-image">
-                                                <a href="product-detail.html">
-                                                    <img :src="`${item.image}`" alt="Product Image" class="prod-img">
-                                                </a>
-                                                <div class="product-action">
-                                                    <a href="#"><i class="fa fa-cart-plus"></i></a>
-                                                    <a href="#"><i class="fa fa-heart"></i></a>
-                                                    <a href="#"><i class="fa fa-search"></i></a>
-                                                </div>
-                                            </div>
-                                            <div class="product-price">
-                                                <h3 class="prod-price"><span>ksh</span>{{Number(item.price).toLocaleString()}}</h3>
-                                                <a class="btn btn-cart" href=""><i class="fa fa-shopping-cart"></i>Buy Now</a>
-                                            </div>
-                                        </div> -->
+                                <div class="col-md-4" v-for="(item,index) in pageOfItems">                                       
                                     <ProductCard
                                     :item="item"
                                     :getProducts="getProducts"
@@ -97,14 +71,14 @@
                                     :addToCart="addToCart"
                                     :getProductDetails="getProductDetails"
                                     :addToWishlist="addToWishlist"
+                                    :buyNow="buyNow"
                                     />
                                     </div>
                         </div>
                         <Pagination
-                        :totalPages="10"
-                        :perPage="10"
-                        :currentPage="currentPage"
-                        @pagechanged="onPageChange"
+                        :items="exampleItems"
+                        @changePage="onChangePage"
+                        :pageSize=6
                         />
                     </div>           
                     
@@ -144,6 +118,7 @@
                                         :index="index"
                                         :addToCart="addToCart"
                                         :getProductDetails="getProductDetails"
+                                        :buyNow="buyNow"
                                         />
                                     </div>
                                 </div>
@@ -160,22 +135,6 @@
                                 <li><a href="#">Fusce </a><span>(89)</span></li>
                                 <li><a href="#">Sagittis</a><span>(28)</span></li>
                             </ul>
-                        </div>
-                        
-                        <div class="sidebar-widget tag">
-                            <h2 class="title">Tags Cloud</h2>
-                            <a href="#">Lorem ipsum</a>
-                            <a href="#">Vivamus</a>
-                            <a href="#">Phasellus</a>
-                            <a href="#">pulvinar</a>
-                            <a href="#">Curabitur</a>
-                            <a href="#">Fusce</a>
-                            <a href="#">Sem quis</a>
-                            <a href="#">Mollis metus</a>
-                            <a href="#">Sit amet</a>
-                            <a href="#">Vel posuere</a>
-                            <a href="#">orci luctus</a>
-                            <a href="#">Nam lorem</a>
                         </div>
                     </div>
                     <!-- Side Bar End -->
@@ -195,7 +154,7 @@ import {Swiper, Autoplay} from 'swiper';
 import ProductCard from '@/components/ProductCard.vue';
 import Pagination from '@/components/Pagination.vue'
 export default {
-    props:['getProducts','items','addToCart','addToWishlist','getProductDetails'],
+    props:['getProducts','items','addToCart','addToWishlist','getProductDetails','totalItems','buyNow','scrollToTop'],
     components:{
         ProductCard,
         Swiper,
@@ -203,17 +162,19 @@ export default {
     },
     data(){
         return{
-            currentPage: 1,
+            exampleItems: [],
+            pageOfItems: []
         }
     },
     methods:{
-        onPageChange(page) {
-            console.log(page)
-            this.currentPage = page;
+        onChangePage(pageOfItems) {
+            // update page of items
+            this.pageOfItems = pageOfItems;
         }
     },
     mounted(){
         this.getProducts();
+        this.exampleItems = this.items
         Swiper.use(Autoplay);
 
         const swiper = new Swiper('.swiper',{
@@ -223,8 +184,22 @@ export default {
             modules:[Autoplay],
             speed:700,
             autoplay:{
-                delay: 3000
-            }
+                delay: 3000,
+                disableOnInteraction:false,
+                pauseOnMouseEnter:true,
+                el:'.swiper-slide',
+            },
+            on: {
+                init() {
+                this.el.addEventListener('mouseenter', () => {
+                    this.autoplay.stop();
+                });
+
+                this.el.addEventListener('mouseleave', () => {
+                    this.autoplay.start();
+                });
+                }
+            },            
         })
         swiper.autoplay.start();
     }

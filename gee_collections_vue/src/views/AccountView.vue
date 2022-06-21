@@ -48,10 +48,11 @@
                                                 <th>Status</th>
                                                 <th>Payment Ref</th>
                                                 <th>Action</th>
+                                                <!-- <th></th> -->
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="order,index in myOrders" :key="index">
+                                            <tr v-for="order,index in pageOfItems" :key="index">
                                                 <td>{{index + 1}}</td>
                                                 <td>{{order.id.substring(0,7)}}</td>
                                                 <td>{{order.created_at.substring(0,10)}}</td>
@@ -62,6 +63,7 @@
                                                 <td v-else>N/A</td>
                                                 <td v-if="order.paid"><button class="btn" @click="showModal(order.id)">View Order</button></td>
                                                 <td v-else><button class="btn" @click="showPaymentModal(order.id)">Make Payment</button></td>
+                                                <!-- <td><button class="btn" @click="printOrder(order.id)">Print</button></td> -->
                                             </tr>
                                         </tbody>
                                     </table>
@@ -71,11 +73,9 @@
                                     <!-- PAGINATION -->
                                     <div class="row">
                                         <Pagination
-                                            :totalPages="totalPages"
-                                            :perPage="itemsPerPage"
-                                            :currentPage="currentPage"
-                                            :totalItems="totalItems"
-                                            @page-changed="onPageChange"
+                                            :items="myOrders"
+                                            @changePage="onChangePage"
+                                            :pageSize=5
                                         />
                                     </div>
                                     <!-- pagination end -->
@@ -370,6 +370,7 @@ export default {
             mpesaRef : '',
             paymentConfirm : false,
             myOrderID: '',
+            pageOfItems: []
         };
     },
     watch:{
@@ -601,30 +602,9 @@ export default {
                 }
             }
         },         
-        onPageChange(page){
-            this.currentPage = page
-            this.start += this.limit;
-
-            this.axios.get(`api/v1/my-orders/`)
-                .then((response)=>{
-                    this.myOrders = response.data;
-                })
-                .catch((error)=>{
-                    console.log(error)
-                })
-        },
-        showClientOrders() {
-            this.axios.get("api/v1/my-orders/")
-                .then((response) => {
-                this.myOrders = response.data.data;
-                this.totalItems = response.data.data.length;
-                
-                const pages = ~~(this.totalItems / this.itemsPerPage);
-                this.totalPages = pages;
-            })
-                .catch((error) => {
-                console.log(error);
-            });
+        onChangePage(pageOfItems) {
+            // update page of items
+            this.pageOfItems = pageOfItems;
         },
         postProfileData() {
             this.errors = [];
@@ -729,6 +709,15 @@ export default {
                 })
             }
         },
+        showClientOrders() {
+            this.axios.get("api/v1/my-orders/")
+                .then((response) => {
+                this.myOrders = response.data;
+            })
+                .catch((error) => {
+                console.log(error);
+            });
+        },
         showModal() {
             this.isModalVisible = true;
 
@@ -784,12 +773,23 @@ export default {
                 })
             }
         },
+        printOrder(){
+            let orderID = arguments[0];
+            this.axios.get(`api/v1/view_pdf/${orderID}/`)
+            .then((response)=>{
+                console.log(response)
+            })
+            .catch((error)=>{
+                console.log(error)
+            })
+        }
     },
     beforeMount() {
     },
     mounted() {
         this.getProfileDetails();
         this.showClientOrders();
+ 
         paypal.Buttons({
             //Styling the paypal button
             style: {

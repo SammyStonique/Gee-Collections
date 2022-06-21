@@ -71,7 +71,7 @@
                                             <h2>Grand Total<span>{{Number(cartGrandTotal).toLocaleString()}}</span></h2>
                                         </div>
                                         <div class="cart-btn">
-                                            <button><router-link to="/products">Update Cart</router-link></button>                      
+                                            <button><router-link to="/products" class="check-btn">Update Cart</router-link></button>                      
                                             <button v-if="cart.length"><router-link to="/checkout" class="checkout">Checkout</router-link></button>
                                         </div>
                                     </div>
@@ -88,17 +88,27 @@
 
 <script>
 import swal from 'sweetalert';
+import Pagination from "@/components/Pagination.vue"
+
 export default {
     data(){
         return{
             myEmoji:'\u{1F62D}',
+            pageOfItems: [],
         }
     },
     props:['cart','items','cartGrandTotal','cartItemTotal','cartSubTotal','shippingCost'],
+    components:{
+        Pagination
+    },
     computed:{
         
     },
     methods:{
+        onChangePage(pageOfItems) {
+            // update page of items
+            this.pageOfItems = pageOfItems;
+        },
         incrementQuantity(){
             let selectedItemQuantity = arguments[0];
             this.cart[selectedItemQuantity].quantity += 1;
@@ -140,7 +150,7 @@ export default {
 
     },
     mounted() {
-        
+
     },
     
 }

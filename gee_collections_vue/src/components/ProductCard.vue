@@ -17,12 +17,12 @@
             <div class="product-action">
                 <a class="btn" @click="addToCart(index)" title="Add to Cart"><i class="fa fa-cart-plus"></i></a>
                 <a class="btn" @click="addToWishlist(index)" title="Add to Wishlist"><i class="fa fa-heart"></i></a>
-                <a class="btn" @click="getProductDetails(`${item.id}`)" title="View Product Details"><i class="fa fa-search"></i></a>
+                <a class="btn" @click="getProductDetails(`${item.name}`)" title="View Product Details"><i class="fa fa-search"></i></a>
             </div>
         </div>
         <div class="product-price">
             <h3 class="prod-price"><span>ksh</span>{{Number(item.price).toLocaleString()}}</h3>
-            <button class="btn btn-cart" @click="addToCart(index)"><i class="fa fa-shopping-cart"></i>Buy Now</button>
+            <button class="btn btn-cart" @click="buyNow(index)"><i class="fa fa-shopping-cart"></i>Buy Now</button>
         </div>
     </div>
 </template>
@@ -45,6 +45,6 @@
 
 <script>
 export default {
-    props:['item','addToWishlist','getProducts','index','addToCart','getProductDetails']
+    props:['item','addToWishlist','getProducts','index','addToCart','getProductDetails','buyNow']
 }
 </script>
