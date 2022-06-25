@@ -111,7 +111,7 @@ import {Swiper, Autoplay} from 'swiper';
 import ProductCard from '@/components/ProductCard.vue';
 import Pagination from '@/components/Pagination.vue'
 export default {
-    props:['getProducts','items','addToCart','addToWishlist','getProductDetails','totalItems','buyNow','scrollToTop'],
+    props:['getProducts','items','addToCart','addToWishlist','getProductDetails','totalItems','buyNow','scrollToTop','productSearch','searchItem','searchItems','getSearchedProduct'],
     components:{
         ProductCard,
         Swiper,
@@ -120,9 +120,9 @@ export default {
     data(){
         return{
             pageOfItems: [],
-            productSearch : '',
-            searchItems: [],
-            searchItem: []
+            // productSearch : '',
+            // searchItems: [],
+            // searchItem: []
         }
     },
     methods:{
@@ -130,38 +130,40 @@ export default {
             // update page of items
             this.pageOfItems = pageOfItems;
         },
-        getSearchedProduct(){
-            this.axios.get(`api/v1/latest-products/${this.productSearch}`)
-            .then((response)=>{
-                this.searchItem = response.data;
-                this.searchItems.push(this.searchItem)
-                console.log('the searched item is',this.searchItems[0])
-            })
-            .catch((error)=>{
-                console.log(error)
-            })
-        },
-        searchAddToCart(){
-            //Getting the index of the items in the cart
-            let selectedItem = arguments[0];
-            if(isNaN(this.quantity) || this.quantity<1){
-                this.quantity = 1;
-            }
+        // getSearchedProduct(){
+        //     this.axios.get(`api/v1/latest-products/${this.productSearch}`)
+        //     .then((response)=>{
+        //         this.searchItem = response.data;
+        //         this.searchItems.push(this.searchItem)
+        //         console.log('the searched item is',this.searchItems[0])
+        //     })
+        //     .catch((error)=>{
+        //         console.log(error)
+        //     })
+        // },
+        // searchAddToCart(){
+        //     //Getting the index of the items in the cart
+        //     let selectedItem = arguments[0];
+        //     if(isNaN(this.quantity) || this.quantity<1){
+        //         this.quantity = 1;
+        //     }
             
-            const cartItem={
-                items : this.searchItems[selectedItem],
-                quantity : this.quantity
-            }
-            this.$store.commit('addToCart',cartItem);
-            this.$toast.success(`${this.searchItems[selectedItem].name} added to cart`);
-        }
+        //     const cartItem={
+        //         items : this.searchItems[selectedItem],
+        //         quantity : this.quantity
+        //     }
+        //     this.$store.commit('addToCart',cartItem);
+        //     this.$toast.success(`${this.searchItems[selectedItem].name} added to cart`);
+        // },
     },
     updated(){
         // this.getSearchedProduct()
     },
     mounted(){
-        this.productSearch = this.$store.state.productSearch
-        this.getSearchedProduct()
+        // this.productSearch = this.$store.state.productSearch
+        if(this.productSearch != ''){
+            this.getSearchedProduct()
+        }
         Swiper.use(Autoplay);
 
         const swiper = new Swiper('.swiper',{

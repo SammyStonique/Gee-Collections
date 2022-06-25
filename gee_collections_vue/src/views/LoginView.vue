@@ -20,7 +20,11 @@
                         </div>
                         <div class="col-md-6">
                             <label>Password</label>
-                            <input class="form-control" type="password" placeholder="Password" v-model="password" required>
+                            <input class="form-control" :type="passType ? 'text' : 'password'" placeholder="Password" v-model="password" required>
+                            <button type="button" class="show-password" @click="showPassword()">
+                            <i class="fa fa-eye-slash" v-if="!passType"></i>
+                            <i class="fa fa-eye" v-else></i>
+                            </button>
                         </div>
                         <div class="col-md-12 notification is-danger" v-if="errors.length">
                             <p style="color: red;" v-for="error in errors" v-bind:key="error">{{ error }}</p>
@@ -30,6 +34,10 @@
                                 <input type="checkbox" class="custom-control-input" id="newaccount">
                                 <label class="custom-control-label" for="newaccount">Keep me signed in</label>
                             </div>
+                        </div>
+                        <div class="col-md-12" style="font-size: 12px;">
+                            <label for="">Don't have an account? </label>
+                            <router-link to="/register"> Register</router-link>
                         </div>
                         <div class="col-md-12">
                             <button class="btn login-btn">Login</button>
@@ -50,9 +58,21 @@ export default {
             email:'',
             password: '',
             errors: [],
+            showPass: false,
+            passType: false
         }
     },
-    methods:{        
+    methods:{ 
+        showPassword(){
+            if(!this.showPass){
+                this.showPass = true;
+                this.passType = true;
+            }
+            else{
+                this.showPass = false;
+                this.passType = false;
+            }
+        },     
         userLogin(){
             this.errors = [];
             if(this.email === '' && this.password === ''){
@@ -132,5 +152,18 @@ export default {
     input{
         font-weight: 300;
         color: black;
+    }
+    .show-password{
+        float: right;
+        margin-top: -50px;
+        position: relative;
+        z-index: 1;
+        cursor:pointer;
+        height: 35px;
+        border:0px;
+        background-color: inherit;
+    }
+    .show-password:focus{
+        outline: none;
     }
 </style>

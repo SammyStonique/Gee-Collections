@@ -32,12 +32,20 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label>Password<em>*</em></label>
-                                        <input class="form-control" type="password" placeholder="Password" v-model="password" :style="{borderColor: pStyle,borderWidth: bWidth+'px' }" required>
+                                        <input class="form-control" :type="passType ? 'text' : 'password'" placeholder="Password" v-model="password" :style="{borderColor: pStyle,borderWidth: bWidth+'px' }" required>
+                                        <button type="button" class="show-password" @click="showPassword()">
+                                        <i class="fa fa-eye-slash" v-if="!passType"></i>
+                                        <i class="fa fa-eye" v-else></i>
+                                        </button>
                                         <span v-if="watcherMsg.password" :style="{color: pStyle, fontSize:10 + 'px' }">{{watcherMsg.password}}</span>
                                     </div>
                                     <div class="col-md-6">
                                         <label>Confirm Password<em>*</em></label>
-                                        <input class="form-control" type="password" placeholder="Password" v-model="password2" :style="{borderColor: passStyle,borderWidth: bWidth+'px' }" required>
+                                        <input class="form-control" :type="pass2Type ? 'text' : 'password'" placeholder="Password" v-model="password2" :style="{borderColor: passStyle,borderWidth: bWidth+'px' }" required>
+                                        <button type="button" class="show-password" @click="showPassword2()">
+                                        <i class="fa fa-eye-slash" v-if="!pass2Type"></i>
+                                        <i class="fa fa-eye" v-else></i>
+                                        </button>
                                         <span v-if="watcherMsg.password2" :style="{color: passStyle , fontSize:10 + 'px' }">{{watcherMsg.password2}}</span>
                                     </div>
                                     <div class="col-md-12 notification is-danger" v-if="errors.length">
@@ -72,7 +80,11 @@ export default {
             nStyle: null,
             pStyle: null,
             passStyle: null,
-            bWidth : null,            
+            bWidth : null, 
+            showPass: false,
+            passType: false,
+            showPass2: false,
+            pass2Type : false          
         }
     },
     watch: {
@@ -159,7 +171,27 @@ export default {
                 this.passStyle = 'red'
                 this.bWidth = 2
             }
-        },      
+        },   
+        showPassword(){
+            if(!this.showPass){
+                this.showPass = true;
+                this.passType = true;
+            }
+            else{
+                this.showPass = false;
+                this.passType = false;
+            }
+        }, 
+        showPassword2(){
+            if(!this.showPass2){
+                this.showPass2 = true;
+                this.pass2Type = true;
+            }
+            else{
+                this.showPass2 = false;
+                this.pass2Type = false;
+            }
+        },    
         createUser(){
             this.errors = []
             if(this.email === ''&&this.password === ''&&this.password2 === ''&& this.phone_number===''){
@@ -235,5 +267,18 @@ export default {
     input{
         font-weight: 300;
         color: black;
+    }
+    .show-password{
+        float: right;
+        margin-top: -50px;
+        position: relative;
+        z-index: 1;
+        cursor:pointer;
+        height: 35px;
+        border:0px;
+        background-color: inherit;
+    }
+    .show-password:focus{
+        outline: none;
     }
 </style>

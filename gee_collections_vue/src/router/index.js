@@ -51,7 +51,8 @@ const routes = [
     name: 'checkout',
     component: CheckoutView,
     meta:{
-      emptyCart: true
+      emptyCart: true,
+      requireLogin: true
     }    
   },
   {

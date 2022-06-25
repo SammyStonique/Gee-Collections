@@ -35,6 +35,9 @@ export default {
         const token = this.$store.state.token
         localStorage.setItem('token',token)
     },
+    mounted(){
+        // this.$store.commit('reloadingPage')
+    }
 }
 </script>
 

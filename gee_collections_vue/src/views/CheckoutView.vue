@@ -239,7 +239,8 @@ export default {
             bWidth : null,
             payment_number2: '',
             pStyle: null,
-            p2Style: null
+            p2Style: null,
+            isAuthenticated: false
         }
     },
     watch:{
@@ -441,9 +442,13 @@ export default {
     beforeMount() {
         this.getProfileDetails();
         this.cart = this.$store.state.cart;
+        this.isAuthenticated = this.$store.state.isAuthenticated
     },
     mounted(){
         this.registerCallbackUrl()
+        if(!this.isAuthenticated){
+            this.$toast.error('You need to create an account before proceeding to checkout')
+        }
         paypal.Buttons({
             //Styling the paypal button
             style: {

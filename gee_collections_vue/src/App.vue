@@ -127,6 +127,10 @@
         :getProductDetails="getProductDetails"
         :userDetails="userDetails"
         :scrollToTop="scrollToTop"
+        :searchItem="searchItem"
+        :searchItems="searchItems"
+        :productSearch="productSearch"
+        :getSearchedProduct="getSearchedProduct"
         />
 
         <!-- Footer Start -->
@@ -225,6 +229,7 @@
 
 <script>
 import axios from 'axios'
+import { nextTick } from 'vue'
 import ProductCard from './components/ProductCard.vue'
 import SearchAutoComplete from './components/SearchAutoComplete.vue'
 export default {
@@ -246,7 +251,9 @@ export default {
             token: '',
             isAuthenticated: false,
             productDetails : [],
-
+            searchItems : [],
+            searchItem : [],
+            productSearch: ''
         }
     },
     beforeMount() {
@@ -267,6 +274,14 @@ export default {
     },
     mounted(){
         this.getUserDetails()
+    },
+    updated(){
+        this.productSearch = this.$store.state.productSearch
+        this.$nextTick(()=>{
+                console.log('The product being searched for is: ',this.productSearch)
+                this.getSearchedProduct()
+            })
+        
     },
     computed: {
         totalQuantity() {
@@ -367,6 +382,31 @@ export default {
             this.$store.commit('addToCart',cartItem);
             this.$toast.success(`${this.items[selectedItem].name} added to cart`);
             
+        },
+        searchAddToCart(){
+            //Getting the index of the items in the cart
+            let selectedItem = arguments[0];
+            if(isNaN(this.quantity) || this.quantity<1){
+                this.quantity = 1;
+            }
+            
+            const cartItem={
+                items : this.searchItems[selectedItem],
+                quantity : this.quantity
+            }
+            this.$store.commit('addToCart',cartItem);
+            this.$toast.success(`${this.searchItems[selectedItem].name} added to cart`);
+        },
+        getSearchedProduct(){
+            this.axios.get(`api/v1/latest-products/${this.productSearch}/`)
+            .then((response)=>{
+                this.searchItem = response.data;
+                this.searchItems.push(this.searchItem)
+                console.log('the searched item is',this.searchItems[0])
+            })
+            .catch((error)=>{
+                console.log(error)
+            })
         },
         buyNow(){
             let selectedItem = arguments[0];
