@@ -128,9 +128,11 @@
         :userDetails="userDetails"
         :scrollToTop="scrollToTop"
         :searchItem="searchItem"
-        :searchItems="searchItems"
         :productSearch="productSearch"
         :getSearchedProduct="getSearchedProduct"
+        :searchAddToCart="searchAddToCart"
+        :searchAddToWishlist="searchAddToWishlist"
+        :searchBuyNow="searchBuyNow"
         />
 
         <!-- Footer Start -->
@@ -231,11 +233,13 @@
 import axios from 'axios'
 import { nextTick } from 'vue'
 import ProductCard from './components/ProductCard.vue'
+import SearchProductCard from './components/SearchProductCard.vue'
 import SearchAutoComplete from './components/SearchAutoComplete.vue'
 export default {
     components:{
         ProductCard,
-        SearchAutoComplete
+        SearchAutoComplete,
+        SearchProductCard
     },
     data(){
         return{
@@ -247,11 +251,10 @@ export default {
                 wishlistItems:[]
             },
             quantity: 1,
-            shippingCost: 200,
+            shippingCost: 100,
             token: '',
             isAuthenticated: false,
             productDetails : [],
-            searchItems : [],
             searchItem : [],
             productSearch: ''
         }
@@ -276,12 +279,15 @@ export default {
         this.getUserDetails()
     },
     updated(){
-        this.productSearch = this.$store.state.productSearch
-        this.$nextTick(()=>{
-                console.log('The product being searched for is: ',this.productSearch)
-                this.getSearchedProduct()
-            })
         
+        this.productSearch = this.$store.state.productSearch
+        if(this.$store.state.isProductSearched){
+            this.getSearchedProduct()
+            this.$store.state.isProductSearched = false;
+            this.$router.push('/search')
+        }
+        
+        this.$store.state.searchItems = this.searchItems;
     },
     computed: {
         totalQuantity() {
@@ -385,28 +391,28 @@ export default {
         },
         searchAddToCart(){
             //Getting the index of the items in the cart
-            let selectedItem = arguments[0];
             if(isNaN(this.quantity) || this.quantity<1){
                 this.quantity = 1;
             }
             
             const cartItem={
-                items : this.searchItems[selectedItem],
+                items : this.searchItem,
                 quantity : this.quantity
             }
             this.$store.commit('addToCart',cartItem);
-            this.$toast.success(`${this.searchItems[selectedItem].name} added to cart`);
+            this.$toast.success(`${this.searchItem.name} added to cart`);
         },
-        getSearchedProduct(){
-            this.axios.get(`api/v1/latest-products/${this.productSearch}/`)
-            .then((response)=>{
-                this.searchItem = response.data;
-                this.searchItems.push(this.searchItem)
-                console.log('the searched item is',this.searchItems[0])
-            })
-            .catch((error)=>{
-                console.log(error)
-            })
+        async getSearchedProduct(){
+            await this.axios.get(`api/v1/latest-products/${this.productSearch}/`)
+                .then((response)=>{
+                    this.searchItem = response.data;
+                    // this.searchItems.push(this.searchItem)
+                    this.$store.state.searchItem = this.searchItem
+                    this.$router.push('/search')
+                })
+                .catch((error)=>{
+                    console.log(error)
+                })
         },
         buyNow(){
             let selectedItem = arguments[0];
@@ -416,6 +422,19 @@ export default {
             
             const cartItem={
                 items : this.items[selectedItem],
+                quantity : this.quantity
+            }
+            this.$store.commit('addToCart',cartItem);
+            this.$router.push('/checkout')
+            this.scrollToTop()
+        },
+        searchBuyNow(){
+            if(isNaN(this.quantity) || this.quantity<1){
+                this.quantity = 1;
+            }
+            
+            const cartItem={
+                items : this.searchItem,
                 quantity : this.quantity
             }
             this.$store.commit('addToCart',cartItem);
@@ -435,6 +454,20 @@ export default {
             }
             this.$store.commit('addToWishlist',wishlistItem);
             this.$toast.success(`${this.items[selectedItem].name} added to wishlist`);
+            
+        },
+        searchAddToWishlist(){
+            //Getting the index of the items in the wishlist
+            if(isNaN(this.quantity) || this.quantity<1){
+                this.quantity = 1;
+            }
+            
+            const wishlistItem={
+                items : this.searchItem,
+                quantity : this.quantity
+            }
+            this.$store.commit('addToWishlist',wishlistItem);
+            this.$toast.success(`${this.searchItem.name} added to wishlist`);
             
         },
         getUserDetails(){

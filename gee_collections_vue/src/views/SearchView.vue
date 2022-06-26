@@ -20,19 +20,19 @@
                             <div class="col-md-12">
                                 <div class="product-view-top">
                                     <div class="row">
-                                        <p style="font-size: 20px;">Showing Results for "<em style="font-weight: bold; font-size: 24px;">{{this.productSearch}}</em> "</p>
+                                        <p style="font-size: 20px;">Showing Results for "<em style="font-weight: bold; font-size: 24px;">{{productSearch}}</em> "</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row">   
                                 <div class="col-md-4">
-                                    <ProductCard
+                                    <SearchProductCard
                                     :item="searchItem"
-                                    :addToCart="addToCart"
+                                    :searchAddToCart="searchAddToCart"
                                     :getProductDetails="getProductDetails"
-                                    :addToWishlist="addToWishlist"
-                                    :buyNow="buyNow"
+                                    :searchAddToWishlist="searchAddToWishlist"
+                                    :searchBuyNow="searchBuyNow"
 
                                     />
                                 </div>
@@ -109,20 +109,20 @@
 <script>
 import {Swiper, Autoplay} from 'swiper';
 import ProductCard from '@/components/ProductCard.vue';
+import SearchProductCard from '@/components/SearchProductCard.vue'
 import Pagination from '@/components/Pagination.vue'
 export default {
-    props:['getProducts','items','addToCart','addToWishlist','getProductDetails','totalItems','buyNow','scrollToTop','productSearch','searchItem','searchItems','getSearchedProduct'],
+    props:['getProducts','items','addToCart','searchAddToCart','addToWishlist','searchAddToWishlist','getProductDetails','buyNow','searchBuyNow','scrollToTop','productSearch','searchItem'],
     components:{
         ProductCard,
         Swiper,
-        Pagination
+        Pagination,
+        SearchProductCard
     },
     data(){
         return{
             pageOfItems: [],
-            // productSearch : '',
-            // searchItems: [],
-            // searchItem: []
+           
         }
     },
     methods:{
@@ -130,40 +130,11 @@ export default {
             // update page of items
             this.pageOfItems = pageOfItems;
         },
-        // getSearchedProduct(){
-        //     this.axios.get(`api/v1/latest-products/${this.productSearch}`)
-        //     .then((response)=>{
-        //         this.searchItem = response.data;
-        //         this.searchItems.push(this.searchItem)
-        //         console.log('the searched item is',this.searchItems[0])
-        //     })
-        //     .catch((error)=>{
-        //         console.log(error)
-        //     })
-        // },
-        // searchAddToCart(){
-        //     //Getting the index of the items in the cart
-        //     let selectedItem = arguments[0];
-        //     if(isNaN(this.quantity) || this.quantity<1){
-        //         this.quantity = 1;
-        //     }
-            
-        //     const cartItem={
-        //         items : this.searchItems[selectedItem],
-        //         quantity : this.quantity
-        //     }
-        //     this.$store.commit('addToCart',cartItem);
-        //     this.$toast.success(`${this.searchItems[selectedItem].name} added to cart`);
-        // },
     },
     updated(){
-        // this.getSearchedProduct()
+
     },
     mounted(){
-        // this.productSearch = this.$store.state.productSearch
-        if(this.productSearch != ''){
-            this.getSearchedProduct()
-        }
         Swiper.use(Autoplay);
 
         const swiper = new Swiper('.swiper',{

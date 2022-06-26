@@ -13,7 +13,9 @@ export default createStore({
     isAuthenticated: false,
     loggedInUser: [],
     reloaded: false,
-    productSearch: ''
+    productSearch: '',
+    isProductSearched: false,
+    searchItem: []
   },
   getters: {
 

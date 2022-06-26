@@ -7,6 +7,7 @@
     @keydown.up="onArrowUp"
     @keydown.enter="onEnter"
     type="text"
+    placeholder="Search"
     />
     <ul class="autocomplete-results" v-show="isOpen">
       <li class="autocomplete-result"
@@ -63,11 +64,13 @@ export default {
     onChange() {
       this.filterResults();
       this.isOpen = true;
+      this.$store.state.isProductSearched = false;
     },
     setResult(result) {
       this.search = result;
       this.isOpen = false;
-      this.$router.push('/search')
+      this.$store.state.isProductSearched = true;
+      this.$router.push('/products')
     },
     handleClickOutside(event) {
       if (!this.$el.contains(event.target)) {
@@ -89,6 +92,7 @@ export default {
       this.search = this.results[this.arrowCounter];
       this.arrowCounter = -1;
       this.isOpen = false;
+      this.$store.state.isProductSearched = true;
     },
   },
 };
