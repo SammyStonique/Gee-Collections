@@ -437,6 +437,9 @@ export default {
         },        
         mountPaypalButton(){
 
+        },
+        scrollToTop(){
+            window.scrollTo({top:0,behavior:"smooth"})
         }
     },
     beforeMount() {

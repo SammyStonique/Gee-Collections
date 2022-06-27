@@ -65,7 +65,6 @@
                                             <h2>Grand Total<span>{{Number(wishlistGrandTotal).toLocaleString()}}</span></h2>
                                         </div>
                                         <div class="cart-btn">
-                                            <!-- <button><router-link to="/products">Update Wishlist</router-link></button>                       -->
                                             <button v-if="wishlist.length"><router-link to="/checkout" class="checkout">Proceed To Checkout</router-link></button>
                                         </div>
                                     </div>

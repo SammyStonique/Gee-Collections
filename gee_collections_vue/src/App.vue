@@ -483,7 +483,6 @@ export default {
             this.axios.get(`/api/v1/latest-products/${productID}/`)
             .then((response)=>{
                 this.productDetails = response.data;
-                console.log('product details are',this.productDetails)
                 this.$router.push("/product-detail");
                 this.scrollToTop()
             })

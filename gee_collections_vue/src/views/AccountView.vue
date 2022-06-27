@@ -223,7 +223,57 @@
                                         <h5>Shipping Address</h5>
                                         <p>123 Shipping Street, Los Angeles, CA</p>
                                         <p>Mobile: 012-345-6789</p>
-                                        <button class="btn">Edit Address</button>
+                                        <button class="btn" @click="showShippingAddress()">Edit Address</button>
+                                    </div>
+                                </div>
+                                <br><br>
+                                <div class="shipping-address" v-if="shippingAddress">
+                                    <h2>Shipping Address</h2>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>First Name</label>
+                                            <input class="form-control" type="text" placeholder="First Name">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label>Last Name</label>
+                                            <input class="form-control" type="text" placeholder="Last Name">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label>E-mail</label>
+                                            <input class="form-control" type="text" placeholder="E-mail">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label>Mobile No</label>
+                                            <input class="form-control" type="text" placeholder="Mobile No">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label>Address</label>
+                                            <input class="form-control" type="text" placeholder="Address">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label>Country</label>
+                                            <select class="custom-select">
+                                                <option selected>Kenya</option>
+                                                <option>Tanzania</option>
+                                                <option>Uganda</option>
+                                                <option>Rwanda</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label>City</label>
+                                            <input class="form-control" type="text" placeholder="City">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label>County</label>
+                                            <input class="form-control" type="text" placeholder="County">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label>ZIP Code</label>
+                                            <input class="form-control" type="text" placeholder="ZIP Code">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <button class="btn">Save Changes</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -289,20 +339,32 @@
                                     </div>
                                 </form>
                                 <h4>Password change</h4>
+                            <form action="" @submit.prevent="changePassword">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input class="form-control" type="password" placeholder="Current Password">
+                                        <input class="form-control" type="password" placeholder="Current Password" v-model="currentPassword">
                                     </div>
                                     <div class="col-md-6">
-                                        <input class="form-control" type="text" placeholder="New Password">
+                                        <input class="form-control" :type="passType ? 'text' : 'password'" placeholder="New Password" v-model="newPassword">
+                                        <button type="button" class="show-password" @click="showPassword()">
+                                        <i class="fa fa-eye-slash" v-if="!passType"></i>
+                                        <i class="fa fa-eye" v-else></i>
+                                        </button>
+                                        <span v-if="watcherMsg.newPassword" style="color:red; font-size: 10px;">{{watcherMsg.newPassword}}</span>
                                     </div>
                                     <div class="col-md-6">
-                                        <input class="form-control" type="text" placeholder="Confirm Password">
+                                        <input class="form-control" :type="pass2Type ? 'text' : 'password'" placeholder="Confirm Password" v-model="newPassword2">
+                                        <button type="button" class="show-password" @click="showPassword2()">
+                                        <i class="fa fa-eye-slash" v-if="!pass2Type"></i>
+                                        <i class="fa fa-eye" v-else></i>
+                                        </button>
+                                        <span v-if="watcherMsg.newPassword2" style="color:red; font-size: 10px;">{{watcherMsg.newPassword2}}</span>
                                     </div>
                                     <div class="col-md-12">
                                         <button class="btn">Save Changes</button>
                                     </div>
                                 </div>
+                            </form>
                             </div>
                         </div>
                     </div>
@@ -370,7 +432,15 @@ export default {
             mpesaRef : '',
             paymentConfirm : false,
             myOrderID: '',
-            pageOfItems: []
+            pageOfItems: [],
+            shippingAddress: false,
+            currentPassword: '',
+            newPassword: '',
+            newPassword2: '',
+            showPass: false,
+            passType: false,
+            showPass2: false,
+            pass2Type : false
         };
     },
     watch:{
@@ -417,7 +487,15 @@ export default {
         mpesaRef(value){
             this.mpesaRef = value;
             this.validatePaymentRef(value)
-        }                       
+        },
+        newPassword2(value){
+            this.newPassword2 = value;
+            this.validatePassword2(value)
+        },
+         newPassword(value){
+            this.newPassword = value;
+            this.validateNewPassword(value)
+        },                     
     },
     computed:{
         orderItemTotal(){
@@ -601,7 +679,26 @@ export default {
                     }
                 }
             }
-        },         
+        }, 
+        validateNewPassword(value){
+            if(value.length == ''){
+                this.watcherMsg['newPassword'] = '';
+            }else{
+                if(value.length > 0 && value.length < 8){
+                    this.watcherMsg['newPassword'] = 'Password is too short';
+                }
+                else{
+                    this.watcherMsg['newPassword'] = '';
+                }
+            }
+        },
+        validatePassword2(value){
+            if(value == this.newPassword){
+                this.watcherMsg['newPassword2'] = '';
+            }else{
+                this.watcherMsg['newPassword2'] = 'Passwords do not match';
+            }
+        },        
         onChangePage(pageOfItems) {
             // update page of items
             this.pageOfItems = pageOfItems;
@@ -647,6 +744,26 @@ export default {
                 });
             }
         },
+        changePassword(){
+            let formData = {
+                password:this.newPassword
+            }
+            this.axios.patch("/api/v1/users/me/",formData)
+            .then((response)=>{
+                console.log(response.data)
+                this.$toast.success('Password Changed Succesfully')
+                this.newPassword = ''
+                this.newPassword2 = ''
+                this.curreentPassword = ''
+                this.$store.commit('removeToken')
+                const token = this.$store.state.token
+                localStorage.setItem('token',token)
+                this.$router.push('/login')
+            })
+            .catch((error)=>{
+                console.log(error)
+            })
+        },
         getProfileDetails() {
             this.axios.get("/api/v1/users/me/")
                 .then((response) => {
@@ -660,6 +777,8 @@ export default {
                 this.county = response.data.county;
                 this.birthdate = response.data.birthdate;
                 this.address = response.data.address;
+                console.log(response.data.email)
+                this.currentPassword = response.data.password;
             })
                 .catch((error) => {
                     console.log(error)
@@ -750,6 +869,9 @@ export default {
         showLipaNaMpesa(){
             this.lipaNaMpesa = !this.lipaNaMpesa
         },
+        showShippingAddress(){
+            this.shippingAddress = true;
+        },
         payViaMpesa(){
             this.paymentConfirm = true;
             this.errors = []
@@ -773,6 +895,26 @@ export default {
                 })
             }
         },
+        showPassword(){
+            if(!this.showPass){
+                this.showPass = true;
+                this.passType = true;
+            }
+            else{
+                this.showPass = false;
+                this.passType = false;
+            }
+        }, 
+        showPassword2(){
+            if(!this.showPass2){
+                this.showPass2 = true;
+                this.pass2Type = true;
+            }
+            else{
+                this.showPass2 = false;
+                this.pass2Type = false;
+            }
+        },
         printOrder(){
             let orderID = arguments[0];
             this.axios.get(`api/v1/view_pdf/${orderID}/`)
@@ -789,6 +931,7 @@ export default {
     mounted() {
         this.getProfileDetails();
         this.showClientOrders();
+        
  
         paypal.Buttons({
             //Styling the paypal button
@@ -933,5 +1076,18 @@ export default {
         display: inline-block;
         text-align: left;
         margin: 0;
+    }
+    .show-password{
+        float: right;
+        margin-top: -50px;
+        position: relative;
+        z-index: 1;
+        cursor:pointer;
+        height: 35px;
+        border:0px;
+        background-color: inherit;
+    }
+    .show-password:focus{
+        outline: none;
     }
 </style>

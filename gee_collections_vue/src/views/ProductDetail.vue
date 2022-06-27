@@ -64,8 +64,8 @@
                                             </div> 
                                         </div>
                                         <div class="action">
-                                            <a class="btn" href="#"><i class="fa fa-shopping-cart" @click="proaddToCart()"></i>Add to Cart</a>
-                                            <a class="btn" href="#"><i class="fa fa-shopping-bag"></i>Buy Now</a>
+                                            <a class="btn details-add-to-cart-btn" @click="detailsAddToCart()"><i class="fa fa-shopping-cart"></i>Add to Cart</a>
+                                            <a class="btn details-add-to-cart-btn" @click="detailsBuyNow()"><i class="fa fa-shopping-bag"></i>Buy Now</a>
                                         </div>
                                     </div>
                                 </div>
@@ -284,6 +284,34 @@ export default {
                 }
             }
         },
+        detailsAddToCart(){
+            //Getting the index of the items in the cart
+            if(isNaN(this.quantity) || this.quantity<1){
+                this.quantity = 1;
+            }
+            const cartItem={
+                items : this.productDetails,
+                quantity : this.quantity
+            }
+            this.$store.commit('addToCart',cartItem);
+            this.$toast.success(`${this.productDetails.name} added to cart`);
+        },
+        detailsBuyNow(){
+            if(isNaN(this.quantity) || this.quantity<1){
+                this.quantity = 1;
+            }
+            
+            const cartItem={
+                items : this.productDetails,
+                quantity : this.quantity
+            }
+            this.$store.commit('addToCart',cartItem);
+            this.$router.push('/checkout')
+            this.scrollToTop()
+        },
+        scrollToTop(){
+            window.scrollTo({top:0,behavior:"smooth"})
+        }
     },
     beforeMount(){
 
@@ -291,6 +319,7 @@ export default {
     mounted(){
         this.getProducts();
         this.quantity = 1;
+        console.log(this.productDetails)
  
         Swiper.use(Autoplay);
         //Swiper for additional products
@@ -334,5 +363,11 @@ export default {
     }
     .product-detail-slider{
         height: 421px;
+    }
+    .details-add-to-cart-btn{
+        color:#FF6F61;
+    }
+    .details-add-to-cart-btn:hover{
+        color:white;
     }
 </style>
