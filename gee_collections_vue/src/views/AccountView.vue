@@ -957,8 +957,6 @@ export default {
                 const my_action = actions.order.capture().then(function(orderData) {
                     // Successful capture! For dev/demo purposes:
                     console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
-                    this.transaction_id = orderData.purchase_units[0].payments.captures[0].id
-                    console.log('the transaction_id is:', this.transaction_id)
                     
                     const transaction = orderData.purchase_units[0].payments.captures[0];
                     alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
@@ -1086,8 +1084,12 @@ export default {
         height: 35px;
         border:0px;
         background-color: inherit;
+        color:grey;
     }
     .show-password:focus{
         outline: none;
+    }
+    .show-password:hover{
+        color: black !important;
     }
 </style>

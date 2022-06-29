@@ -67,7 +67,7 @@
                                         <div class="cart-content">
                                             <h1>Cart Summary</h1>
                                             <p>Sub Total<span>ksh. {{Number(cartSubTotal).toLocaleString()}}</span></p>
-                                            <p>Shipping Cost(varies)<span>ksh. {{Number(shippingCost).toLocaleString()}}</span></p>
+                                            <p>Delivery Fee(varies)<span>ksh. {{Number(shippingCost).toLocaleString()}}</span></p>
                                             <h2>Grand Total<span>{{Number(cartGrandTotal).toLocaleString()}}</span></h2>
                                         </div>
                                         <div class="cart-btn">

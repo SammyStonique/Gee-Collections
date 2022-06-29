@@ -251,7 +251,7 @@ export default {
                 wishlistItems:[]
             },
             quantity: 1,
-            shippingCost: 100,
+            shippingCost: 0,
             token: '',
             isAuthenticated: false,
             productDetails : [],

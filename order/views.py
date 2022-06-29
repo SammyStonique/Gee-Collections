@@ -75,6 +75,14 @@ class MpesaDetails(generics.ListAPIView):
     queryset = MpesaPayment.objects.all()
     serializer_class = MpesaPaymentSerializer
 
+class PaymentDetailsList(generics.ListCreateAPIView):
+    queryset = PaymentDetail.objects.all()
+    serializer_class = PaymentDetailsSerializer
+
+class PaymentDetails(generics.RetrieveUpdateDestroyAPIView):
+    queryset = PaymentDetail.objects.all()
+    serializer_class = PaymentDetailsSerializer
+
 def getAccessToken(request):
     consumer_key = os.environ.get('CONSUMER_KEY')
     consumer_secret = os.environ.get('CONSUMER_SECRET')
@@ -86,6 +94,10 @@ def getAccessToken(request):
 
 @api_view(['POST'])
 def lipa_na_mpesa_online(request):
+    payment = PaymentDetail.objects.all()
+    phone_number = payment[0].phone_number
+    first_name = payment[0].first_name
+    # amount = payment[0].order_total
     access_token = MpesaAccessToken.validated_mpesa_access_token
     api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
     headers = {"Authorization": "Bearer %s" % access_token}
@@ -95,12 +107,12 @@ def lipa_na_mpesa_online(request):
         "Timestamp": LipanaMpesaPpassword.lipa_time,
         "TransactionType": "CustomerPayBillOnline",
         "Amount": 1,
-        "PartyA": 254717423651,  # replace with your phone number to get stk push
+        "PartyA": phone_number,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
-        "PhoneNumber": 254717423651,  # replace with your phone number to get stk push
-        "CallBackURL": "https://5bf3-197-248-34-79.ngrok.io/api/v1/c2b/callback",
-        "AccountReference": "SammyB",
-        "TransactionDesc": "Testing stk push"
+        "PhoneNumber": phone_number,  # replace with your phone number to get stk push
+        "CallBackURL": "https://5990-197-248-34-79.ngrok.io.io/api/v1/c2b/callback",
+        "AccountReference": first_name,
+        "TransactionDesc": "Making payment for purchased goods"
     }
     response = requests.post(api_url, json=request, headers=headers)
     return HttpResponse('success')
@@ -113,20 +125,19 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Business_short_code,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://5bf3-197-248-34-79.ngrok.io/api/v1/c2b/confirmation",
-               "ValidationURL": "https://5bf3-197-248-34-79.ngrok.io/api/v1/c2b/validation"}
+               "ConfirmationURL": "https://5990-197-248-34-79.ngrok.io.io/api/v1/c2b/confirmation",
+               "ValidationURL": "https://5990-197-248-34-79.ngrok.io.io/api/v1/c2b/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     return HttpResponse(response.text)
 
 
 @csrf_exempt
-def call_back(request):
+def call_back(request):  
     mpesa_body =request.body.decode('utf-8')
     mpesa_payment = json.loads(mpesa_body)
     print('this is the body:',mpesa_body)
     amount = mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][0].get('Value')
     phone_number=mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][4].get('Value')
-    print('The amount is:',amount)
     payment= MpesaPayment(
         transaction_time=mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][3].get('Value'),
         amount=mpesa_payment['Body']['stkCallback']['CallbackMetadata']['Item'][0].get('Value'),

@@ -98,7 +98,7 @@ export default {
                 this.axios
                     .post('/api/v1/token/login/', formData)
                     .then((response)=>{
-                        const token = response.data.auth_token;       
+                        const token = response.data.auth_token;        
                         this.$store.commit('setToken', token);
                         axios.defaults.headers.common['Authorization'] = "Token " + token
                         localStorage.setItem('token',token)
@@ -162,8 +162,12 @@ export default {
         height: 35px;
         border:0px;
         background-color: inherit;
+        color:grey;
     }
     .show-password:focus{
         outline: none;
+    }
+    .show-password:hover{
+        color: black !important;
     }
 </style>

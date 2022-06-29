@@ -61,7 +61,7 @@
                                         <div class="cart-content">
                                             <h1>Wishlist Summary</h1>
                                             <p>Sub Total<span>ksh. {{Number(wishlistSubTotal).toLocaleString()}}</span></p>
-                                            <p>Shipping Cost(varies)<span>ksh. {{Number(shippingCost).toLocaleString()}}</span></p>
+                                            <p>Delivery Fee(varies)<span>ksh. {{Number(shippingCost).toLocaleString()}}</span></p>
                                             <h2>Grand Total<span>{{Number(wishlistGrandTotal).toLocaleString()}}</span></h2>
                                         </div>
                                         <div class="cart-btn">

@@ -70,11 +70,51 @@
                                                         <option>Nairobi</option>
                                                         <option>Mombasa</option>
                                                     </select>
-                                            </div>                                
+                                            </div> 
                                             <div class="col-md-12">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="newaccount">
-                                                    <label class="custom-control-label" for="newaccount">Create an account</label>
+                                                    <input type="checkbox" class="custom-control-input" id="newaccount" @click="requestDelivery()">
+                                                    <label class="custom-control-label" for="newaccount">Select if you would wish for the items to be delivered</label>  
+                                                    <div class="delivery-address" v-if="deliveryOption">
+                                                    <br><br>
+                                                        <h5>Delivery Address</h5>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <label>Choose the delivery town</label>
+                                                                    <select name="town" class="form-control" v-model="town">
+                                                                        <option value="" disabled="true">--Select your Town--</option>
+                                                                        <option>Ahero</option>
+                                                                        <option>Bondo</option>
+                                                                        <option>Bungoma</option>
+                                                                        <option>Busia</option>
+                                                                        <option>Eldoret</option>
+                                                                        <option>Embu</option>
+                                                                        <option>Kakamega</option>
+                                                                        <option>Kericho</option>
+                                                                        <option>Kiambu</option>
+                                                                        <option>Kikuyu</option>
+                                                                        <option>Kisii</option>
+                                                                        <option>Kisumu</option>
+                                                                        <option>Kitale</option>
+                                                                        <option>Luanda</option>
+                                                                        <option>Machakos</option>
+                                                                        <option>Malindi</option>
+                                                                        <option>Migori</option>
+                                                                        <option>Mombasa</option>
+                                                                        <option>Mtwapa</option>
+                                                                        <option>Mumias</option>
+                                                                        <option>Nairobi</option>
+                                                                        <option>Naivasha</option>
+                                                                        <option>Nakuru</option>
+                                                                        <option>Nyamira</option>
+                                                                        <option>Siaya</option>
+                                                                        <option>Thika</option>
+                                                                        <option>Ugunja</option>
+                                                                        <option>Ukunda</option>
+                                                                    </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
@@ -138,13 +178,16 @@
                                     <div class="checkout-summary">
                                         <h1>Cart Total</h1>
                                         <p class="sub-total">Sub Total<span>ksh. {{Number(cartSubTotal).toLocaleString()}}</span></p>
-                                        <p class="ship-cost">Shipping Cost<span>ksh. {{Number(shippingCost).toLocaleString()}}</span></p>
-                                        <h2>Grand Total<span>{{Number(cartGrandTotal).toLocaleString()}}</span></h2>
+                                        <!-- <p class="ship-cost">Shipping Cost<span>ksh. {{Number(shippingCost).toLocaleString()}}</span></p> -->
+                                        <p class="ship-cost">Delivery Fee<span>ksh. {{Number(setShippingCost).toLocaleString()}}</span></p>
+                                        <!-- <h2>Grand Total<span>{{Number(cartGrandTotal).toLocaleString()}}</span></h2> -->
+                                        <h2>Grand Total<span>{{Number(checkoutTotal).toLocaleString()}}</span></h2>
+    
                                     </div>
 
                                     <div class="checkout-payment">
                                     <h1>Payment Methods</h1>
-                                        <button type="button" class="lipanampesa" @click="showLipaNaMpesa">Lipa Na Mpesa</button>
+                                        <button type="button" class="lipanampesa" @click="captureDetails()">Lipa Na Mpesa</button>
                                         <div v-if="lipaNaMpesa">
                                             <p>To proceed to Lipa Na Mpesa, please enter the phone number you would like to make the payment with.</p>
                                             <label for="">Phone Number:</label>
@@ -221,6 +264,7 @@ export default {
             address: '',
             county: '',
             city: '',
+            town:'',
             gender: '',
             errors:[],
             lipaNaMpesa: false,
@@ -240,7 +284,9 @@ export default {
             payment_number2: '',
             pStyle: null,
             p2Style: null,
-            isAuthenticated: false
+            isAuthenticated: false,
+            deliveryOption: false,
+            unknownVal : '',
         }
     },
     watch:{
@@ -256,6 +302,51 @@ export default {
             this.payment_number = value;
             this.validatePhoneNumber2(value)
         },      
+    },
+    computed:{
+        setShippingCost(){
+            let shipCost = 0;
+            if (this.cartSubTotal == 0 || this.deliveryOption == false){
+                 this.shipCost = 0
+            }else{
+                if(this.town == 'Bondo'||this.town == 'Siaya'||this.town == 'Nairobi'||this.town == 'Ugunja'){
+                   this.shipCost = 100
+                   console.log('The shipping cost is ',this.shipCost)
+                }
+                else{
+                    if(this.town == 'Busia'||this.town == 'Kiambu'||this.town == 'Kikuyu'||this.town == 'Kisumu'||this.town == 'Luanda'||this.town == 'Thika'){
+                        this.shipCost = 200
+                    }else{
+                        if(this.town == 'Kakamega'){
+                            this.shipCost = 250
+                        }else{
+                            if(this.town == 'Ahero'||this.town == 'Bungoma'||this.town == 'Machakos'||this.town == 'Mumias'||this.town == 'Naivasha'||this.town == 'Nakuru'){
+                                this.shipCost = 300
+                            }else{
+                                if(this.town == 'Kericho'||this.town == 'Migori'||this.town == 'Kitale'){
+                                    this.shipCost = 400
+                                }
+                                else{
+                                    if(this.town == 'Eldoret'||this.town == 'Embu'||this.town == 'Kisii'||this.town == 'Nyamira'){
+                                        this.shipCost = 500
+                                    }else{
+                                        if(this.town == 'Malindi'||this.town == 'Mombasa'||this.town == 'Mtwapa'||this.town == 'Ukunda'){
+                                            this.shipCost = 600
+                                        }else{
+                                            this.shipCost = 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return this.shipCost
+        },
+        checkoutTotal(){
+            return this.cartSubTotal + this.setShippingCost
+        }
     },
     methods:{
         validatePaymentRef(value){
@@ -334,7 +425,7 @@ export default {
                 console.log(error)
             })
         },
-        payViaMpesa(){
+        async payViaMpesa(){
             this.errors = []
             if(this.payment_number === ''){
                 this.errors.push('Please enter phone number');
@@ -343,16 +434,34 @@ export default {
                 })
             }
             if(!this.errors.length){
-                this.axios.post('/api/v1/online/lipa/')
+                let formData = {
+                    phone_number: this.payment_number
+                }
+                await this.axios.patch('/api/v1/payment-details/'+this.unknownVal+'/',formData)
                 .then((response)=>{
                     console.log(response.data)
-                    this.paymentConfirm = true;
                 })
                 .catch((error)=>{
                     console.log(error)
                 })
                 .finally(()=>{
-                    
+                    this.axios.post('/api/v1/online/lipa/')
+                    .then((response)=>{
+                        console.log(response.data)
+                        this.paymentConfirm = true;
+                    })
+                    .catch((error)=>{
+                        console.log(error)
+                    })
+                    .finally(()=>{
+                        this.axios.delete('/api/v1/payment-details/'+this.unknownVal+'/')
+                        .then((response)=>{
+                            console.log(response.data)
+                        })
+                        .catch((error)=>{
+                            console.log(error)
+                        })
+                    })
                 })
             }
         },
@@ -378,7 +487,7 @@ export default {
                this.payment_ref = this.mpesaRef;
                this.$toast.success('Payment Confirmation Succesful', {
                     duration: 3000
-                }) 
+                })
                 this.placeOrder();
             }
             else{
@@ -425,9 +534,42 @@ export default {
                 console.log(error)
             })
         },
-        showLipaNaMpesa(){
-            this.lipaNaMpesa = !this.lipaNaMpesa
+        requestDelivery(){
+            this.deliveryOption = !this.deliveryOption
+            if(this.deliveryOption == false){
+                this.town = ''
+            }
         },
+        async captureDetails(){
+            let formData = {
+                first_name: this.first_name,
+                last_name: this.last_name,
+                email: this.email,
+                order_total: this.checkoutTotal,
+            }
+            await this.axios.post('/api/v1/payments-list/', formData)
+            .then((response)=>{
+                console.log(response.data)
+                this.lipaNaMpesa = !this.lipaNaMpesa
+            })
+            .catch((error)=>{
+                console.log(error)
+            })
+            .finally(()=>{
+                this.axios.get('/api/v1/payments-list/')
+                .then((response)=>{
+                    this.unknownVal = response.data[0].id
+                    console.log('response is ',response.data)
+                    console.log('id of the response is ',this.unknownVal)
+                })
+                .catch((error)=>{
+                    console.log(error)
+                })
+            })
+        },
+        // showLipaNaMpesa(){
+        //     this.lipaNaMpesa = !this.lipaNaMpesa
+        // },
         showShippingDetails(){
             this.checked = !this.checked
             console.log(this.checked)
@@ -538,5 +680,10 @@ export default {
     .procPayBtn:hover{
         color: white;
         background-color: green;
+    }
+    .delivery-address h5{
+        font-family: 'Source Code Pro', monospace;
+        font-weight: bold;
+        font-size: 18px;
     }
 </style>
