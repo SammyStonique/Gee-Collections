@@ -170,4 +170,9 @@ export default {
     .show-password:hover{
         color: black !important;
     }
+    .user-login-form{
+        background-color: white;
+        margin-bottom: 50px;
+        padding: 30px;
+    }
 </style>

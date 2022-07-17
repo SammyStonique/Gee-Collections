@@ -187,7 +187,7 @@
 
                                     <div class="checkout-payment">
                                     <h1>Payment Methods</h1>
-                                        <button type="button" class="lipanampesa" @click="captureDetails()">Lipa Na Mpesa</button>
+                                        <button type="button" class="lipanampesa" @click="showLipaNaMpesa">Lipa Na Mpesa</button>
                                         <div v-if="lipaNaMpesa">
                                             <p>To proceed to Lipa Na Mpesa, please enter the phone number you would like to make the payment with.</p>
                                             <label for="">Phone Number:</label>
@@ -356,17 +356,15 @@ export default {
                 this.bWidth = 1;
             }
             else{
-                if(value.length > 0 && value.length < 10){
-                    this.rfStyle = 'red';
-                    this.watcherMsg['mpesaRef'] = 'Incomplete Reference Number';
-                    this.bWidth = 2;
-                }
-                else{
-                    if(/^[A-Z0-9]$/.test(value) && value.length > 9){
+                if(/^[A-Z0-9]$/.test(value) && value.length > 9){
                         this.rfStyle = 'green';
                         this.watcherMsg['mpesaRef'] = '';
                         this.bWidth = 2;
-                    }
+                    }             
+                else{   
+                    this.rfStyle = 'red';
+                    this.watcherMsg['mpesaRef'] = 'Incomplete Reference Number';
+                    this.bWidth = 2;
                 }
             }
         },
@@ -435,33 +433,19 @@ export default {
             }
             if(!this.errors.length){
                 let formData = {
-                    phone_number: this.payment_number
-                }
-                await this.axios.patch('/api/v1/payment-details/'+this.unknownVal+'/',formData)
+                    payment_number: this.payment_number,
+                    first_name : this.first_name
+                    }
+                this.axios.post('/api/v1/online/lipa/',formData)
                 .then((response)=>{
                     console.log(response.data)
+                    this.paymentConfirm = true;
                 })
                 .catch((error)=>{
                     console.log(error)
                 })
                 .finally(()=>{
-                    this.axios.post('/api/v1/online/lipa/')
-                    .then((response)=>{
-                        console.log(response.data)
-                        this.paymentConfirm = true;
-                    })
-                    .catch((error)=>{
-                        console.log(error)
-                    })
-                    .finally(()=>{
-                        this.axios.delete('/api/v1/payment-details/'+this.unknownVal+'/')
-                        .then((response)=>{
-                            console.log(response.data)
-                        })
-                        .catch((error)=>{
-                            console.log(error)
-                        })
-                    })
+                    
                 })
             }
         },
@@ -519,7 +503,8 @@ export default {
                 items: items,
                 order_total: this.cartSubTotal,
                 payment_reference: this.payment_ref,
-                paid : this.is_paid
+                paid : this.is_paid,
+                delivery_fee : this.setShippingCost,
             }
             console.log(formData)
             this.axios.post('/api/v1/checkout/', formData)
@@ -540,36 +525,9 @@ export default {
                 this.town = ''
             }
         },
-        async captureDetails(){
-            let formData = {
-                first_name: this.first_name,
-                last_name: this.last_name,
-                email: this.email,
-                order_total: this.checkoutTotal,
-            }
-            await this.axios.post('/api/v1/payments-list/', formData)
-            .then((response)=>{
-                console.log(response.data)
-                this.lipaNaMpesa = !this.lipaNaMpesa
-            })
-            .catch((error)=>{
-                console.log(error)
-            })
-            .finally(()=>{
-                this.axios.get('/api/v1/payments-list/')
-                .then((response)=>{
-                    this.unknownVal = response.data[0].id
-                    console.log('response is ',response.data)
-                    console.log('id of the response is ',this.unknownVal)
-                })
-                .catch((error)=>{
-                    console.log(error)
-                })
-            })
+        showLipaNaMpesa(){
+            this.lipaNaMpesa = !this.lipaNaMpesa
         },
-        // showLipaNaMpesa(){
-        //     this.lipaNaMpesa = !this.lipaNaMpesa
-        // },
         showShippingDetails(){
             this.checked = !this.checked
             console.log(this.checked)

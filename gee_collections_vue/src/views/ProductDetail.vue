@@ -319,7 +319,6 @@ export default {
     mounted(){
         this.getProducts();
         this.quantity = 1;
-        console.log(this.productDetails)
  
         Swiper.use(Autoplay);
         //Swiper for additional products

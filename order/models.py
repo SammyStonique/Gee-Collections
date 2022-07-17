@@ -32,6 +32,7 @@ class Order(models.Model):
     county = models.CharField(max_length=100)
     order_total = models.DecimalField(max_digits=8, decimal_places=2)
     payment_reference = models.CharField(max_length=100, blank=True, null=True)
+    delivery_fee = models.DecimalField(max_digits=8, decimal_places=2)
 
     class Meta:
         ordering = ('-created_at',)
@@ -97,13 +98,4 @@ class MpesaPayment(BaseModel):
     def __str__(self):
         return self.transaction_id
 
-class PaymentDetail(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
-    order_total = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=100, blank=True, null=True)
-    
-    def __str__(self):
-        return f'{self.email} Payment Details'
  

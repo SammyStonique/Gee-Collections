@@ -29,7 +29,7 @@
                                         </tr>
                                     </thead>
                                     <tbody class="align-middle">
-                                        <tr v-for="prod,index in cart" :key="index">
+                                        <tr v-for="prod,index in pageOfItems" :key="index">
                                             <td>
                                                 <div class="img">
                                                     <a href="#"><img :src="`${prod.items.image}`" alt="Image"></a>
@@ -44,12 +44,21 @@
                                                     <button class="btn-plus" @click="incrementQuantity(index)"><i class="fa fa-plus"></i></button>
                                                 </div>
                                             </td>
-                                            <td>{{Number(cartItemTotal[index]).toLocaleString()}}</td>
+                                            <td>{{Number(prodCartItemTotal[index]).toLocaleString()}}</td>
                                             <td><button @click="removeFromCart(index)"><i class="fa fa-trash"></i></button></td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <p class="empty-cart" v-if="!Object.keys(cart).length"><span class="emoji " role="img" aria-label="">😭</span><br/><em class="empty-cart-message">Ooops,No items in cart</em></p>
+                                <!-- PAGINATION -->
+                                    <div class="row">
+                                        <Pagination
+                                            :items="cart"
+                                            @changePage="onChangePage"
+                                            :pageSize=5
+                                        />
+                                    </div>
+                                    <!-- pagination end -->
                             </div>
                         </div>
                     </div>
@@ -94,7 +103,7 @@ export default {
     data(){
         return{
             myEmoji:'\u{1F62D}',
-            pageOfItems: [],
+            pageOfItems: []
         }
     },
     props:['cart','items','cartGrandTotal','cartItemTotal','cartSubTotal','shippingCost'],
@@ -102,7 +111,14 @@ export default {
         Pagination
     },
     computed:{
-        
+        prodCartItemTotal(){
+            let itemTotal = [];
+            for(let i = 0; i<this.pageOfItems.length; i++){
+                let lineTotal = (this.pageOfItems[i].quantity * this.pageOfItems[i].items.price).toFixed(2)
+                itemTotal.push(lineTotal);
+            }
+            return itemTotal
+        },
     },
     methods:{
         onChangePage(pageOfItems) {
@@ -111,13 +127,13 @@ export default {
         },
         incrementQuantity(){
             let selectedItemQuantity = arguments[0];
-            this.cart[selectedItemQuantity].quantity += 1;
+            this.pageOfItems[selectedItemQuantity].quantity += 1;
             this.updateCart();
         },
         decrementQuantity(){
             let selectedItemQuantity = arguments[0];
-            if(this.cart[selectedItemQuantity].quantity >=2){
-                this.cart[selectedItemQuantity].quantity -= 1;
+            if(this.pageOfItems[selectedItemQuantity].quantity >=2){
+                this.pageOfItems[selectedItemQuantity].quantity -= 1;
             }
             else{
                 this.$store.commit('removeFromCart',selectedItemQuantity);
@@ -150,7 +166,7 @@ export default {
 
     },
     mounted() {
-
+    
     },
     
 }

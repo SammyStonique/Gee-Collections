@@ -24,6 +24,7 @@
 
 <script>
 export default {
+    props:['loggedOut'],
     data(){
         return{
     
@@ -31,12 +32,16 @@ export default {
     },
     beforeMount() {
         this.$store.commit('removeToken')
+        this.$store.commit('clearCart')
         console.log(this.$store.state.reloaded)
         const token = this.$store.state.token
         localStorage.setItem('token',token)
     },
     mounted(){
-        // this.$store.commit('reloadingPage')
+        if (this.$store.state.reloaded == false){
+            // this.$store.commit('reloadingPage')
+            this.$store.state.reloaded = true
+        }
     }
 }
 </script>

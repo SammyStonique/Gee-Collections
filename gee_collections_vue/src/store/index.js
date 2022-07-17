@@ -29,7 +29,7 @@ export default createStore({
         // The page was just reloaded. Clear the value from local storage
         // so that it will reload the next time this page is visited.
         localStorage.removeItem('reloaded');
-        console.log('No reload')
+        console.log('Value of reload in store set to false')
         } else {
             // Set a flag so that we know not to reload the page twice.
             localStorage.setItem('reloaded', 'true');

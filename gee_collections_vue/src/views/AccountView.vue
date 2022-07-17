@@ -60,7 +60,7 @@
                                                 <td v-if="order.paid" style="color:green;">Paid</td>
                                                 <td v-else style="color:red;">Not Paid</td>
                                                 <td v-if="order.paid">{{order.payment_reference}}</td>
-                                                <td v-else>N/A</td>
+                                                <td v-else>-</td>
                                                 <td v-if="order.paid"><button class="btn" @click="showModal(order.id)">View Order</button></td>
                                                 <td v-else><button class="btn" @click="showPaymentModal(order.id)">Make Payment</button></td>
                                                 <!-- <td><button class="btn" @click="printOrder(order.id)">Print</button></td> -->
@@ -116,6 +116,7 @@
                                             </tr>
                                         </tbody>
                                     </table>
+                                    
                                 </div>
                             </div>
                             </template>
@@ -440,7 +441,8 @@ export default {
             showPass: false,
             passType: false,
             showPass2: false,
-            pass2Type : false
+            pass2Type : false,
+            orderTotal : 0,
         };
     },
     watch:{
@@ -741,7 +743,20 @@ export default {
                 })
                     .catch((error) => {
                     console.log(error);
-                });
+                })
+                    .finally(()=>{
+                        this.fnStyle = null,
+                        this.lnStyle = null;
+                        this.nStyle = null;
+                        this.gStyle = null;
+                        this.bWidth = null;
+                        this.dStyle= null;
+                        this.cStyle = null;
+                        this.ccStyle = null;
+                        this.aStyle = null;
+                        this.pStyle= null;
+                        this.p2Style= null
+                    });
             }
         },
         changePassword(){
@@ -777,12 +792,24 @@ export default {
                 this.county = response.data.county;
                 this.birthdate = response.data.birthdate;
                 this.address = response.data.address;
-                console.log(response.data.email)
                 this.currentPassword = response.data.password;
             })
                 .catch((error) => {
                     console.log(error)
-            });
+            })
+                .finally(()=>{
+                    this.fnStyle = null,
+                    this.lnStyle = null;
+                    this.nStyle = null;
+                    this.gStyle = null;
+                    this.bWidth = null;
+                    this.dStyle= null;
+                    this.cStyle = null;
+                    this.ccStyle = null;
+                    this.aStyle = null;
+                    this.pStyle= null;
+                    this.p2Style= null
+                })
         },
         getMpesaPayments(){
             this.mpesaRefs = []
@@ -793,7 +820,6 @@ export default {
                     this.mpesaRefs.push(trans_id)
                     
                 }
-                console.log(this.mpesaRefs)
                 this.isPayModalVisible = true;
             })
             .catch((error)=>{
@@ -844,11 +870,10 @@ export default {
             this.axios.get(`/api/v1/my-orders/${orderID}/`)
             .then((response)=>{
                 this.myOrderDetails = response.data
-                console.log(this.myOrderDetails)
             })
             .catch((error)=>{
                 console.log(error)
-            })
+            });
         },
         showPaymentModal(){
             this.paymentModalVisible = true;
@@ -856,11 +881,13 @@ export default {
             this.axios.get(`/api/v1/my-orders/${orderID}/`)
             .then((response)=>{
                 this.myOrderID = orderID;
-                console.log(this.myOrderID)
+                console.log(response.data)
+                this.orderTotal = Math.round(response.data.order_total)
+                console.log(this.orderTotal)
             })
             .catch((error)=>{
                 console.log(error)
-            })
+            });
         },
         closeModal() {
             this.isModalVisible = false;
@@ -882,7 +909,12 @@ export default {
                 })
             }
             if(!this.errors.length && this.pStyle == 'green'){
-                this.axios.post('/api/v1/online/lipa/')
+                let formData = {
+                    payment_number: this.payment_number,
+                    first_name: this.first_name,
+                    orderTotal : this.orderTotal
+                }
+                this.axios.post('/api/v1/online/lipa/',formData)
                 .then((response)=>{
                     console.log(response.data)
                     this.paymentConfirm = true;
@@ -892,7 +924,7 @@ export default {
                 })
                 .finally(()=>{
                     
-                })
+                });
             }
         },
         showPassword(){
@@ -923,7 +955,7 @@ export default {
             })
             .catch((error)=>{
                 console.log(error)
-            })
+            });
         }
     },
     beforeMount() {

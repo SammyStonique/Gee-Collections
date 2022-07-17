@@ -44,7 +44,7 @@
                         </div>
                         <div class="navbar-nav ml-auto" v-if="!isAuthenticated">
                             <div class="nav-item dropdown">
-                                <router-link to="#" class="nav-link dropdown-toggle" data-toggle="dropdown">User Account</router-link>
+                                <router-link to="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{loggedOut}}</router-link>
                                 <div class="dropdown-menu">
                                     <router-link to="/login" class="dropdown-item">Login</router-link>
                                     <router-link to="/register" class="dropdown-item">Register</router-link>
@@ -133,6 +133,7 @@
         :searchAddToCart="searchAddToCart"
         :searchAddToWishlist="searchAddToWishlist"
         :searchBuyNow="searchBuyNow"
+        :loggedOut="loggedOut"
         />
 
         <!-- Footer Start -->
@@ -256,7 +257,8 @@ export default {
             isAuthenticated: false,
             productDetails : [],
             searchItem : [],
-            productSearch: ''
+            productSearch: '',
+            loggedOut: 'USER ACCOUNT'
         }
     },
     beforeMount() {

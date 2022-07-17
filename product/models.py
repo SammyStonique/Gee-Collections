@@ -36,7 +36,7 @@ class CustomAccountManager(BaseUserManager):
         return user
 
 class User(AbstractBaseUser,PermissionsMixin):
-    CITY = (('','Select your city'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Kisumu','Kisumu'))
+    CITY = (('','Select your city'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Kisumu','Kisumu'),('Nakuru','Nakuru'))
     GENDER = (('','Select Gender'),('Male','Male'),('Female','Female'),('Other','Other')) 
     COUNTY = (('','Select County'),('Kisumu','Kisumu'),('Nairobi','Nairobi'),('Mombasa','Mombasa'),('Siaya','Siaya'))
     

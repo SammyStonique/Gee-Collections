@@ -68,9 +68,9 @@
                                     :getProducts="getProducts"
                                     :key="item.id"
                                     :index="index"
-                                    :addToCart="addToCart"
+                                    :addToCart="prodAddToCart"
                                     :getProductDetails="getProductDetails"
-                                    :addToWishlist="addToWishlist"
+                                    :addToWishlist="prodAddToWishlist"
                                     :buyNow="buyNow"
                                     />
                                     </div>
@@ -78,7 +78,7 @@
                         <Pagination
                         :items="exampleItems"
                         @changePage="onChangePage"
-                        :pageSize=6
+                        :pageSize=9
                         />
                     </div>           
                     
@@ -170,7 +170,37 @@ export default {
         onChangePage(pageOfItems) {
             // update page of items
             this.pageOfItems = pageOfItems;
-        }
+        },
+        prodAddToCart(){
+            //Getting the index of the items in the cart
+            let selectedItem = arguments[0];
+            if(isNaN(this.quantity) || this.quantity<1){
+                this.quantity = 1;
+            }
+            
+            const cartItem={
+                items : this.pageOfItems[selectedItem],
+                quantity : this.quantity
+            }
+            this.$store.commit('addToCart',cartItem);
+            this.$toast.success(`${this.pageOfItems[selectedItem].name} added to cart`);
+            
+        },
+        prodAddToWishlist(){
+            //Getting the index of the items in the wishlist
+            let selectedItem = arguments[0];
+            if(isNaN(this.quantity) || this.quantity<1){
+                this.quantity = 1;
+            }
+            
+            const wishlistItem={
+                items : this.pageOfItems[selectedItem],
+                quantity : this.quantity
+            }
+            this.$store.commit('addToWishlist',wishlistItem);
+            this.$toast.success(`${this.pageOfItems[selectedItem].name} added to wishlist`);
+            
+        },
     },
     mounted(){
         this.getProducts();

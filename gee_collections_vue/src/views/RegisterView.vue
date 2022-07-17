@@ -277,8 +277,12 @@ export default {
         height: 35px;
         border:0px;
         background-color: inherit;
+        color:grey;
     }
     .show-password:focus{
         outline: none;
+    }
+    .show-password:hover{
+        color: black !important;
     }
 </style>
