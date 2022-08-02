@@ -24,3 +24,9 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id','name','slug','get_absolute_url','products']
+
+class NewsletterSubscriptionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = NewsletterSubscription
+        fields = ['id','email']

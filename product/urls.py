@@ -10,5 +10,7 @@ urlpatterns = [
     path('category/<int:pk>/', views.CategoryDetail.as_view()),
     path('user-list/', views.UserList.as_view()),
     path('user-list/<int:pk>/', views.UserDetails.as_view()),
-    path('my-account/activate/<uid>/<token>/', views.ActivateUser.as_view({'get':'activation'}))
+    path('my-account/activate/<uid>/<token>/', views.ActivateUser.as_view({'get':'activation'})),
+    path('newsletter-subscription/', views.newsletter_email),
+    path('newsletter-emails/', views.NewsletterEmails.as_view())
 ]

@@ -147,7 +147,7 @@ export default {
             let selectedItem = arguments[0];
             swal({
                 title: "Are you sure?",
-                text: `Do you wish to remove ${this.cart[selectedItem].items.name} from your cart?`,
+                text: `Do you wish to remove ${this.pageOfItems[selectedItem].items.name} from your cart?`,
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,

@@ -124,3 +124,9 @@ class Product(models.Model):
         return thumbnail
 
 
+class NewsletterSubscription(models.Model):
+
+    email = models.EmailField(max_length=250)
+
+    def __str__(self):
+        return self.email
