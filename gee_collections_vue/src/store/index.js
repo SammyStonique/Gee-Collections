@@ -15,20 +15,38 @@ export default createStore({
     reloaded: false,
     productSearch: '',
     isProductSearched: false,
-    searchItem: []
+    searchItem: [],
+    detailProducts: []
+    
   },
   getters: {
 
   },
   mutations: {
-    searchItem(state){
+    searchForItem(state){
       localStorage.setItem('productSearch',state.productSearch)
+    },
+    setSearchItem(state){
+      localStorage.setItem('searchItem',JSON.stringify(state.searchItem))
+    },
+    setProductDetails(state){
+      localStorage.setItem('detailProducts',JSON.stringify(state.detailProducts))
+    },
+    clearSearch(state){
+      state.searchItem = []
+      state.productSearch = ''
+      localStorage.setItem('productSearch',state.productSearch)
+      localStorage.setItem('searchItem',JSON.stringify(state.searchItem))
+    },
+    clearProductDetails(state){
+      state.detailProducts = []
+      localStorage.setItem('detailProducts',JSON.stringify(state.detailProducts))
     },
     reloadingPage(state){
       if (localStorage.getItem('reloaded')) {
         // The page was just reloaded. Clear the value from local storage
         // so that it will reload the next time this page is visited.
-        localStorage.removeItem('reloaded');
+        localStorage.removeItem('reloaded', 'false');
         console.log('Value of reload in store set to false')
         } else {
             // Set a flag so that we know not to reload the page twice.

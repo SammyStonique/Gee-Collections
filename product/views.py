@@ -63,6 +63,8 @@ def newsletter_email(request):
         content = f'Dear Client, You have succesfully subscribed to our newsletter. We will keep you posted at all times. Thank you.'
         send_mail(subject, content,os.environ.get('EMAIL_HOST_USER'),recipient, fail_silently=False) 
         return Response(serializer.data)
+    else:
+        return Response('No email provided')
 
 class NewsletterEmails(generics.ListCreateAPIView):
     queryset = NewsletterSubscription.objects.all()

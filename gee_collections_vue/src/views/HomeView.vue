@@ -114,12 +114,24 @@
     <div class="container-fluid-brand">
       <div class="swiper-brand">
         <div class="swiper-wrapper">
-          <div class="swiper-slide"><img src="@/assets/img/brand-1.png" alt="" /></div>
-          <div class="swiper-slide"><img src="@/assets/img/brand-2.png" alt="" /></div>
-          <div class="swiper-slide"><img src="@/assets/img/brand-3.png" alt="" /></div>
-          <div class="swiper-slide"><img src="@/assets/img/brand-4.png" alt="" /></div>
-          <div class="swiper-slide"><img src="@/assets/img/brand-5.png" alt="" /></div>
-          <div class="swiper-slide"><img src="@/assets/img/brand-6.png" alt="" /></div>
+          <div class="swiper-slide">
+            <img src="@/assets/img/brand-1.png" alt="" />
+          </div>
+          <div class="swiper-slide">
+            <img src="@/assets/img/brand-2.png" alt="" />
+          </div>
+          <div class="swiper-slide">
+            <img src="@/assets/img/brand-3.png" alt="" />
+          </div>
+          <div class="swiper-slide">
+            <img src="@/assets/img/brand-4.png" alt="" />
+          </div>
+          <div class="swiper-slide">
+            <img src="@/assets/img/brand-5.png" alt="" />
+          </div>
+          <div class="swiper-slide">
+            <img src="@/assets/img/brand-6.png" alt="" />
+          </div>
         </div>
       </div>
     </div>
@@ -404,30 +416,36 @@ export default {
   ],
   methods: {
     newsSubscription() {
+      let emailArray = [];
       for (let i = 0; i < this.subscribedEmails.length; i++) {
-        if (this.subscribedEmails[i].email == this.newsEmail) {
-          this.$toast.error("You're already subscribed", {
-            duration: 5000,
-            dismissible: true,
-          });
-          this.newsEmail = "";
-        } else {
-          let formData = {
-            email: this.newsEmail,
-          };
-          this.axios
-            .post("api/v1/newsletter-subscription/", formData)
-            .then((response) => {
-              this.email = "";
+        emailArray.push(this.subscribedEmails[i].email);
+        console.log(emailArray);
+      }
+
+      if (emailArray.includes(this.newsEmail)) {
+        this.$toast.warning("You're already subscribed", {
+          duration: 5000,
+          dismissible: true,
+        });
+      } else {
+        let formData = {
+          email: this.newsEmail,
+        };
+        this.axios
+          .post("api/v1/newsletter-subscription/", formData)
+          .then((response) => {
+            console.log(response.data);
+            if (response.data != "No email provided") {
               this.$toast.success("You have succesfully subscribed to our newsletter", {
                 duration: 5000,
                 dismissible: true,
               });
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        }
+              this.newsEmail = "";
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       }
     },
   },
@@ -586,5 +604,8 @@ export default {
   margin-left: 50px;
   margin-right: 50px;
   overflow-x: hidden;
+}
+.swiper {
+  z-index: -1;
 }
 </style>

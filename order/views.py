@@ -58,7 +58,7 @@ def checkout(request):
         subject = f'Order({order_id}) succesfully placed'
         content = f'Dear {customer_name},your order {order_id} has succesfully been placed. Thank you.'
         send_mail(subject, content,os.environ.get('EMAIL_HOST_USER'),recipient, fail_silently=False) 
-        sms.send(f'Dear {customer_name},your order {order_id} has succesfully been placed.',[f'{pn}'],callback=checkout)
+        sms.send(f'Dear {customer_name},your order {order_id} has succesfully been placed. Thank you for doing business with us.',[f'{pn}'],callback=checkout)
         return Response(serializer.data)
 
 class OrdersList(APIView):
@@ -105,7 +105,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": payment_number,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": payment_number,  # replace with your phone number to get stk push
-        "CallBackURL": "https://aa46-105-163-1-75.ngrok.io/api/v1/c2b/callback",
+        "CallBackURL": "https://b478-105-160-4-98.ngrok.io/api/v1/c2b/callback",
         "AccountReference": first_name,
         "TransactionDesc": "Making payment for purchased goods"
     }
@@ -119,8 +119,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Business_short_code,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://aa46-105-163-1-75.ngrok.io/api/v1/c2b/confirmation",
-               "ValidationURL": "https://aa46-105-163-1-75.ngrok.io/api/v1/c2b/validation"}
+               "ConfirmationURL": "https://b478-105-160-4-98.ngrok.io/api/v1/c2b/confirmation",
+               "ValidationURL": "https://b478-105-160-4-98.ngrok.io/api/v1/c2b/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     return HttpResponse(response.text)
 

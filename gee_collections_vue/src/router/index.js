@@ -19,7 +19,10 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    meta:{
+      isIdle: true,
+    }
   },
   {
     path: '/products',
@@ -118,5 +121,14 @@ router.beforeEach((to, from, next) => {
     next()
   }
 })
+
+// VUE IDLE
+// router.beforeEach((to, from, next) => {
+//   if (to.matched.some(record => record.meta.isIdle) && store.state.idleVue.isIdle) {
+//     next({ name: 'login', query: { to: to.path } });
+//   } else {
+//     next()
+//   }
+// })
 
 export default router

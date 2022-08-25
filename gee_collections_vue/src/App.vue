@@ -159,7 +159,7 @@
     :getSubscribedEmails="getSubscribedEmails"
     :subscribedEmails="subscribedEmails"
   />
-
+  <!-- <p>{{ isIdle }}</p> -->
   <!-- Footer Start -->
   <div class="footer">
     <div class="container-fluid">
@@ -232,7 +232,7 @@
 
       <div class="row payment align-items-center">
         <div class="col-md-6">
-          <div class="payment-method">
+          <div class="flex payment-method">
             <h2>We Accept:</h2>
             <img
               src="@/assets/img/payment-method.png"
@@ -242,7 +242,7 @@
           </div>
         </div>
         <div class="col-md-6">
-          <div class="payment-security">
+          <div class="flex payment-security">
             <h2>Secured By:</h2>
             <img
               src="@/assets/img/godaddy.svg"
@@ -345,12 +345,15 @@ export default {
   },
   mounted() {
     this.getUserDetails();
+    // this.$store.commit("clearSearch");
+    // this.$store.commit("clearProductDetails");
   },
   updated() {
-    this.productSearch = this.$store.state.productSearch;
+    this.productSearch = localStorage.getItem("productSearch");
     if (this.$store.state.isProductSearched) {
       this.getSearchedProduct();
       this.$store.state.isProductSearched = false;
+      this.$store.commit("searchForItem");
       this.$router.push("/search");
     }
 
@@ -479,13 +482,16 @@ export default {
       this.$toast.success(`${this.searchItem.name} added to cart`);
     },
     async getSearchedProduct() {
+      this.productSearch = localStorage.getItem("productSearch");
+      this.$store.state.searchItem = [];
       await this.axios
         .get(`api/v1/latest-products/${this.productSearch}/`)
         .then((response) => {
           this.searchItem = response.data;
-          // this.searchItems.push(this.searchItem)
-          this.$store.state.searchItem = this.searchItem;
+          this.$store.state.searchItem.push(this.searchItem);
+          this.$store.commit("setSearchItem");
           this.$router.push("/search");
+          this.$store.commit("reloadingPage");
         })
         .catch((error) => {
           console.log(error);
@@ -558,6 +564,8 @@ export default {
         .get(`/api/v1/latest-products/${productID}/`)
         .then((response) => {
           this.productDetails = response.data;
+          this.$store.state.detailProducts.push(this.productDetails);
+          this.$store.commit("setProductDetails");
           this.$router.push("/product-detail");
           this.scrollToTop();
         })

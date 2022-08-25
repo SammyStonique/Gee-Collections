@@ -1,20 +1,25 @@
 <template>
   <div class="autocomplete">
-    <input 
-    v-model="search" 
-    @input="onChange" 
-    @keydown.down="onArrowDown"
-    @keydown.up="onArrowUp"
-    @keydown.enter="onEnter"
-    type="text"
-    placeholder="Search"
+    <input
+      v-model="search"
+      @input="onChange"
+      @keydown.down="onArrowDown"
+      @keydown.up="onArrowUp"
+      @keydown.enter="onEnter"
+      type="text"
+      placeholder="Search"
     />
-    <ul class="autocomplete-results" v-show="isOpen">
-      <li class="autocomplete-result"
-       v-for="(result, i) in results" :key="i"
+    <ul
+      class="absolute w-full shadow shadow-gray-500 autocomplete-results"
+      v-show="isOpen"
+    >
+      <li
+        class="autocomplete-result"
+        v-for="(result, i) in results"
+        :key="i"
         @click="setResult(result)"
         :class="{ 'is-active': i === arrowCounter }"
-        >
+      >
         {{ result }}
       </li>
     </ul>
@@ -23,7 +28,7 @@
 
 <script>
 export default {
-  name: 'SearchAutocomplete',
+  name: "SearchAutocomplete",
   props: {
     items: {
       type: Array,
@@ -33,33 +38,36 @@ export default {
   },
   data() {
     return {
-      search: '',
+      search: "",
       results: [],
       isOpen: false,
-      arrowCounter: -1
+      arrowCounter: -1,
     };
   },
-  beforeMount(){
-    this.search = this.$store.state.productSearch
+  beforeMount() {
+    this.search = this.$store.state.productSearch;
   },
   mounted() {
-    document.addEventListener('click', this.handleClickOutside);
+    document.addEventListener("click", this.handleClickOutside);
   },
-  updated(){
-    this.$nextTick(()=>{
-      this.$store.state.productSearch = this.search
-    })
+  updated() {
+    this.$nextTick(() => {
+      this.$store.state.productSearch = this.search;
+      this.$store.commit("searchForItem");
+    });
   },
   destroyed() {
-    document.removeEventListener('click', this.handleClickOutside);
+    document.removeEventListener("click", this.handleClickOutside);
   },
   methods: {
     filterResults() {
-      let newArray = []
-      for (let i=0 ; i<this.items.length ; i++){
-        newArray.push(this.items[i].name)
+      let newArray = [];
+      for (let i = 0; i < this.items.length; i++) {
+        newArray.push(this.items[i].name);
       }
-      this.results = newArray.filter(item => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1);
+      this.results = newArray.filter(
+        (item) => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+      );
     },
     onChange() {
       this.filterResults();
@@ -70,7 +78,9 @@ export default {
       this.search = result;
       this.isOpen = false;
       this.$store.state.isProductSearched = true;
-      this.$router.push('/products')
+      // this.$store.state.productSearch = result;
+      // this.$tore.commit("searchForItem");
+      this.$router.push("/products");
     },
     handleClickOutside(event) {
       if (!this.$el.contains(event.target)) {
@@ -99,31 +109,34 @@ export default {
 </script>
 
 <style>
-  .autocomplete {
-    position: relative;
-  }
+/* .autocomplete {
+  width: 100%;
+} */
 
-  .autocomplete-results {
-    padding: 0;
-    margin: 0;
-    border: 1px solid #eeeeee;
-    height: 120px;
-    min-height: 1em;
-    max-height: 6em;    
-    overflow: auto;
-    display: block;
-  }
+.autocomplete-results {
+  padding: 0;
+  margin: 0;
+  border: 1px solid #eeeeee;
+  height: 120px;
+  min-height: 1em;
+  max-height: 12em;
+  overflow: auto;
+  display: block;
+}
 
-  .autocomplete-result {
-    list-style: none;
-    text-align: left;
-    padding: 4px 2px;
-    cursor: pointer;
-  }
+.autocomplete-result {
+  list-style: none;
+  text-align: left;
+  padding: 4px 2px;
+  cursor: pointer;
+  /* background-color: #ff6f61; */
+  background-color: white;
+  z-index: 1000;
+}
 
-  .autocomplete-result.is-active,
-  .autocomplete-result:hover {
-    background-color: #4AAE9B;
-    color: white;
-  }
+.autocomplete-result.is-active,
+.autocomplete-result:hover {
+  background-color: #4aae9b;
+  color: white;
+}
 </style>
