@@ -326,24 +326,38 @@
                     <template v-slot:header> Debit/Credit Card Details </template>
 
                     <template v-slot:body>
-                      <div class="m-auto w-1/2">
-                        <p class="card-digits absolute flex ml-14 text-xl text-white font-bold">
-                          <p class="tracking-wide mr-3">{{ cardNum1 }}</p><p class="tracking-wide mr-3">{{ cardNum2 }}</p><p class="tracking-wide mr-3">{{ cardNum3 }}</p><p class="tracking-wide ">{{ cardNum4 }}</p>
-                        </p>
-                        <div class="flex flex-row">
-                        <div>
-                        <p class="card-validity text-white absolute ml-40 font-bold">VALID</p>
-                        <p class="card-validity1 text-white absolute ml-40 font-bold">THRU</p>
+                      <div class="flip m-auto w-1/2">
+                        <div class="flip-content">
+                          <div class="flip-front z-20">
+                            <p class="card-digits absolute flex ml-14 text-xl text-white font-bold z-40">
+                              <p class="tracking-wide mr-3">{{ cardNum1 }}</p><p class="tracking-wide mr-3">{{ cardNum2 }}</p><p class="tracking-wide mr-3">{{ cardNum3 }}</p><p class="tracking-wide ">{{ cardNum4 }}</p>
+                            </p>
+                            <div class="flex flex-row">
+                            <div>
+                              <p class="card-validity text-white absolute ml-40 font-bold z-40">VALID</p>
+                              <p class="card-validity1 text-white absolute ml-40 font-bold z-40">THRU</p>
+                            </div>
+                            <div>
+                            <p class="card-validity2 flex text-white absolute ml-48 font-bold z-40">
+                              <p>{{cardValidityMonth}}</p><small class="text-xl">/</small><p>{{cardValidityYear}}</p>
+                            </p>
+                            </div>
+                            </div>
+                            <img
+                              class="absolute debit-card ml-8"
+                              src="@/assets/img/visacard-front.jpeg"
+                              alt="Visa Card"
+                            />
+                          </div>
+                          <div class="flip-back z-20">
+                          <p class="security-code absolute flex ml-56 text-xl text-white font-bold z-40">{{secCVV}}</p>
+                            <img
+                              class="debit-card ml-8"
+                              src="@/assets/img/visacard-back.jpeg"
+                              alt="Visa Card"
+                            />
+                          </div>
                         </div>
-                        <div>
-                        <p class="card-validity2 text-white absolute ml-48 font-bold">{{cardValidityMonth}}</p>
-                        </div>
-                        </div>
-                        <img
-                          class="debit-card ml-8"
-                          src="@/assets/img/visacard-front.jpeg"
-                          alt="Visa Card"
-                        />
                       </div>
                       <p class="mt-4 ml-8">Enter your card number:</p>
                       <div
@@ -407,7 +421,7 @@
                       />
                       /
                       <input
-                        class="w-12 focus:outline-0"
+                        class="w-12 focus:outline-0 pl-2"
                         type="text"
                         maxlength="2"
                         ref="cardYear"
@@ -417,8 +431,10 @@
                       </div>
                       <p class="ml-8 mt-2">Security code:</p>
                       <input
-                        class="ml-8 border-2 border-x-0 border-t-0 border-gray-400 focus:border focus:border-x-0 focus:border-t-0 focus:border-gray-400 focus:outline-0"
+                        class="security-flip ml-8 border-2 border-x-0 border-t-0 border-gray-400 focus:border focus:border-x-0 focus:border-t-0 focus:border-gray-400 focus:outline-0"
                         type="text"
+                        maxlength="3"
+                        v-model="securityCode"
                       />
                     </template>
                     <template v-slot:footer>
@@ -449,7 +465,7 @@
                 role="tabpanel"
                 aria-labelledby="address-nav"
               >
-                <h4>Address</h4>
+                <h4 class="font-bold text-xl">Address</h4>
                 <div class="row">
                   <div class="col-md-6">
                     <h5>Payment Address</h5>
@@ -788,8 +804,8 @@ export default {
       userCardNumber3: "",
       userCardNumber4: "",
       userCardValidityMonth: "",
-      userCardValidityYear: ""
-
+      userCardValidityYear: "",
+      securityCode: ""
     };
   },
   watch: {
@@ -869,7 +885,7 @@ export default {
     },
     userCardValidityYear(value){
       this.userCardValidityYear = value;
-      this.focusOnMonth(value);
+      this.refocusOnMonth(value);
     },
   },
   computed: {
@@ -902,6 +918,9 @@ export default {
     cardValidityYear(){
       return this.userCardValidityYear;
     },
+    secCVV(){
+      return this.securityCode;
+    }
   },
   methods: {
     focusOnInput2(value) {
@@ -1354,7 +1373,7 @@ export default {
       this.lipaNaMpesa = !this.lipaNaMpesa;
     },
     showShippingAddress() {
-      this.shippingAddress = true;
+      this.shippingAddress = !this.shippingAddress;
     },
     payViaMpesa() {
       this.paymentConfirm = true;
@@ -1607,5 +1626,32 @@ select {
 .card-validity2{
   margin-top: 130px;
   font-size: 18px;
+}
+.security-code{
+  margin-top: 70px;
+}
+.flip {
+  perspective: 600px;  
+}
+.flip-content {
+  transition: transform 2s;
+  transform-style: preserve-3d;
+}
+.flip:hover .flip-content {
+  transform: rotateY(180deg);
+  transition: transform 2s;
+}
+.flip-front, .flip-back {
+  backface-visibility: hidden;
+}
+.flip-back {
+  transform: rotateY(180deg);
+}
+.security-flip:focus .flip-content{
+  transform: rotateY(180deg);
+  transition: transform 2s;
+}
+.security-flip{
+  perspective: 600px;
 }
 </style>

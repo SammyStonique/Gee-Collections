@@ -357,8 +357,18 @@
                     </template>
                   </Modal>
                   <div id="paypal-button-container"></div>
+                  <div>
+                    <button
+                      class="lipanabank bg-yellow-400 hover:text-yellow-400 hover:bg-black"
+                      type="button"
+                      @click="payViaBank"
+                    >
+                      Pay Via Bank
+                    </button>
+                  </div>
+                  <div v-if="showStripe" ref="card"></div>
                   <div class="checkout-btn">
-                    <button>Place Order</button>
+                    <button type="submit">Place Order</button>
                   </div>
                 </div>
               </div>
@@ -373,6 +383,9 @@
 
 <script>
 import Modal from "@/components/Modal.vue";
+let stripe = Stripe(`YOUR_STRIPE_PUBLISHABLE_KEY`),
+  elements = stripe.elements(),
+  card = undefined;
 export default {
   props: [
     "cartGrandTotal",
@@ -421,6 +434,7 @@ export default {
       isAuthenticated: false,
       deliveryOption: false,
       unknownVal: "",
+      showStripe: false,
     };
   },
   watch: {
@@ -645,6 +659,23 @@ export default {
         });
       }
     },
+    payViaBank() {
+      // STRIPE SETTINGS
+      let style = {
+        base: {
+          border: "1px solid #D8D8D8",
+          borderRadius: "4px",
+          color: "#000",
+        },
+
+        invalid: {
+          // All of the error styles go inside of here.
+        },
+      };
+      let card = elements.create("card", style);
+      card.mount(this.$refs.card);
+      this.showStripe = !this.showStripe;
+    },
     placeOrder() {
       const items = [];
       for (let i = 0; i < this.cart.cartItems.length; i++) {
@@ -711,10 +742,11 @@ export default {
     this.isAuthenticated = this.$store.state.isAuthenticated;
   },
   mounted() {
-    this.registerCallbackUrl();
+    // this.registerCallbackUrl();
     if (!this.isAuthenticated) {
       this.$toast.error("You need to create an account before proceeding to checkout");
     }
+
     paypal
       .Buttons({
         //Styling the paypal button
@@ -791,6 +823,21 @@ select {
 .lipanampesa:hover {
   background-color: black;
   color: green;
+}
+.lipanabank {
+  width: 100%;
+  height: 40px;
+  padding: 2px 10px;
+  font-family: "Source Code Pro", monospace;
+  font-weight: 700;
+  font-size: 18px;
+  text-align: center;
+  color: #000000;
+  /* background: yellow; */
+  border: none;
+  transition: all 0.3s;
+  margin-bottom: 20px;
+  border-radius: 20px;
 }
 .procPayBtn {
   margin: 20px;

@@ -290,7 +290,7 @@
   <!-- Footer Bottom End -->
 
   <!-- Back to Top -->
-  <router-link to="#" @click="scrollToTop()" class="back-to-top"
+  <router-link to="#" @click="scrollToTop()" class="animate-bounce back-to-top"
     ><i class="fa fa-chevron-up"></i
   ></router-link>
 </template>
@@ -440,8 +440,8 @@ export default {
     },
   },
   methods: {
-    getProducts() {
-      this.axios
+    async getProducts() {
+      await this.axios
         .get("/api/v1/latest-products/")
         .then((response) => {
           this.items = response.data;
