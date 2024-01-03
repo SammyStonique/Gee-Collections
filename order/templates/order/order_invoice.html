@@ -1,0 +1,76 @@
+<div class="page-container">Page of</div>
+<div class="logo-container">
+    <img style="height: 18px;" src="@/assets/img/new-logo.png" />
+</div>
+<table class="invoice-info-container">
+<tbody>
+<tr>
+<td class="client-name" rowspan="2">{{order_first_name}}  {{order_last_name }}</td>
+<td>Gee Collections</td>
+</tr>
+<tr>
+<td>Opposite Jamia Mosque</td>
+</tr>
+<tr>
+<td>Invoice Date: <strong>{{today_date}}</strong></td>
+<td>Siaya, 94103</td>
+</tr>
+<tr>
+<td>Invoice No: <strong>12345</strong></td>
+<td>geecollections@gmail.com</td>
+</tr>
+</tbody>
+</table>
+<table class="line-items-container">
+<thead>
+<tr>
+<th class="heading-quantity">Quantity</th>
+<th class="heading-description">Description</th>
+<th class="heading-price">Price</th>
+<th class="heading-subtotal">Subtotal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>{{ quantity }}</td>
+<td>{{ product_name }}</td>
+<td class="right">{{ price }}</td>
+<td class="bold">{{subtotal1}}</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>{{item2}}</td>
+<td class="right">&nbsp;</td>
+<td class="bold">{{subtotal2}}</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>{{item3}}</td>
+<td class="right">&nbsp;</td>
+<td class="bold">{{subtotal3}}</td>
+</tr>
+</tbody>
+</table>
+<table class="line-items-container has-bottom-border">
+<thead>
+<tr>
+<th>Payment Info</th>
+<th>Due By</th>
+<th>Total Due</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="payment-info">
+<div>Account No: <strong>123567744</strong></div>
+<div>Routing No: <strong>120000547</strong></div>
+</td>
+<td class="large">{{month}}</td>
+<td class="large total">{{total}}</td>
+</tr>
+</tbody>
+</table>
+<div class="footer">
+<div class="footer-info">geecollections@gmail.com | 0711 171 607 | geecollections.com</div>
+<div class="footer-thanks"><img src="https://github.com/anvilco/html-pdf-invoice-template/raw/main/img/heart.png" alt="heart" />Thank you!</div>
+</div>

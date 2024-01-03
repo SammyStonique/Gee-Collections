@@ -479,15 +479,18 @@ export default {
         quantity: this.quantity,
       };
       this.$store.commit("addToCart", cartItem);
+      console.log(this.searchItem);
       this.$toast.success(`${this.searchItem.name} added to cart`);
     },
     async getSearchedProduct() {
       this.productSearch = localStorage.getItem("productSearch");
+      console.log("the searched product is ", this.productSearch);
       this.$store.state.searchItem = [];
       await this.axios
         .get(`api/v1/latest-products/${this.productSearch}/`)
         .then((response) => {
           this.searchItem = response.data;
+          console.log("Search Item Array", this.searchItem);
           this.$store.state.searchItem.push(this.searchItem);
           this.$store.commit("setSearchItem");
           this.$router.push("/search");

@@ -6,7 +6,7 @@
 
 
 ## Documentation
-Take a look at the [API docs here](https://build.at-labs.io/discover/).
+Take a look at the [API docs here](https://developers.africastalking.com).
 
 ## Install
 
@@ -71,10 +71,10 @@ Initialize the SDK by calling `africastalking.initialize(username, api_key)`. Af
 
 - [SMS](#sms): `africastalking.SMS`
 - [Airtime](#airtime): `africastalking.Airtime`
-- [Payments](#payments): `africastalking.Payment`
 - [Voice](#voice): `africastalking.Voice`
 - [Token](#token): `africastalking.Token`
 - [Application](#application): `africastalking.Application`
+- [MobileData](#mobiledata): `africastalking.MobileData`
 
 ### `Application`
 
@@ -89,6 +89,8 @@ Initialize the SDK by calling `africastalking.initialize(username, api_key)`. Af
         - `phone_number`: Recipient of airtime
         - `amount`: Amount to send with currency e.g `100`
         - `currency_code`: 3-digit ISO format currency code (e.g `KES`, `USD`, `UGX` etc).
+
+- `max_num_retry`: This allows you to specify the maximum number of retries in case of failed airtime deliveries due to various reasons such as telco unavailability. The default retry period is 8 hours and retries occur every 60 seconds. For example, setting `max_num_retry=4` means the transaction will be retried every 60 seconds for the next 4 hours. `OPTIONAL`.
 
 ### `Sms`
 
@@ -131,7 +133,7 @@ Initialize the SDK by calling `africastalking.initialize(username, api_key)`. Af
     - `phone_number`: PhoneNumber to be subscribed `REQUIRED`
     
     
-### `Payments`
+<!-- ### `Payments`
 
 - `mobile_checkout(product_name: str, phone_number: str, currency_code: str, amount: float, metadata: dict = {}, provider_channel:str)`: Charge a customers mobile money account
 
@@ -166,15 +168,6 @@ Initialize the SDK by calling `africastalking.initialize(username, api_key)`. Af
       - `requester`: PhoneNumber through which KPLC will send tokens when using B2B to buy electricity tokens.
       - `metadata`: Additional data to associate with the transaction. `REQUIRED`
 
-- `mobile_data(product_name: str, recipients: dict)`: Send mobile data to customers.
-
-    - `product_name`: Payment product on Africa's Talking. `REQUIRED`
-    - `recipients`:  A list of recipients. Each recipient has:
-      - `phoneNumber`: Customer phone number (in international format). `REQUIRED`
-      - `quantity`: Mobile data amount. `REQUIRED`
-      - `unit`: Mobile data unit. Can either be `MB` or `GB`. `REQUIRED`
-      - `validity`: How long the mobile data is valid for. Must be one of `Day`, `Week` and `Month`. `REQUIRED`
-      - `metadata`: Additional data to associate with the transaction. `REQUIRED`
 
 - `bank_checkout(product_name: str, currency_code: str, amount: float, bank_account: dict, narration: str, metadata: dict = {})`: Initiate bank checkout.
 
@@ -183,7 +176,7 @@ Initialize the SDK by calling `africastalking.initialize(username, api_key)`. Af
 
         - `accountName`: Name of the bank account. `REQUIRED`
         - `accountNumber`: Account number. `REQUIRED`
-        - `bankCode`: A [6-Digit Integer Code](https://build.at-labs.io/docs/payments%2Fbank%2Fcheckout) for the bank that we allocate. See `payments::BANK*` for supported banks. `REQUIRED`
+        - `bankCode`: A [6-Digit Integer Code](https://developers.africastalking.com/docs/payments/bank/checkout) for the bank that we allocate. See `payments::BANK*` for supported banks. `REQUIRED`
         - `dateOfBirth`: Date of birth of the account owner (in the format `YYYY-MM-DD`). Required for Zenith Bank Nigeria.
 
     - `currency_ode`: 3-digit ISO format currency code (only `NGN` is supported at present). `REQUIRED`
@@ -205,7 +198,7 @@ Initialize the SDK by calling `africastalking.initialize(username, api_key)`. Af
 
             - `accountName`: Name of the bank account. `REQUIRED`
             - `accountNumber`: Account number. `REQUIRED`
-            - `bankCode`: A [6-Digit Integer Code](https://build.at-labs.io/docs/payments%2Fbank%2Fcheckout) for the bank that we allocate. See `payments::BANK*` for supported banks. `REQUIRED`
+            - `bankCode`: A [6-Digit Integer Code](https://developers.africastalking.com/docs/payments/bank/checkout) for the bank that we allocate. See `payments::BANK*` for supported banks. `REQUIRED`
             - `dateOfBirth`: Date of birth of the account owner (in the format `YYYY-MM-DD`). Required for Zenith Bank Nigeria.
 
         - `currencyCode`: 3-digit ISO format currency code (only `NGN` is supported at present). `REQUIRED`
@@ -296,7 +289,24 @@ Initialize the SDK by calling `africastalking.initialize(username, api_key)`. Af
 - `upload_media_file(phone_number: str, url: str)`: Upload voice media file
 
     - `phone_number`: phone number mapped to your Africa's Talking account (in international format). `REQUIRED`
-    - `url`: The url of the file to upload. Should start with `http(s)://`. `REQUIRED`
+    - `url`: The url of the file to upload. Should start with `http(s)://`. `REQUIRED` -->
+
+### `MobileData`
+
+- `send(product_name: str, recipients: dict)`: Send mobile data to customers.
+
+    - `product_name`: Payment product on Africa's Talking. `REQUIRED`
+    - `recipients`:  A list of recipients. Each recipient has:
+      - `phoneNumber`: Customer phone number (in international format). `REQUIRED`
+      - `quantity`: Mobile data amount. `REQUIRED`
+      - `unit`: Mobile data unit. Can either be `MB` or `GB`. `REQUIRED`
+      - `validity`: How long the mobile data is valid for. Must be one of `Day`, `Week` and `Month`. `REQUIRED`
+      - `isPromoBundle`: This is an optional field that can be either`true` and `false`. `OPTIONAL`
+      - `metadata`: Additional data to associate with the transaction. `OPTIONAL`
+
+- `find_transaction(transaction_id: str)`: Find a mobile data transaction.
+
+- `fetch_wallet_balance()`: Fetch a mobile data product balance.
 
 ### `Token`
 
@@ -305,7 +315,7 @@ Initialize the SDK by calling `africastalking.initialize(username, api_key)`. Af
 
 ### `Ussd`
 
-For more information, please read [http://docs.africastalking.com/ussd](https://build.at-labs.io/docs/ussd%2Foverview)
+For more information, please read [https://developers.africastalking.com/docs/ussd](https://developers.africastalking.com/docs/ussd/overview)
 
 
 ## Development

@@ -17,4 +17,6 @@ urlpatterns = [
     path('c2b/validation', views.validation, name="validation"),
     path('c2b/callback', views.call_back, name="call_back"),
     path('view_pdf/<str:order_id>/',views.ViewPDF.as_view()),
+    path('order-pdf/',views.orderPDF, name="order_pdf"),
+    path('invoice-pdf/<str:order_id>/',views.orderReceiptPDF, name="invoice"),
 ]

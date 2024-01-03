@@ -19,7 +19,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'b478-105-160-4-98.ngrok.io',
+    'd0a8-41-81-221-21.ngrok-free.app',
     '192.168.100.23',
 ]
 
@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'product',
     'order',
-    'jsonpickle'
+    'jsonpickle',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -154,6 +155,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
     ),
 }
 

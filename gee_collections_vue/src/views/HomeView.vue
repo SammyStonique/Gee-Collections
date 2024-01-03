@@ -51,30 +51,47 @@
           <div class="col-md-6">
             <div class="swiper">
               <div class="swiper-wrapper">
+                <div class="pt-48"></div>
                 <div class="swiper-slide">
-                  <img
-                    src="@/assets/img/main1.jpg"
-                    alt="Slider Image"
-                    style="width: 500px; height: 400px"
-                  />
-                  <div class="header-slider-caption">
-                    <p>Some text goes here that describes the image</p>
-                    <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Shop Now</a>
+                  <div class="z-50">
+                    <img
+                      src="@/assets/img/main1.jpg"
+                      alt="Slider Image"
+                      style="width: 500px; height: 400px"
+                    />
                   </div>
                 </div>
                 <div class="swiper-slide">
-                  <img
-                    src="@/assets/img/main2.jpg"
-                    alt="Slider Image"
-                    style="width: 500px; height: 400px"
-                  />
+                  <div class="relative">
+                    <img
+                      src="@/assets/img/main2.jpg"
+                      alt="Slider Image"
+                      style="width: 500px; height: 400px"
+                    />
+                  </div>
+                  <div class="absolute top-40">
+                    <button
+                      class="transition ease-in-out delay-150 rounded-full w-20 h-20 hover:-translate-y-1 hover:scale-110 duration-300"
+                    >
+                      <i class="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                    </button>
+                  </div>
                 </div>
                 <div class="swiper-slide">
-                  <img
-                    src="@/assets/img/main3.jpg"
-                    alt="Slider Image"
-                    style="width: 500px; height: 400px"
-                  />
+                  <div class="relative">
+                    <img
+                      src="@/assets/img/main3.jpg"
+                      alt="Slider Image"
+                      style="width: 500px; height: 400px"
+                    />
+                  </div>
+                  <div class="absolute top-40">
+                    <button
+                      class="transition ease-in-out delay-150 rounded-full w-20 h-20 hover:-translate-y-1 hover:scale-110 duration-300"
+                    >
+                      <i class="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -459,10 +476,14 @@ export default {
       speed: 700,
       modules: [Autoplay, Pagination],
       autoplay: {
-        delay: 2000,
+        delay: 3000,
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
         el: ".swiper-slide",
+      },
+      pagination: {
+        el: ".swiper-pagination",
+        type: "bullets",
       },
       on: {
         init() {

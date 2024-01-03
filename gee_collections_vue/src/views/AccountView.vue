@@ -31,6 +31,14 @@
               >
               <a
                 class="nav-link"
+                id="account-nav"
+                data-toggle="pill"
+                href="#account-tab"
+                role="tab"
+                ><i class="fa fa-user"></i>Account Details</a
+              >
+              <a
+                class="nav-link"
                 id="orders-nav"
                 data-toggle="pill"
                 href="#orders-tab"
@@ -53,14 +61,7 @@
                 role="tab"
                 ><i class="fa fa-map-marker-alt"></i>Address</a
               >
-              <a
-                class="nav-link"
-                id="account-nav"
-                data-toggle="pill"
-                href="#account-tab"
-                role="tab"
-                ><i class="fa fa-user"></i>Account Details</a
-              >
+              
               <router-link to="/logout" class="nav-link"
                 ><i class="fa fa-sign-out-alt"></i>Logout</router-link
               >
@@ -74,8 +75,8 @@
                 role="tabpanel"
                 aria-labelledby="dashboard-nav"
               >
-                <h4>Dashboard</h4>
-                <p>
+                <h1 class="mb-4 text-lg font-bold">Dashboard</h1>
+                <p class="mb-4">
                   Hello {{ this.first_name }}, we're very excited to have you on board.
                   Gee Collections appreciates your contribution towards assisting us grow
                   us a brand. We could not make it this far without you, always feel free
@@ -91,6 +92,7 @@
                 aria-labelledby="orders-nav"
               >
                 <div class="table-responsive">
+                <h1 class="font-bold text-lg mb-4">My Orders</h1>
                   <table class="table table-bordered">
                     <thead class="thead-dark">
                       <tr>
@@ -410,13 +412,20 @@
                           />
                         </div>
                       </div>
+                      <span
+                        class="ml-8"
+                        v-if="watcherMsg.userCardNumber1"
+                        style="color: red; font-size: 10px"
+                        >{{ watcherMsg.userCardNumber1 }}</span
+                      >
                       <p class="ml-8 mt-2">Expiration date:</p>
                       <div class="flex flex-row w-1/4 ml-8 border-2 border-x-0 border-t-0 border-gray-400 focus:border focus:border-x-0 focus:border-t-0 focus:border-gray-400 focus:outline-0">
                       <input
-                        class="w-12 focus:outline-0 pl-6"
+                        class="w-12 focus:outline-0 pl-3 mr-2"
                         type="text"
                         maxlength="2"
                         ref="cardMonth"
+                        placeholder="Mm "
                         v-model="userCardValidityMonth"
                       />
                       /
@@ -425,10 +434,17 @@
                         type="text"
                         maxlength="2"
                         ref="cardYear"
+                        placeholder="Yy"
                         v-on:keyup.delete="refocusOnMonth"
                         v-model="userCardValidityYear"
                       />
                       </div>
+                      <span
+                        class="ml-8"
+                        v-if="watcherMsg.userCardValidityMonth"
+                        style="color: red; font-size: 10px"
+                        >{{ watcherMsg.userCardValidityMonth }}</span
+                      >
                       <p class="ml-8 mt-2">Security code:</p>
                       <input
                         class="security-flip ml-8 border-2 border-x-0 border-t-0 border-gray-400 focus:border focus:border-x-0 focus:border-t-0 focus:border-gray-400 focus:outline-0"
@@ -539,7 +555,7 @@
                 role="tabpanel"
                 aria-labelledby="account-nav"
               >
-                <h4>Account Details</h4>
+                <h1 class="mb-4 font-bold text-lg">Account Details</h1>
                 <form action="" @submit.prevent="postProfileData">
                   <div class="row">
                     <div class="col-md-6">
@@ -925,25 +941,38 @@ export default {
   methods: {
     focusOnInput2(value) {
       const editInput2 = this.$refs.editCard2;
-      if(value.length == 4){
+      this.watcherMsg["userCardNumber1"] = "";
+      if(/^[a-zA-Z]+$/.test(value)){
+        this.watcherMsg["userCardNumber1"] = "Should contain numbers only";
+      }else if(value.length == 4 && !(/^[a-zA-Z]+$/.test(value)) && (/\d/.test(value))){
         editInput2.focus();
       }
+      
     },
     focusOnInput3(value) {
       const editInput3 = this.$refs.editCard3;
-      if(value.length == 4){
+      this.watcherMsg["userCardNumber1"] = "";
+      if(/^[a-zA-Z]+$/.test(value)){
+        this.watcherMsg["userCardNumber1"] = "Should contain numbers only";
+      }else if(value.length == 4 && !(/^[a-zA-Z]+$/.test(value)) && (/\d/.test(value))){
         editInput3.focus();
       }
     },
     focusOnInput4(value) {
       const editInput4 = this.$refs.editCard4;
-      if(value.length == 4){
+      this.watcherMsg["userCardNumber1"] = "";
+      if(/^[a-zA-Z]+$/.test(value)){
+        this.watcherMsg["userCardNumber1"] = "Should contain numbers only";
+      }else if(value.length == 4 && !(/^[a-zA-Z]+$/.test(value)) && (/\d/.test(value))){
         editInput4.focus();
       }
     },
     focusOnYear(value) {
       const cardYear = this.$refs.cardYear;
-      if(value.length == 2){
+      this.watcherMsg["userCardValidityMonth"] = "";
+      if(/^[a-zA-Z]+$/.test(value)){
+        this.watcherMsg["userCardNumber1"] = "Should contain numbers only";
+      }else if(value.length == 2 && (/\d/.test(value))){
         cardYear.focus();
       }
     },

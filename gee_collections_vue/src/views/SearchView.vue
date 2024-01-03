@@ -23,7 +23,7 @@
                     <p style="font-size: 20px">
                       Showing Results for "<em
                         style="font-weight: bold; font-size: 24px"
-                        >{{ productSearched }}</em
+                        >{{ searchedItem.name }}</em
                       >
                       "
                     </p>

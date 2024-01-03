@@ -83,6 +83,8 @@ export default createStore({
     },
     //ADDING AN ITEM TO THE CART
     addToCart(state, cartItem){
+
+      console.log(cartItem);
       //Checking if the cart has an item
       if(state.cart.cartItems.length > 0){
         //Checking if an item exists in a cart

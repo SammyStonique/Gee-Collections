@@ -8,6 +8,7 @@ import string
 
 UserModel = get_user_model()
 
+#Function to generate random string that serves as order ID
 def random_string(letter_count=4, digit_count=3):  
         str1 = ''.join((random.choice(string.ascii_letters) for x in range(letter_count)))  
         str1 += ''.join((random.choice(string.digits) for x in range(digit_count)))  
@@ -50,7 +51,7 @@ class OrderItem(models.Model) :
 
     def __str__(self):
         # return f'{self.product.name} for {self.user.email}' 
-        return f"{self.order.email} OrderItem({'%s' % self.id})"
+        return f"{self.order.email} OrderItem({'%s' % self.order.id})"
 
 
 class BaseModel(models.Model):

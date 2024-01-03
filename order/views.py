@@ -23,7 +23,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger ##pagin
 from io import BytesIO
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
-from xhtml2pdf import pisa
+# from xhtml2pdf import pisa
 from django.views import View
 
 #AFRICASTALKING
@@ -32,6 +32,20 @@ username = os.environ.get('AFRICASTALKING_USERNAME')
 api_key = os.environ.get('AFRICASTALKING_API_KEY')
 africastalking.initialize(username, api_key)  
 sms = africastalking.SMS
+
+#Creating PDF using ReportLab
+from django.http import FileResponse
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import Table, TableStyle
+from reportlab.lib import colors
+
+#Creating PDF using pdfkit
+import jinja2   
+import pdfkit
+
 
 
 # Create your views here.
@@ -105,7 +119,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": payment_number,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": payment_number,  # replace with your phone number to get stk push
-        "CallBackURL": "https://b478-105-160-4-98.ngrok.io/api/v1/c2b/callback",
+        "CallBackURL": "https://d0a8-41-81-221-21.ngrok-free.app/api/v1/c2b/callback",
         "AccountReference": first_name,
         "TransactionDesc": "Making payment for purchased goods"
     }
@@ -119,8 +133,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Business_short_code,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://b478-105-160-4-98.ngrok.io/api/v1/c2b/confirmation",
-               "ValidationURL": "https://b478-105-160-4-98.ngrok.io/api/v1/c2b/validation"}
+               "ConfirmationURL": "https://d0a8-41-81-221-21.ngrok-free.app/api/v1/c2b/confirmation",
+               "ValidationURL": "https://d0a8-41-81-221-21.ngrok-free.app/api/v1/c2b/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     return HttpResponse(response.text)
 
@@ -188,14 +202,79 @@ def render_to_pdf(template_src, context_dict={}):
     template = get_template(template_src)
     html = template.render(context_dict)
     result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    # pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
 
-    if not pdf.err:
-        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    # if not pdf.err:
+    #     return HttpResponse(result.getvalue(), content_type='application/pdf')
     
     return None
 
+def orderPDF(request):
+    #Create a Bytestream buffer
+    buf = io.BytesIO()
 
+    #Create a canvas
+    canv = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+    canv.setTitle('MyOrders')
+
+    #Create a text object
+    textobj = canv.beginText()
+    textobj.setTextOrigin(inch, inch)
+    textobj.setFont('Helvetica', 16)
+
+    myOrders = Order.objects.all()
+    pnOrders = []
+
+    for myOrder in myOrders:
+        pnOrders.append(myOrder.id)
+        pnOrders.append(myOrder.address)
+        pnOrders.append(myOrder.phone_number)
+        pnOrders.append(myOrder.email)
+        pnOrders.append("========")
+
+    for pnOrder in pnOrders:
+        textobj.textLine(pnOrder)
+
+    canv.drawText(textobj)
+    canv.showPage()
+    canv.save()
+    buf.seek(0)
+
+
+    return FileResponse(buf, as_attachment=True, filename="MyOrder.pdf")
+
+def orderReceiptPDF(request,order_id):
+    myOrder = get_object_or_404(Order, pk=order_id)
+    orderItem = OrderItem.objects.filter(order=myOrder)
+
+    product_name = orderItem[0].product.name
+    product_price = orderItem[0].product.price
+    quantity = orderItem[0].quantity
+    price = orderItem[0].price
+
+    invoice_no = myOrder.id
+    first_name = myOrder.first_name
+    last_name = myOrder.last_name
+    address = myOrder.address
+    city = myOrder.city
+    county = myOrder.county
+    order_total = myOrder.order_total
+
+    context={"order_id":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
+              "order_address":address, "order_city":city, "order_county":county, 
+              "order_order_total ":order_total, "product_name":product_name, "product_price":product_price,
+              "quantity":quantity, "price":price}
+
+    template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
+    template_env = jinja2.Environment(loader=template_loader)
+
+    template  = template_env.get_template('order_invoice.html')
+    output_text = template.render(context)
+
+    config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
+    options={"enable-local-file-access": ""}
+
+    return HttpResponse(pdfkit.from_string(output_text, 'Invoice01.pdf', configuration=config, options=options, css="/home/sammyb/gee_collections/order/static/order/invoice-pdf.css"), content_type='application/pdf')
 
 @login_required
 def admin_order_pdf(request, order_id):
