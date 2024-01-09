@@ -8,15 +8,15 @@ from .models import *
 from .serializers import *
 from rest_framework import authentication, permissions
 from rest_framework.decorators import authentication_classes, permission_classes, api_view
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse,JsonResponse, FileResponse
 import requests
 from requests.auth import HTTPBasicAuth
 import json
 from .mpesa_credentials import MpesaAccessToken, LipanaMpesaPpassword
 from django.views.decorators.csrf import csrf_exempt
+
 ##Send Email
-import smtplib
-from django.core.mail import send_mail 
+from django.core.mail import send_mail, EmailMessage
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger ##pagination
 
 # PDF REQUIREMENTS
@@ -60,9 +60,14 @@ def checkout(request):
         elif(phone_number.startswith('254')):
             pn = "+"+phone_number
         recipient = [email]
-        subject = f'Order({order_id}) succesfully placed'
-        content = f'Dear {customer_name},your order {order_id} has succesfully been placed. Thank you.'
-        send_mail(subject, content,os.environ.get('EMAIL_HOST_USER'),recipient, fail_silently=False) 
+        subject = f'Order Invoice - [{order_id}]'
+        content = f'Dear {customer_name}, Thank you for choosing Gee Collections! We appreciate your business and are pleased to provide you with the invoice for your recent order. Below, you will find an attached invoice.'
+        # send_mail(subject, content,os.environ.get('EMAIL_HOST_USER'),recipient, fail_silently=False) 
+        mail = EmailMessage(subject,content,os.environ.get('EMAIL_HOST_USER'),recipient)
+        pdf = orderEmailInvoicePDF(request, order_id)
+        mail.attach('Invoice.pdf', pdf, 'application/pdf')
+        mail.send(fail_silently = False)
+
         sms.send(f'Dear {customer_name},your order {order_id} has succesfully been placed. Thank you for doing business with us.',[f'{pn}'],callback=checkout)
         return Response(serializer.data)
 
@@ -188,7 +193,56 @@ def confirmation(request):
     }
     return JsonResponse(dict(context))
 
-@api_view(['GET'])
+
+def orderEmailInvoicePDF(request,order_id):
+    myOrder = get_object_or_404(Order, pk=order_id)
+    orderItems = OrderItem.objects.filter(order=myOrder)
+
+    for orderItem in orderItems:
+        product_name = orderItem.product.name
+        product_price = orderItem.product.price
+        quantity = orderItem.quantity
+        price = orderItem.price
+
+    invoice_no = myOrder.id
+    first_name = myOrder.first_name
+    last_name = myOrder.last_name
+    address = myOrder.address
+    city = myOrder.city
+    county = myOrder.county
+    subtotal = quantity * price
+    order_total = myOrder.order_total
+    invoice_date = myOrder.created_at.strftime("%d %b, %Y")
+    month = myOrder.created_at.strftime("%B")
+
+    context={"order_id":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
+              "order_address":address, "order_city":city, "order_county":county, 
+              "order_total ":order_total, "product_name":product_name, "product_price":product_price,
+              "quantity":quantity, "price":price , "month":month , "invoice_date":invoice_date , "subtotal":subtotal}
+
+    template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
+    template_env = jinja2.Environment(loader=template_loader)
+
+    template  = template_env.get_template('order_invoice.html')
+    output_text = template.render(context)
+
+    config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
+    options={"enable-local-file-access": None,
+             }
+
+    pdfkit.from_string(output_text, 'Invoice.pdf', configuration=config, options=options, css="/home/sammyb/gee_collections/order/static/order/invoice-pdf.css")
+
+    path = 'Invoice.pdf'
+    with open(path, 'rb') as pdf:
+        contents = pdf.read()
+
+    # response = HttpResponse(contents, content_type='application/pdf')
+
+    # response['Content-Disposition'] = 'attachment; filename=Invoice.pdf'
+    pdf.close()
+    os.remove("Invoice.pdf")  # remove the locally created pdf file.
+    return contents  
+
 def orderInvoicePDF(request,order_id):
     myOrder = get_object_or_404(Order, pk=order_id)
     orderItems = OrderItem.objects.filter(order=myOrder)
@@ -236,4 +290,4 @@ def orderInvoicePDF(request,order_id):
     response['Content-Disposition'] = 'attachment; filename=Invoice.pdf'
     pdf.close()
     os.remove("Invoice.pdf")  # remove the locally created pdf file.
-    return response  
+    return response

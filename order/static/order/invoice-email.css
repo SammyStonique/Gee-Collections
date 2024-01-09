@@ -1,0 +1,39 @@
+body {
+    font-size: 25px;
+  }
+.bold{
+    font-weight: bold;
+    font-size: 30px;
+}
+.normal{
+    font-weight: lighter;
+    font-size: 25px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 20%;
+    border: 1px solid white;
+  }
+  
+table tr td {
+    padding-left: 10px;
+    text-align: left;
+}
+table thead{
+    background-color: #ff6f61;
+    color: white;
+    font-weight: bold;
+}
+
+table tr:nth-child(even){
+    background-color: #f2f2f2;
+}
+.salutation{
+    margin-bottom: 20px;
+}
+.subheading{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
