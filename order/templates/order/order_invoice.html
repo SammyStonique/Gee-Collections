@@ -1,6 +1,7 @@
 <div class="page-container">Page of</div>
 <div class="logo-container">
-    <img style="height: 18px;" src="@/assets/img/new-logo.png" />
+    <!-- <img style="height: 40px; width: auto;" src="@/assets/img/new-logo.png" /> -->
+    <img style="height: 50px; width: auto;" src="/home/sammyb/gee_collections/gee_collections_vue/src/assets/img/new-logo.png" />
 </div>
 <table class="invoice-info-container">
 <tbody>
@@ -12,7 +13,7 @@
 <td>Opposite Jamia Mosque</td>
 </tr>
 <tr>
-<td>Invoice Date: <strong>{{today_date}}</strong></td>
+<td>Invoice Date: <strong>{{invoice_date}}</strong></td>
 <td>Siaya, 94103</td>
 </tr>
 <tr>
@@ -35,7 +36,7 @@
 <td>{{ quantity }}</td>
 <td>{{ product_name }}</td>
 <td class="right">{{ price }}</td>
-<td class="bold">{{subtotal1}}</td>
+<td class="bold">{{subtotal}}</td>
 </tr>
 <tr>
 <td>&nbsp;</td>
@@ -62,11 +63,12 @@
 <tbody>
 <tr>
 <td class="payment-info">
-<div>Account No: <strong>123567744</strong></div>
-<div>Routing No: <strong>120000547</strong></div>
+<div>Bank: <strong>KCB Bank</strong></div>
+<div>Account Name: <strong>Grace Adhiambo Odhiambo</strong></div>
+<div>Account N0: <strong>120000547</strong></div>
 </td>
 <td class="large">{{month}}</td>
-<td class="large total">{{total}}</td>
+<td class="large total">{{order_total}}</td>
 </tr>
 </tbody>
 </table>

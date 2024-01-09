@@ -103,7 +103,7 @@
                         <th>Status</th>
                         <th>Payment Ref</th>
                         <th>Action</th>
-                        <!-- <th></th> -->
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -130,7 +130,11 @@
                             Make Payment
                           </button>
                         </td>
-                        <!-- <td><button class="btn" @click="printOrder(order.id)">Print</button></td> -->
+                        <td>
+                          <button class="btn" @click="printOrderInvoice(order.id)">
+                            <i class="fa fa-print" aria-hidden="true" title="Print Invoice"></i>
+                          </button>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -1449,12 +1453,19 @@ export default {
         this.pass2Type = false;
       }
     },
-    printOrder() {
+    printOrderInvoice() {
       let orderID = arguments[0];
       this.axios
-        .get(`api/v1/view_pdf/${orderID}/`)
+        .get(`api/v1/invoice-pdf/${orderID}/`, { responseType: 'blob' })
         .then((response) => {
-          console.log(response);
+          if(response.status == 200){
+              const url = window.URL.createObjectURL(new Blob([response.data]));
+              const link = document.createElement('a');
+              link.href = url;
+              link.setAttribute('download', 'Invoice.pdf');
+              document.body.appendChild(link);
+              link.click();
+          }
         })
         .catch((error) => {
           console.log(error);

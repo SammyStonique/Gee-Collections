@@ -23,7 +23,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger ##pagin
 from io import BytesIO
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
-# from xhtml2pdf import pisa
 from django.views import View
 
 #AFRICASTALKING
@@ -33,14 +32,6 @@ api_key = os.environ.get('AFRICASTALKING_API_KEY')
 africastalking.initialize(username, api_key)  
 sms = africastalking.SMS
 
-#Creating PDF using ReportLab
-from django.http import FileResponse
-import io
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import Table, TableStyle
-from reportlab.lib import colors
 
 #Creating PDF using pdfkit
 import jinja2   
@@ -197,60 +188,16 @@ def confirmation(request):
     }
     return JsonResponse(dict(context))
 
-#PDF Generator
-def render_to_pdf(template_src, context_dict={}):
-    template = get_template(template_src)
-    html = template.render(context_dict)
-    result = BytesIO()
-    # pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
-
-    # if not pdf.err:
-    #     return HttpResponse(result.getvalue(), content_type='application/pdf')
-    
-    return None
-
-def orderPDF(request):
-    #Create a Bytestream buffer
-    buf = io.BytesIO()
-
-    #Create a canvas
-    canv = canvas.Canvas(buf, pagesize=letter, bottomup=0)
-    canv.setTitle('MyOrders')
-
-    #Create a text object
-    textobj = canv.beginText()
-    textobj.setTextOrigin(inch, inch)
-    textobj.setFont('Helvetica', 16)
-
-    myOrders = Order.objects.all()
-    pnOrders = []
-
-    for myOrder in myOrders:
-        pnOrders.append(myOrder.id)
-        pnOrders.append(myOrder.address)
-        pnOrders.append(myOrder.phone_number)
-        pnOrders.append(myOrder.email)
-        pnOrders.append("========")
-
-    for pnOrder in pnOrders:
-        textobj.textLine(pnOrder)
-
-    canv.drawText(textobj)
-    canv.showPage()
-    canv.save()
-    buf.seek(0)
-
-
-    return FileResponse(buf, as_attachment=True, filename="MyOrder.pdf")
-
-def orderReceiptPDF(request,order_id):
+@api_view(['GET'])
+def orderInvoicePDF(request,order_id):
     myOrder = get_object_or_404(Order, pk=order_id)
-    orderItem = OrderItem.objects.filter(order=myOrder)
+    orderItems = OrderItem.objects.filter(order=myOrder)
 
-    product_name = orderItem[0].product.name
-    product_price = orderItem[0].product.price
-    quantity = orderItem[0].quantity
-    price = orderItem[0].price
+    for orderItem in orderItems:
+        product_name = orderItem.product.name
+        product_price = orderItem.product.price
+        quantity = orderItem.quantity
+        price = orderItem.price
 
     invoice_no = myOrder.id
     first_name = myOrder.first_name
@@ -258,12 +205,15 @@ def orderReceiptPDF(request,order_id):
     address = myOrder.address
     city = myOrder.city
     county = myOrder.county
+    subtotal = quantity * price
     order_total = myOrder.order_total
+    invoice_date = myOrder.created_at.strftime("%d %b, %Y")
+    month = myOrder.created_at.strftime("%B")
 
     context={"order_id":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
               "order_address":address, "order_city":city, "order_county":county, 
-              "order_order_total ":order_total, "product_name":product_name, "product_price":product_price,
-              "quantity":quantity, "price":price}
+              "order_total ":order_total, "product_name":product_name, "product_price":product_price,
+              "quantity":quantity, "price":price , "month":month , "invoice_date":invoice_date , "subtotal":subtotal}
 
     template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
     template_env = jinja2.Environment(loader=template_loader)
@@ -272,28 +222,18 @@ def orderReceiptPDF(request,order_id):
     output_text = template.render(context)
 
     config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
-    options={"enable-local-file-access": ""}
+    options={"enable-local-file-access": None,
+             }
 
-    return HttpResponse(pdfkit.from_string(output_text, 'Invoice01.pdf', configuration=config, options=options, css="/home/sammyb/gee_collections/order/static/order/invoice-pdf.css"), content_type='application/pdf')
+    pdfkit.from_string(output_text, 'Invoice.pdf', configuration=config, options=options, css="/home/sammyb/gee_collections/order/static/order/invoice-pdf.css")
 
-@login_required
-def admin_order_pdf(request, order_id):
-    if request.user.is_superuser:
-        order = get_object_or_404(Order, id=order_id)
-        pdf = render_to_pdf('order/order_pdf.html', {'order': order})
+    path = 'Invoice.pdf'
+    with open(path, 'rb') as pdf:
+        contents = pdf.read()
 
-        if pdf:
-            response = HttpResponse(pdf, content_type='application/pdf')
-            content = "attachment; filename=%s.pdf" % order_id
-            response['Content-Disposition'] = content
+    response = HttpResponse(contents, content_type='application/pdf')
 
-            return response
-
-    return HttpResponse("Not found")
-
-class ViewPDF(View):
-    def get(self, request, order_id):
-        order = get_object_or_404(Order, pk=order_id)
-        pdf = render_to_pdf('order/order_pdf.html', {'order': order})
-
-        return HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=Invoice.pdf'
+    pdf.close()
+    os.remove("Invoice.pdf")  # remove the locally created pdf file.
+    return response  
