@@ -16,7 +16,7 @@ from .mpesa_credentials import MpesaAccessToken, LipanaMpesaPpassword
 from django.views.decorators.csrf import csrf_exempt
 
 ##Send Email
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger ##pagination
 
 # PDF REQUIREMENTS
@@ -47,10 +47,26 @@ def checkout(request):
     if serializer.is_valid():
         serializer.save(user=request.user)
         qset = Order.objects.filter(user=request.user)
+        # orderItems = OrderItem.objects.get(order=qset)
+
         email = qset[0].user
         phone_number = qset[0].phone_number
         customer_name = qset[0].user.first_name
         order_id = qset[0].id
+        billing_address = qset[0].address
+        city = qset[0].city
+        shipping_cost = qset[0].delivery_fee
+        transaction_id = qset[0].payment_reference
+        payment_status = qset[0].paid
+        subtotal = qset[0].order_total
+        total_due = qset[0].order_total + qset[0].delivery_fee
+        # for orderItem in orderItems:
+        #     product_name = orderItem.product.name
+        #     quantity = orderItem.quantity
+        #     price = orderItem.price
+        #     price_total = quantity * price
+
+        vat = 0
         if(phone_number.startswith("+254")):
             pn = phone_number
         elif(phone_number.startswith('0')):
@@ -61,9 +77,20 @@ def checkout(request):
             pn = "+"+phone_number
         recipient = [email]
         subject = f'Order Invoice - [{order_id}]'
-        content = f'Dear {customer_name}, Thank you for choosing Gee Collections! We appreciate your business and are pleased to provide you with the invoice for your recent order. Below, you will find an attached invoice.'
-        # send_mail(subject, content,os.environ.get('EMAIL_HOST_USER'),recipient, fail_silently=False) 
-        mail = EmailMessage(subject,content,os.environ.get('EMAIL_HOST_USER'),recipient)
+        template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
+        template_env = jinja2.Environment(loader=template_loader)
+        # output_text = {"customer_name": customer_name, "order_id": order_id, "billing_address": billing_address, "city": city,
+        #                "shipping_cost": shipping_cost, "transaction_id": transaction_id, "payment_status": payment_status,
+        #                 "total_due": total_due, "subtotal": subtotal, "vat": vat,  "product_name": product_name,
+        #                 "quantity": quantity, "price": price, "price_total": price_total}
+        output_text = {"customer_name": customer_name, "order_id": order_id, "billing_address": billing_address, "city": city,
+                       "shipping_cost": shipping_cost, "transaction_id": transaction_id, "payment_status": payment_status,
+                        "total_due": total_due, "subtotal": subtotal, "vat": vat}
+
+        template  = template_env.get_template('invoice_email.html')
+        content = template.render(output_text)
+        mail = EmailMultiAlternatives(subject,content,os.environ.get('EMAIL_HOST_USER'),recipient)
+        mail.attach_alternative(content, "text/html")
         pdf = orderEmailInvoicePDF(request, order_id)
         mail.attach('Invoice.pdf', pdf, 'application/pdf')
         mail.send(fail_silently = False)

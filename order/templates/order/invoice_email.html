@@ -1,55 +1,104 @@
-<p class="salutation">Dear {{customer_name}},</p>
-<p>Thank you for choosing Gee Collections! We appreciate your business and are pleased to provide you with the invoice for your recent order. 
-    Below, you'll find a detailed breakdown of the items you purchased and the total amount due.
-</p>
-<p class="bold subheading">Order Details:</p>
-<p class="bold">Order Number: <span class="normal"> {{order_id}}</span></p>
-<p class="bold">Order Date: <span class="normal"> {{order_date}}</span></p>
-<p class="bold">Address: <span class="normal"> {{billing_address}}</span></p>
-<p class="bold">Shipping Address: <span class="normal"> {{shipping_address}}</span></p>
-<p class="bold subheading">Itemized List:</p>
-<table>
-    <thead>
-        <tr>
-            <th>Item</th>
-            <th>Description</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-    </tbody>
-</table>
-<p>Subtotal: kshs. <span class="normal"> {{subtotal}}</span></p>
-<p>Shipping Cost: <span class="normal"> {{shipping_cost}}</span></p>
-<p>VAT (16%): <span class="normal"> {{vat}}</span></p>
-<p>Total Amount Due: <span class="normal"> {{total_due}}</span></p>
-<p class="bold subheading">Payment Information:</p>
-<p>Payment Method:<span class="normal"> {{payment_method}}</span><br />
-<p>Transaction ID: <span class="normal"> {{transaction_id}}</span></p>
-<p>Payment Status: <span class="normal"> {{payment_status}}</span></p>
-<p>Please ensure that the total amount due is paid by {{due_date}}. 
-    If you have already made the payment, we sincerely appreciate your promptness.
-</p>
-<p class="bold">Payment Instructions</p>
-<p>Bank: <strong>KCB Bank</strong></p>
-<p>Account Name: <strong>Grace Adhiambo Odhiambo</strong></p>
-<p>Account N0: <strong>120000547</strong></p>
+<html>
+    <head>
+        <style>
+            body {
+                font-size: 12px;
+            }
+            .bold{
+                font-weight: bold;
+                font-size: 12px;
+            }
+            .normal{
+                font-weight: lighter;
+                font-size: 12px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                border-radius: 30%;
+                border: 1px solid white;
+            }
+            
+            table tr td {
+                padding-left: 6px;
+                text-align: left;
+            }
+            table thead{
+                background-color: #ff6f61;
+                color: white;
+                font-weight: bold;
+            }
 
-<p>If you have any questions or concerns regarding your order or this invoice,
-     please feel free to contact our customer service team at info@geecollections.com. 
-     We are here to assist you.
-</p>
-<p>Thank you once again for choosing Gee Collections. We look forward to serving you again in the future.</p>
-<p class="subheading">Best regards,</p>
-<p>Gee Collections</p>
-<p>geecollections@gmail.com</p>
-<p>+254711171607</p>
+            table tr:nth-child(even){
+                background-color: #f2f2f2;
+            }
+            .salutation{
+                margin-bottom: 10px;
+            }
+            .subheading{
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+            .footer{
+                opacity: 0.5;
+            }
+        </style>
+    </head>
+    <body>
+
+        <p class="salutation">Dear {{customer_name}},</p>
+        <p>Thank you for choosing Gee Collections! We appreciate your business and are pleased to provide you with the invoice for your recent order. 
+            Below, you'll find a detailed breakdown of the items you purchased and the total amount due.
+        </p>
+        <p class="bold subheading">Order Details:</p>
+        <p class="bold">Order Number: <span class="normal"> {{order_id}}</span></p>
+        <p class="bold">Order Date: <span class="normal"> {{order_date}}</span></p>
+        <p class="bold">Shipping Address: <span class="normal"> {{billing_address}}, {{city}}</span></p>
+        <p class="bold subheading">Itemized List:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>{{product_name}}</td>
+                    <td>{{quantity}}</td>
+                    <td>{{price}}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Subtotal: kshs. <span class="normal"> {{subtotal}}</span></p>
+        <p>Shipping Cost: <span class="normal"> {{shipping_cost}}</span></p>
+        <p>VAT (16%): <span class="normal"> {{vat}}</span></p>
+        <p>Total Amount Due: <span class="normal"> {{total_due}}</span></p>
+        <p class="bold subheading">Payment Information:</p>
+        <p>Payment Method:<span class="normal"> {{payment_method}}</span><br />
+        <p>Transaction ID: <span class="normal"> {{transaction_id}}</span></p>
+        <p>Payment Status: <span class="normal"> {{payment_status}}</span></p>
+        <p>Please ensure that the total amount due is paid by {{due_date}}. 
+            If you have already made the payment, we sincerely appreciate your promptness.
+        </p>
+        <p class="bold">Payment Instructions</p>
+        <p>Bank: <strong>KCB Bank</strong></p>
+        <p>Account Name: <strong>Grace Adhiambo Odhiambo</strong></p>
+        <p>Account N0: <strong>120000547</strong></p>
+
+        <p>If you have any questions or concerns regarding your order or this invoice,
+            please feel free to contact our customer service team at info@geecollections.com. 
+            We are here to assist you.
+        </p>
+        <p>Thank you once again for choosing Gee Collections. We look forward to serving you again in the future.</p>
+        <p class="subheading">Best regards,</p>
+        <p class="footer">Gee Collections</p>
+        <p class="footer">geecollections@gmail.com</p>
+        <p class="footer">+254711171607</p>
+    </body>
+</html>

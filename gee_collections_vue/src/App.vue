@@ -1,4 +1,13 @@
 <template>
+
+  <!-- Loading Animation for Printing Invoice -->
+  <LoadingView
+    :loader="loader"
+    :showLoader="showLoader"
+    :hideLoader="hideLoader"
+  />
+  
+  <div class="">
   <!-- Top bar Start -->
   <div class="top-bar">
     <div class="container-fluid">
@@ -158,6 +167,10 @@
     :loggedOut="loggedOut"
     :getSubscribedEmails="getSubscribedEmails"
     :subscribedEmails="subscribedEmails"
+    :loader="loader"
+    :showLoader="showLoader"
+    :hideLoader="hideLoader"
+    :loaderIndex="loaderIndex"
   />
   <!-- <p>{{ isIdle }}</p> -->
   <!-- Footer Start -->
@@ -293,17 +306,22 @@
   <router-link to="#" @click="scrollToTop()" class="animate-bounce back-to-top"
     ><i class="fa fa-chevron-up"></i
   ></router-link>
+
+</div>
+
 </template>
 
 <script>
 import axios from "axios";
 import { nextTick } from "vue";
 import ProductCard from "./components/ProductCard.vue";
+import LoadingView from "./components/LoadingView.vue";
 import SearchProductCard from "./components/SearchProductCard.vue";
 import SearchAutoComplete from "./components/SearchAutoComplete.vue";
 export default {
   components: {
     ProductCard,
+    LoadingView,
     SearchAutoComplete,
     SearchProductCard,
   },
@@ -325,6 +343,8 @@ export default {
       productSearch: "",
       loggedOut: "USER ACCOUNT",
       subscribedEmails: [],
+      loader: "none",
+      loaderIndex: 1,
     };
   },
   beforeMount() {
@@ -589,6 +609,16 @@ export default {
           console.log(error);
         });
     },
+
+    // Loader Methods
+    showLoader(){
+        this.loader = "block";
+        this.loaderIndex = -1;
+    },
+    hideLoader(){
+        this.loader = "none";
+        this.loaderIndex = 1;
+    }
   },
 };
 </script>

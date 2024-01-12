@@ -1,5 +1,13 @@
 <template>
-  <div class="checkout">
+
+  <!-- Loading Animation for Printing Invoice -->
+  <LoadingView
+    :loader="loader"
+    :showLoader="showLoader"
+    :hideLoader="hideLoader"
+  />
+
+  <div class="checkout" :style="{zIndex: this.loaderIndex}">
     <!-- Breadcrumb Start -->
     <div class="breadcrumb-wrap">
       <div class="container-fluid">
@@ -383,6 +391,8 @@
 
 <script>
 import Modal from "@/components/Modal.vue";
+import LoadingView from "@/components/LoadingView.vue"
+
 let stripe = Stripe(`YOUR_STRIPE_PUBLISHABLE_KEY`),
   elements = stripe.elements(),
   card = undefined;
@@ -393,10 +403,13 @@ export default {
     "cartSubTotal",
     "shippingCost",
     "cartTotalUSD",
+    'loader','showLoader','hideLoader','loaderIndex'
+
   ],
   el: "#selector",
   components: {
     Modal,
+    LoadingView
   },
   data() {
     return {
@@ -677,6 +690,7 @@ export default {
       this.showStripe = !this.showStripe;
     },
     placeOrder() {
+      this.showLoader();
       const items = [];
       for (let i = 0; i < this.cart.cartItems.length; i++) {
         const item = this.cart.cartItems[i];
@@ -713,6 +727,9 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+        })
+        .finally(()=>{
+          this.hideLoader();
         });
     },
     requestDelivery() {

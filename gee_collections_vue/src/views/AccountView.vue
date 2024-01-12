@@ -1,5 +1,14 @@
 <template>
-  <div class="my-account">
+  <!-- Loading Animation for Printing Invoice -->
+  <LoadingView
+    :loader="loader"
+    :showLoader="showLoader"
+    :hideLoader="hideLoader"
+  />
+
+
+  <div class="my-account" :style="{zIndex: this.loaderIndex}">
+    
     <!-- Breadcrumb Start -->
     <div class="breadcrumb-wrap">
       <div class="container-fluid">
@@ -756,13 +765,15 @@
 import Modal from "@/components/Modal.vue";
 import Pagination from "@/components/Pagination.vue";
 import DoughnutChart from "@/components/DoughnutChart.vue";
+import LoadingView from "@/components/LoadingView.vue"
 
 export default {
-  props: ["getUserDetails", "userDetails"],
+  props: ["getUserDetails", "userDetails",'loader','showLoader','hideLoader','loaderIndex'],
   components: {
     Modal,
     Pagination,
     DoughnutChart,
+    LoadingView
   },
   data() {
     return {
@@ -1454,6 +1465,7 @@ export default {
       }
     },
     printOrderInvoice() {
+      this.showLoader();
       let orderID = arguments[0];
       this.axios
         .get(`api/v1/invoice-pdf/${orderID}/`, { responseType: 'blob' })
@@ -1466,10 +1478,15 @@ export default {
               document.body.appendChild(link);
               link.click();
           }
+         
         })
         .catch((error) => {
           console.log(error);
+        })
+        .finally(()=>{
+          this.hideLoader();
         });
+        
     },
   },
   beforeMount() {},
@@ -1525,6 +1542,7 @@ export default {
 </script>
 
 <style scoped>
+
 input {
   font-weight: 300;
   color: black;
