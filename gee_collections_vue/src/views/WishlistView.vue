@@ -64,8 +64,9 @@
                                             <p>Delivery Fee(varies)<span>ksh. {{Number(shippingCost).toLocaleString()}}</span></p>
                                             <h2>Grand Total<span>{{Number(wishlistGrandTotal).toLocaleString()}}</span></h2>
                                         </div>
-                                        <div class="cart-btn">
-                                            <button v-if="wishlist.length"><router-link to="/checkout" class="checkout">Proceed To Checkout</router-link></button>
+                                        <div class="cart-btn mt-6">
+                                            <!-- <button v-if="wishlist.length"><router-link to="/checkout" class="checkout">Proceed To Checkout</router-link></button> -->
+                                            <router-link to="/checkout" @click="wishlistCheckout" class="checkout border rounded py-3 px-4 mt-4" v-if="wishlist.length"><span class="checkout-span">Proceed To Checkout</span></router-link>
                                         </div>
                                     </div>
                                 </div>
@@ -82,7 +83,7 @@
 
 <script>
 export default {
-    props:['wishlist','items','wishlistGrandTotal','wishlistItemTotal','wishlistSubTotal','shippingCost'],
+    props:['wishlist','items','wishlistGrandTotal','wishlistItemTotal','wishlistSubTotal','shippingCost','addToCart'],
     methods:{
         incrementQuantity(){
             let selectedItemQuantity = arguments[0];
@@ -122,6 +123,25 @@ export default {
                 }
             });
         },
+        wishlistCheckout(){
+            let wishlistArray = [];
+            for(let i=0; i < this.wishlist.length; i++){
+                wishlistArray.push(this.wishlist[i]);
+            }
+            console.log("THe wishlist items are ", wishlistArray[0].items)
+            for(let i = 0; i < wishlistArray.length; i++){
+                let cartItem = {
+                    items: wishlistArray[i].items,
+                    quantity: wishlistArray[i].quantity,
+                }
+                this.$store.commit("addToCart", cartItem);
+                console.log("The cartItem is ", cartItem)
+            }
+            // const cartItem = {
+            //     items: wishlistArray,
+            //     quantity: this.quantity,
+            // };
+        }
 
     },
 }
@@ -139,12 +159,13 @@ export default {
         font-style: normal;
     }
     .checkout{
-        color:#FF6F61;
+        background-color:#FF6F61;
+        color: white;
         font-size: 20px;
         font-weight: bold;
         font-family: 'Source Code Pro', monospace;
     }
-    .checkout:hover{
+    .checkout:hover .checkout-span{
         color: black;
     }
     .cart-btn:hover{

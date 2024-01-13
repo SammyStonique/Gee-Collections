@@ -480,7 +480,6 @@ export default {
       if (isNaN(this.quantity) || this.quantity < 1) {
         this.quantity = 1;
       }
-
       const cartItem = {
         items: this.items[selectedItem],
         quantity: this.quantity,
@@ -503,8 +502,9 @@ export default {
       this.$toast.success(`${this.searchItem.name} added to cart`);
     },
     async getSearchedProduct() {
+      this.showLoader();
       this.productSearch = localStorage.getItem("productSearch");
-      console.log("the searched product is ", this.productSearch);
+      // console.log("the searched product is ", this.productSearch);
       this.$store.state.searchItem = [];
       await this.axios
         .get(`api/v1/latest-products/${this.productSearch}/`)
@@ -518,6 +518,9 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+        })
+        .finally(()=>{
+          this.hideLoader();
         });
     },
     buyNow() {
@@ -583,6 +586,7 @@ export default {
         });
     },
     getProductDetails(productID) {
+      this.$store.commit("clearProductDetails");
       this.axios
         .get(`/api/v1/latest-products/${productID}/`)
         .then((response) => {
@@ -594,6 +598,9 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+        })
+        .finally(()=>{
+          this.scrollToTop();
         });
     },
     scrollToTop() {

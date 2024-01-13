@@ -430,6 +430,7 @@ export default {
     "buyNow",
     "subscribedEmails",
     "getSubscribedEmails",
+    "scrollToTop",
   ],
   methods: {
     newsSubscription() {
@@ -444,6 +445,7 @@ export default {
           duration: 5000,
           dismissible: true,
         });
+        this.newsEmail = "";
       } else {
         let formData = {
           email: this.newsEmail,

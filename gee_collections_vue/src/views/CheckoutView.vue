@@ -630,6 +630,7 @@ export default {
           first_name: this.first_name,
           orderTotal: this.checkoutTotal,
         };
+        this.showLoader();
         this.axios
           .post("/api/v1/online/lipa/", formData)
           .then((response) => {
@@ -639,7 +640,9 @@ export default {
           .catch((error) => {
             console.log(error);
           })
-          .finally(() => {});
+          .finally(() => {
+            this.hideLoader();
+          });
       }
     },
     getMpesaPayments() {

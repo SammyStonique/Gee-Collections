@@ -142,7 +142,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": payment_number,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": payment_number,  # replace with your phone number to get stk push
-        "CallBackURL": "https://d0a8-41-81-221-21.ngrok-free.app/api/v1/c2b/callback",
+        "CallBackURL": "https://8c2f-197-156-140-162.ngrok-free.app/api/v1/c2b/callback",
         "AccountReference": first_name,
         "TransactionDesc": "Making payment for purchased goods"
     }
@@ -156,8 +156,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Business_short_code,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://d0a8-41-81-221-21.ngrok-free.app/api/v1/c2b/confirmation",
-               "ValidationURL": "https://d0a8-41-81-221-21.ngrok-free.app/api/v1/c2b/validation"}
+               "ConfirmationURL": "https://8c2f-197-156-140-162.ngrok-free.app/api/v1/c2b/confirmation",
+               "ValidationURL": "https://8c2f-197-156-140-162.ngrok-free.app/api/v1/c2b/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     return HttpResponse(response.text)
 

@@ -293,6 +293,7 @@ export default {
     "addToWishlist",
     "productDetails",
     "buyNow",
+    "scrollToTop",
   ],
   components: {
     ProductCard,
@@ -351,7 +352,7 @@ export default {
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
   },
-  beforeMount() {},
+
   mounted() {
     this.getProducts();
     this.quantity = 1;
