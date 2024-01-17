@@ -104,9 +104,44 @@ class OrdersList(APIView):
         serializer = MyOrderSerializer(orders, many=True)
         return Response(serializer.data)
 
-class OrderDetails(generics.RetrieveUpdateDestroyAPIView):
+class OrderDetails(generics.RetrieveUpdateDestroyAPIView):  
     queryset = Order.objects.all()
     serializer_class = MyOrderSerializer
+
+@api_view(['POST'])
+def couponGen(request):
+    coupon_amount = request.data.get('coupon_amount')
+    print("The coupon amount is ", coupon_amount)
+    serializer = CouponSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        qset = Coupon.objects.filter(user=request.user)
+        customer_name = qset[0].user.first_name
+        phone_number = qset[0].coupon_order.phone_number
+        coupon_code = qset[0].coupon_code
+
+        if(phone_number.startswith("+254")):
+            pn = phone_number
+        elif(phone_number.startswith('0')):
+            pn = re.sub("0","+254",phone_number,1)
+        elif (phone_number.startswith('7') or phone_number.startswith('1')):
+            pn = "+254"+phone_number
+        elif(phone_number.startswith('254')):
+            pn = "+"+phone_number
+        
+        sms.send(f'Dear {customer_name},as a token of our appreciation, we are thrilled to present you with an exclusive coupon code to use on your next purchase. The code is {coupon_code} and is worth {coupon_amount}',[f'{pn}'],callback=couponGen)
+        return Response(serializer.data)
+    else:
+        return Response('Coupon not generated')
+
+class CouponsList(generics.ListCreateAPIView):
+    queryset = Coupon.objects.all()
+    serializer_class = CouponSerializer
+
+class CouponDetails(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Coupon.objects.all()
+    serializer_class = CouponSerializer
 
 class MpesaDetails(generics.ListAPIView):
     queryset = MpesaPayment.objects.all()
@@ -142,7 +177,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": payment_number,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": payment_number,  # replace with your phone number to get stk push
-        "CallBackURL": "https://8c2f-197-156-140-162.ngrok-free.app/api/v1/c2b/callback",
+        "CallBackURL": "https://faec-197-156-140-162.ngrok-free.app/api/v1/c2b/callback",
         "AccountReference": first_name,
         "TransactionDesc": "Making payment for purchased goods"
     }
@@ -156,8 +191,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Business_short_code,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://8c2f-197-156-140-162.ngrok-free.app/api/v1/c2b/confirmation",
-               "ValidationURL": "https://8c2f-197-156-140-162.ngrok-free.app/api/v1/c2b/validation"}
+               "ConfirmationURL": "https://faec-197-156-140-162.ngrok-free.app/api/v1/c2b/confirmation",
+               "ValidationURL": "https://faec-197-156-140-162.ngrok-free.app/api/v1/c2b/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     return HttpResponse(response.text)
 
@@ -231,7 +266,7 @@ def orderEmailInvoicePDF(request,order_id):
         quantity = orderItem.quantity
         price = orderItem.price
 
-    invoice_no = myOrder.id
+    invoice_no = myOrder.invoice_no
     first_name = myOrder.first_name
     last_name = myOrder.last_name
     address = myOrder.address
@@ -242,7 +277,7 @@ def orderEmailInvoicePDF(request,order_id):
     invoice_date = myOrder.created_at.strftime("%d %b, %Y")
     month = myOrder.created_at.strftime("%B")
 
-    context={"order_id":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
+    context={"invoice_no":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
               "order_address":address, "order_city":city, "order_county":county, 
               "order_total ":order_total, "product_name":product_name, "product_price":product_price,
               "quantity":quantity, "price":price , "month":month , "invoice_date":invoice_date , "subtotal":subtotal}
@@ -271,6 +306,57 @@ def orderEmailInvoicePDF(request,order_id):
     return contents  
 
 def orderInvoicePDF(request,order_id):
+    myOrder = get_object_or_404(Order, pk=order_id)
+    orderItems = OrderItem.objects.filter(order=myOrder)
+
+    for orderItem in orderItems:
+        product_name = orderItem.product.name
+        product_price = orderItem.product.price
+        quantity = orderItem.quantity
+        price = orderItem.price
+
+    invoice_no = myOrder.invoice_no
+    first_name = myOrder.first_name
+    last_name = myOrder.last_name
+    address = myOrder.address
+    city = myOrder.city
+    county = myOrder.county
+    subtotal = quantity * price
+    order_total = myOrder.order_total
+    invoice_date = myOrder.created_at.strftime("%d %b, %Y")
+    month = myOrder.created_at.strftime("%B")
+
+    context={"invoice_no":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
+              "order_address":address, "order_city":city, "order_county":county, 
+              "order_total ":order_total, "product_name":product_name, "product_price":product_price,
+              "quantity":quantity, "price":price , "month":month , "invoice_date":invoice_date , "subtotal":subtotal}
+
+    template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
+    template_env = jinja2.Environment(loader=template_loader)
+
+    template  = template_env.get_template('order_invoice.html')
+    output_text = template.render(context)
+
+    config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
+    options={"enable-local-file-access": None,
+             }
+
+    pdfkit.from_string(output_text, 'Invoice.pdf', configuration=config, options=options, css="/home/sammyb/gee_collections/order/static/order/invoice-pdf.css")
+
+    path = 'Invoice.pdf'
+    with open(path, 'rb') as pdf:
+        contents = pdf.read()
+
+    response = HttpResponse(contents, content_type='application/pdf')
+
+    response['Content-Disposition'] = 'attachment; filename=Invoice.pdf'
+    pdf.close()
+    os.remove("Invoice.pdf")  # remove the locally created pdf file.
+    return response
+
+
+
+def orderReceiptPDF(request,order_id):
     myOrder = get_object_or_404(Order, pk=order_id)
     orderItems = OrderItem.objects.filter(order=myOrder)
 

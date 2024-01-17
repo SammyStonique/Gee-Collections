@@ -1,4 +1,12 @@
 <template>
+
+     <!-- Loading Animation for Printing Invoice -->
+    <LoadingView
+        :loader="loader"
+        :showLoader="showLoader"
+        :hideLoader="hideLoader"
+    />
+
     <div class="login">
         <!-- Breadcrumb Start -->
         <div class="breadcrumb-wrap">
@@ -51,8 +59,9 @@
 
 <script>
 import axios from 'axios'
+import LoadingView from "@/components/LoadingView.vue"
 export default {
-    props:['token','isAuthenticated'],
+    props:['token','isAuthenticated','loader','showLoader','hideLoader','loaderIndex'],
     data(){
         return{
             email:'',
@@ -61,6 +70,9 @@ export default {
             showPass: false,
             passType: false
         }
+    },
+    components:{
+        LoadingView
     },
     methods:{ 
         showPassword(){

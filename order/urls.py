@@ -17,4 +17,7 @@ urlpatterns = [
     path('c2b/validation', views.validation, name="validation"),
     path('c2b/callback', views.call_back, name="call_back"),
     path('invoice-pdf/<str:order_id>/',views.orderInvoicePDF, name="invoice"),
+    path('generate-coupon/', views.couponGen),
+    path('coupons/', views.CouponsList.as_view()),
+    path('coupons/<str:pk>/', views.CouponDetails.as_view()),
 ]

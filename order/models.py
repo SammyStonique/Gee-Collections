@@ -18,9 +18,58 @@ def random_string(letter_count=4, digit_count=3):
         final_string = ''.join(sam_list)  
         return final_string
 
+#Function to generate random string that serves as coupon code
+def coupon_generator(letter_count=4, digit_count=2):  
+        str1 = ''.join((random.choice(string.ascii_uppercase) for x in range(letter_count)))  
+        str1 += ''.join((random.choice(string.digits) for x in range(digit_count)))  
+    
+        sam_list = list(str1) # it converts the string to list.  
+        random.shuffle(sam_list) # It uses a random.shuffle() function to shuffle the string.  
+        final_string = ''.join(sam_list)  
+        return final_string
+
+# #Function to generate incrementing invoice numbers
+def invoice_number_gen():
+        last_invoice = Order.objects.all().order_by('invoice_no').last()
+        if not last_invoice:
+            return "INV0001"
+        invoice_no = last_invoice.invoice_no
+        invoice_int = int(invoice_no.split('INV')[-1])
+        new_invoice_int = invoice_int + 1
+        if ( new_invoice_int < 10 ):
+            new_invoice_no = 'INV'+ str(new_invoice_int).zfill(4)
+        elif ( new_invoice_int >= 10 and new_invoice_int < 100 ):
+            new_invoice_no = 'INV'+ str(new_invoice_int).zfill(4)
+        elif ( new_invoice_int >= 100 and new_invoice_int < 1000 ):
+            new_invoice_no = 'INV'+ str(new_invoice_int).zfill(4)
+        else :
+             new_invoice_no = 'INV'+ str(new_invoice_int)
+        return new_invoice_no
+
+
+#Function to generate incrementing receipt numbers
+def receipt_number_gen():
+        last_receipt = Receipt.objects.all().order_by('receipt_no').last()
+        if not last_receipt:
+            return "RC0001"
+        receipt_no = last_receipt.receipt_no
+        receipt_int = int(receipt_no.split('RC')[-1])
+        new_receipt_int = receipt_int + 1
+        if ( new_receipt_int < 10 ):
+            new_receipt_no = 'RC'+ str(new_receipt_int).zfill(4)
+        elif ( new_receipt_int >= 10 and new_receipt_int < 100 ):
+            new_receipt_no = 'RC'+ str(new_receipt_int).zfill(4)
+        elif ( new_receipt_int >= 100 and new_receipt_int < 1000 ):
+            new_receipt_no = 'RC'+ str(new_receipt_int).zfill(4)
+        else :
+             new_receipt_no = 'RC'+ str(new_receipt_int)
+        return new_receipt_no
+
+
 # Create your models here.
 class Order(models.Model):
     id = models.CharField(default=random_string,primary_key=True,max_length=100)
+    invoice_no = models.CharField(default=invoice_number_gen, max_length=250)
     user = models.ForeignKey(UserModel,related_name='orders', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     paid = models.BooleanField(default=False)
@@ -50,7 +99,6 @@ class OrderItem(models.Model) :
 
 
     def __str__(self):
-        # return f'{self.product.name} for {self.user.email}' 
         return f"{self.order.email} OrderItem({'%s' % self.order.id})"
 
 
@@ -99,4 +147,33 @@ class MpesaPayment(BaseModel):
     def __str__(self):
         return self.transaction_id
 
- 
+class Coupon(models.Model):
+    coupon_code = models.CharField(default=coupon_generator,primary_key=True,max_length=100)
+    coupon_amount = models.DecimalField(max_digits=8, decimal_places=2)
+    coupon_order = models.ForeignKey(Order,related_name='coupon_order',on_delete=models.CASCADE)
+    user = models.ForeignKey(UserModel,related_name='user', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return f"{self.coupon_order.email}({'%s' % self.coupon_order.id}) - {'%s' % self.coupon_code}"
+    
+class Receipt(models.Model):
+    PAYMETHOD = (('','Payment Method'),('Cash','Cash'),('Mpesa','Mpesa'),('Cheque','Cheque'),('EFT','EFT'))
+
+    receipt_no = models.CharField(default=receipt_number_gen,primary_key=True, max_length=100)
+    receipt_order = models.ForeignKey(Order, related_name = "receipt_order", on_delete=models.CASCADE)
+    receipt_user = models.ForeignKey(UserModel,related_name='receipt_user', on_delete=models.CASCADE)
+    received_amount = models.DecimalField(max_digits=8, decimal_places=2)
+    payment_method = models.CharField(max_length=250, choices=PAYMETHOD ,default='', blank=True)
+    received_by = models.CharField(max_length=250, blank=True)
+    reference_no = models.CharField(max_length=250, blank=True, null=True)
+    balance = models.DecimalField(max_digits=8, decimal_places=2)
+
+    def __str__(self):
+         return f"{self.receipt_no} - Order ({self.receipt_order.id})"
+
+
+

@@ -24,9 +24,11 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = ['product','quantity','price']
 
 
+
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
     user = serializers.ReadOnlyField(source='user.email')
+    # coupon_order = serializers.PrimaryKeyRelatedField(queryset=Coupon.objects.all())
     class Meta:
         model = Order
         fields = ['id','user','first_name','last_name','email','phone_number','county','city','address','items','created_at','order_total','paid','payment_reference','delivery_fee']
@@ -39,8 +41,17 @@ class OrderSerializer(serializers.ModelSerializer):
             OrderItem.objects.create(order=order, **item_data)
             
         return order
+    
+class CouponSerializer(serializers.ModelSerializer):
+    # coupon_order = serializers.PrimaryKeyRelatedField(queryset = Order.objects.all())
+    coupon_order = serializers.ReadOnlyField(source='coupon_order.id')
+    user = serializers.ReadOnlyField(source='user.email')
+    class Meta:
+        model = Coupon
+        fields=['coupon_code','coupon_amount','user','coupon_order','created_at']
 
 class MpesaPaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = MpesaPayment
         fields=['transaction_id','phone_number','amount','transaction_time']
+

@@ -128,19 +128,13 @@ export default {
             for(let i=0; i < this.wishlist.length; i++){
                 wishlistArray.push(this.wishlist[i]);
             }
-            console.log("THe wishlist items are ", wishlistArray[0].items)
             for(let i = 0; i < wishlistArray.length; i++){
                 let cartItem = {
                     items: wishlistArray[i].items,
                     quantity: wishlistArray[i].quantity,
                 }
                 this.$store.commit("addToCart", cartItem);
-                console.log("The cartItem is ", cartItem)
             }
-            // const cartItem = {
-            //     items: wishlistArray,
-            //     quantity: this.quantity,
-            // };
         }
 
     },

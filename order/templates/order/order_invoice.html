@@ -4,23 +4,23 @@
     <img style="height: 50px; width: auto;" src="/home/sammyb/gee_collections/gee_collections_vue/src/assets/img/new-logo.png" />
 </div>
 <table class="invoice-info-container">
-<tbody>
-<tr>
-<td class="client-name" rowspan="2">{{order_first_name}}  {{order_last_name }}</td>
-<td>Gee Collections</td>
-</tr>
-<tr>
-<td>Opposite Jamia Mosque</td>
-</tr>
-<tr>
-<td>Invoice Date: <strong>{{invoice_date}}</strong></td>
-<td>Siaya, 94103</td>
-</tr>
-<tr>
-<td>Invoice No: <strong>12345</strong></td>
-<td>geecollections@gmail.com</td>
-</tr>
-</tbody>
+    <tbody>
+        <tr>
+            <td class="client-name" rowspan="2">{{order_first_name}}  {{order_last_name }}</td>
+            <td>Gee Collections</td>
+        </tr>
+        <tr>
+            <td>Opposite Jamia Mosque</td>
+        </tr>
+        <tr>
+            <td>Invoice Date: <strong>{{invoice_date}}</strong></td>
+            <td>Siaya, 94103</td>
+        </tr>
+        <tr>
+            <td>Invoice No: <strong>{{invoice_no}}</strong></td>
+            <td>geecollections@gmail.com</td>
+        </tr>
+    </tbody>
 </table>
 <table class="line-items-container">
 <thead>
@@ -31,46 +31,46 @@
 <th class="heading-subtotal">Subtotal</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td>{{ quantity }}</td>
-<td>{{ product_name }}</td>
-<td class="right">{{ price }}</td>
-<td class="bold">{{subtotal}}</td>
-</tr>
-<tr>
-<td>&nbsp;</td>
-<td>{{item2}}</td>
-<td class="right">&nbsp;</td>
-<td class="bold">{{subtotal2}}</td>
-</tr>
-<tr>
-<td>&nbsp;</td>
-<td>{{item3}}</td>
-<td class="right">&nbsp;</td>
-<td class="bold">{{subtotal3}}</td>
-</tr>
-</tbody>
+    <tbody>
+        <tr>
+            <td>{{ quantity }}</td>
+            <td>{{ product_name }}</td>
+            <td class="right">{{ price }}</td>
+            <td class="bold">{{subtotal}}</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>{{item2}}</td>
+            <td class="right">&nbsp;</td>
+            <td class="bold">{{subtotal2}}</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>{{item3}}</td>
+            <td class="right">&nbsp;</td>
+            <td class="bold">{{subtotal3}}</td>
+        </tr>
+    </tbody>
 </table>
 <table class="line-items-container has-bottom-border">
-<thead>
-<tr>
-<th>Payment Info</th>
-<th>Due By</th>
-<th>Total Due</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="payment-info">
-<div>Bank: <strong>KCB Bank</strong></div>
-<div>Account Name: <strong>Grace Adhiambo Odhiambo</strong></div>
-<div>Account N0: <strong>120000547</strong></div>
-</td>
-<td class="large">{{month}}</td>
-<td class="large total">{{order_total}}</td>
-</tr>
-</tbody>
+    <thead>
+        <tr>
+            <th>Payment Info</th>
+            <th>Due By</th>
+            <th>Total Due</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="payment-info">
+                <div>Bank: <strong>KCB Bank</strong></div>
+                <div>Account Name: <strong>Grace Adhiambo Odhiambo</strong></div>
+                <div>Account N0: <strong>120000547</strong></div>
+            </td>
+            <td class="large">{{month}}</td>
+            <td class="large total">{{order_total}}</td>
+        </tr>
+    </tbody>
 </table>
 <div class="footer">
 <div class="footer-info">geecollections@gmail.com | 0711 171 607 | geecollections.com</div>

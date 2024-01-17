@@ -24,3 +24,5 @@ class OrderAdmin(admin.ModelAdmin):
 admin.site.register(Order,OrderAdmin)
 admin.site.register(OrderItem)
 admin.site.register(MpesaPayment)
+admin.site.register(Coupon)
+admin.site.register(Receipt)

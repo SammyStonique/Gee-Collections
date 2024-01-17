@@ -448,6 +448,7 @@ export default {
       deliveryOption: false,
       unknownVal: "",
       showStripe: false,
+      coupon_amount: 0,
     };
   },
   watch: {
@@ -718,7 +719,6 @@ export default {
         paid: this.is_paid,
         delivery_fee: this.setShippingCost,
       };
-      console.log(formData);
       this.axios
         .post("/api/v1/checkout/", formData)
         .then((response) => {
@@ -732,8 +732,46 @@ export default {
           console.log(error);
         })
         .finally(()=>{
+          this.generateOrderCoupon();
           this.hideLoader();
         });
+    },
+    generateOrderCoupon(){
+      if (this.cartSubTotal >= 10000 && this.cartSubTotal < 20000){
+            this.coupon_amount = 500;
+          }else if(this.cartSubTotal >= 20000 && this.cartSubTotal < 30000){
+            this.coupon_amount = 1000;
+          }else if(this.cartSubTotal >= 30000 && this.cartSubTotal < 40000){
+            this.coupon_amount = 1500;
+          }else if(this.cartSubTotal >= 40000 && this.cartSubTotal < 50000){
+            this.coupon_amount = 2000;
+          }else if(this.cartSubTotal >= 50000 && this.cartSubTotal < 60000){
+            this.coupon_amount = 2500;
+          }else if(this.cartSubTotal >= 60000 && this.cartSubTotal < 70000){
+            this.coupon_amount = 3000;
+          }else if(this.cartSubTotal >= 70000 && this.cartSubTotal < 80000){
+            this.coupon_amount = 3500;
+          }else if(this.cartSubTotal >= 80000 && this.cartSubTotal < 90000){
+            this.coupon_amount = 4000;
+          }else if(this.cartSubTotal >= 90000 && this.cartSubTotal < 100000){
+            this.coupon_amount = 4500;
+          }else if(this.cartSubTotal >= 100000){
+            this.coupon_amount = 5000;
+          }else{
+            this.coupon_amount = 0;
+          }
+          if(this.coupon_amount > 0){
+            let formData = {
+              coupon_amount: Number(this.coupon_amount).toFixed(2),
+            };
+            this.axios.post("api/v1/generate-coupon/",formData)
+            .then((response)=>{
+              console.log("The coupon amount is ",this.coupon_amount)
+            })
+            .catch((error)=>{
+              console.log(error);
+            })
+          }
     },
     requestDelivery() {
       this.deliveryOption = !this.deliveryOption;
