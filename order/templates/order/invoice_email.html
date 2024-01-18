@@ -66,13 +66,15 @@
                 </tr>
             </thead>
             <tbody>
+                {% for orderItem in orderItems %}
                 <tr>
-                    <td>1</td>
-                    <td>{{product_name}}</td>
-                    <td>{{quantity}}</td>
-                    <td>{{price}}</td>
                     <td></td>
+                    <td>{{orderItem.product.name}}</td>
+                    <td>{{orderItem.quantity}}</td>
+                    <td>{{orderItem.price}}</td>
+                    <td>{{ orderItem.getTotal()}}</td>
                 </tr>
+                {% endfor %}
             </tbody>
         </table>
         <p>Subtotal: kshs. <span class="normal"> {{subtotal}}</span></p>

@@ -32,12 +32,14 @@
 </tr>
 </thead>
     <tbody>
+        {% for orderItem in orderItems %}
         <tr>
-            <td>{{ quantity }}</td>
-            <td>{{ product_name }}</td>
-            <td class="right">{{ price }}</td>
-            <td class="bold">{{subtotal}}</td>
+            <td>{{ orderItem.quantity }}</td>
+            <td>{{ orderItem.product.name }}</td>
+            <td class="right">{{ orderItem.price}}</td>
+            <td class="bold">{{ orderItem.getTotal()}}</td>
         </tr>
+        {% endfor %}
         <tr>
             <td>&nbsp;</td>
             <td>{{item2}}</td>

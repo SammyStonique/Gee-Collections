@@ -260,27 +260,19 @@ def orderEmailInvoicePDF(request,order_id):
     myOrder = get_object_or_404(Order, pk=order_id)
     orderItems = OrderItem.objects.filter(order=myOrder)
 
-    for orderItem in orderItems:
-        product_name = orderItem.product.name
-        product_price = orderItem.product.price
-        quantity = orderItem.quantity
-        price = orderItem.price
-
     invoice_no = myOrder.invoice_no
     first_name = myOrder.first_name
     last_name = myOrder.last_name
     address = myOrder.address
     city = myOrder.city
     county = myOrder.county
-    subtotal = quantity * price
     order_total = myOrder.order_total
     invoice_date = myOrder.created_at.strftime("%d %b, %Y")
     month = myOrder.created_at.strftime("%B")
 
-    context={"invoice_no":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
+    context={"orderItems": orderItems, "invoice_no":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
               "order_address":address, "order_city":city, "order_county":county, 
-              "order_total ":order_total, "product_name":product_name, "product_price":product_price,
-              "quantity":quantity, "price":price , "month":month , "invoice_date":invoice_date , "subtotal":subtotal}
+              "order_total ":order_total, "month":month , "invoice_date":invoice_date }
 
     template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
     template_env = jinja2.Environment(loader=template_loader)
@@ -309,11 +301,6 @@ def orderInvoicePDF(request,order_id):
     myOrder = get_object_or_404(Order, pk=order_id)
     orderItems = OrderItem.objects.filter(order=myOrder)
 
-    for orderItem in orderItems:
-        product_name = orderItem.product.name
-        product_price = orderItem.product.price
-        quantity = orderItem.quantity
-        price = orderItem.price
 
     invoice_no = myOrder.invoice_no
     first_name = myOrder.first_name
@@ -321,15 +308,13 @@ def orderInvoicePDF(request,order_id):
     address = myOrder.address
     city = myOrder.city
     county = myOrder.county
-    subtotal = quantity * price
     order_total = myOrder.order_total
     invoice_date = myOrder.created_at.strftime("%d %b, %Y")
     month = myOrder.created_at.strftime("%B")
 
-    context={"invoice_no":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
+    context={"orderItems": orderItems,"invoice_no":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
               "order_address":address, "order_city":city, "order_county":county, 
-              "order_total ":order_total, "product_name":product_name, "product_price":product_price,
-              "quantity":quantity, "price":price , "month":month , "invoice_date":invoice_date , "subtotal":subtotal}
+              "order_total ":order_total, "month":month , "invoice_date":invoice_date}
 
     template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
     template_env = jinja2.Environment(loader=template_loader)
@@ -359,48 +344,47 @@ def orderInvoicePDF(request,order_id):
 def orderReceiptPDF(request,order_id):
     myOrder = get_object_or_404(Order, pk=order_id)
     orderItems = OrderItem.objects.filter(order=myOrder)
+    myReceipt = get_object_or_404(Receipt, receipt_order=myOrder)
 
-    for orderItem in orderItems:
-        product_name = orderItem.product.name
-        product_price = orderItem.product.price
-        quantity = orderItem.quantity
-        price = orderItem.price
-
-    invoice_no = myOrder.id
-    first_name = myOrder.first_name
-    last_name = myOrder.last_name
+    receipt_no = myReceipt.receipt_no
+    received_by = myReceipt.received_by
+    balance = myReceipt.balance
+    reference_no = myReceipt.reference_no
+    customer_name = myOrder.last_name + myOrder.first_name
+    phone_number = myOrder.user.phone_number
+    email = myOrder.email
     address = myOrder.address
     city = myOrder.city
     county = myOrder.county
-    subtotal = quantity * price
     order_total = myOrder.order_total
-    invoice_date = myOrder.created_at.strftime("%d %b, %Y")
+    receipt_date = myReceipt.created_at.strftime("%d %b, %Y")
     month = myOrder.created_at.strftime("%B")
 
-    context={"order_id":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
-              "order_address":address, "order_city":city, "order_county":county, 
-              "order_total ":order_total, "product_name":product_name, "product_price":product_price,
-              "quantity":quantity, "price":price , "month":month , "invoice_date":invoice_date , "subtotal":subtotal}
+    context={"orderItems": orderItems,"receipt_no":receipt_no, "customer_name":customer_name, "phone_number":phone_number,
+              "payment_method":address, "reference_no":reference_no, "amount":county, 
+              "balance ":balance, "month":month , "date":receipt_date , "address":address,
+              "county":county, "email":email, "received_by": received_by,"order_total":order_total}
 
     template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
     template_env = jinja2.Environment(loader=template_loader)
 
-    template  = template_env.get_template('order_invoice.html')
+    template  = template_env.get_template('order_receipt.html')
     output_text = template.render(context)
 
     config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
     options={"enable-local-file-access": None,
              }
 
-    pdfkit.from_string(output_text, 'Invoice.pdf', configuration=config, options=options, css="/home/sammyb/gee_collections/order/static/order/invoice-pdf.css")
+    pdfkit.from_string(output_text, 'Receipt.pdf', configuration=config, options=options, css="/home/sammyb/gee_collections/order/static/order/invoice-pdf.css")
 
-    path = 'Invoice.pdf'
+    path = 'Receipt.pdf'
     with open(path, 'rb') as pdf:
         contents = pdf.read()
 
     response = HttpResponse(contents, content_type='application/pdf')
 
-    response['Content-Disposition'] = 'attachment; filename=Invoice.pdf'
+    response['Content-Disposition'] = 'attachment; filename=Receipt.pdf'
     pdf.close()
-    os.remove("Invoice.pdf")  # remove the locally created pdf file.
+    os.remove("Receipt.pdf")  # remove the locally created pdf file.
     return response
+

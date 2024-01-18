@@ -55,3 +55,8 @@ class MpesaPaymentSerializer(serializers.ModelSerializer):
         model = MpesaPayment
         fields=['transaction_id','phone_number','amount','transaction_time']
 
+class ReceiptSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Receipt
+        fields=['receipt_no','receipt_order','receipt_user','received_amount','payment_method','received_by','reference_no','balance']
+

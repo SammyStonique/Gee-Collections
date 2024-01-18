@@ -36,14 +36,8 @@ def invoice_number_gen():
         invoice_no = last_invoice.invoice_no
         invoice_int = int(invoice_no.split('INV')[-1])
         new_invoice_int = invoice_int + 1
-        if ( new_invoice_int < 10 ):
-            new_invoice_no = 'INV'+ str(new_invoice_int).zfill(4)
-        elif ( new_invoice_int >= 10 and new_invoice_int < 100 ):
-            new_invoice_no = 'INV'+ str(new_invoice_int).zfill(4)
-        elif ( new_invoice_int >= 100 and new_invoice_int < 1000 ):
-            new_invoice_no = 'INV'+ str(new_invoice_int).zfill(4)
-        else :
-             new_invoice_no = 'INV'+ str(new_invoice_int)
+        new_invoice_no = 'INV'+ str(new_invoice_int).zfill(4)
+        
         return new_invoice_no
 
 
@@ -55,14 +49,8 @@ def receipt_number_gen():
         receipt_no = last_receipt.receipt_no
         receipt_int = int(receipt_no.split('RC')[-1])
         new_receipt_int = receipt_int + 1
-        if ( new_receipt_int < 10 ):
-            new_receipt_no = 'RC'+ str(new_receipt_int).zfill(4)
-        elif ( new_receipt_int >= 10 and new_receipt_int < 100 ):
-            new_receipt_no = 'RC'+ str(new_receipt_int).zfill(4)
-        elif ( new_receipt_int >= 100 and new_receipt_int < 1000 ):
-            new_receipt_no = 'RC'+ str(new_receipt_int).zfill(4)
-        else :
-             new_receipt_no = 'RC'+ str(new_receipt_int)
+        new_receipt_no = 'RC'+ str(new_receipt_int).zfill(4)
+
         return new_receipt_no
 
 
@@ -92,11 +80,14 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model) :
+
     order = models.ForeignKey(Order,related_name='items',on_delete=models.CASCADE)
     product = models.ForeignKey(Product,related_name='items', on_delete=models.CASCADE,null=True,blank=True)
     quantity = models.IntegerField(default=1,null=True,blank=True)
     price = models.DecimalField(max_digits=8, decimal_places=2,null=True,blank=True)
 
+    def getTotal(self):
+         return self.quantity * self.price
 
     def __str__(self):
         return f"{self.order.email} OrderItem({'%s' % self.order.id})"
@@ -171,6 +162,7 @@ class Receipt(models.Model):
     received_by = models.CharField(max_length=250, blank=True)
     reference_no = models.CharField(max_length=250, blank=True, null=True)
     balance = models.DecimalField(max_digits=8, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
          return f"{self.receipt_no} - Order ({self.receipt_order.id})"
