@@ -13,7 +13,8 @@ import ContactView from '../views/ContactView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import LogoutView from '../views/LogoutView.vue'
 import SearchView from '../views/SearchView.vue'
-
+import ReceiptAddView from '../views/ReceiptAddView.vue'
+import TestView from '../views/TestView.vue'
 
 const routes = [
   {
@@ -23,6 +24,11 @@ const routes = [
     meta:{
       isIdle: true,
     }
+  },
+  {
+    path: '/tests',
+    name: 'tests',
+    component: TestView
   },
   {
     path: '/products',
@@ -93,6 +99,11 @@ const routes = [
     path: '/register',
     name: 'register',
     component: RegisterView
+  },
+  {
+    path: '/receipt-add',
+    name: 'receipt-add',
+    component: ReceiptAddView
   },
 ]
 const router = createRouter({

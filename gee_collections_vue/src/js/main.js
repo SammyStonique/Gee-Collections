@@ -244,7 +244,7 @@
         }
         $button.parent().find('input').val(newVal);
     });
-    
+
     
     // Shipping address show hide
     $('.checkout #shipto').on('change',function () {

@@ -99,12 +99,22 @@ def checkout(request):
         return Response(serializer.data)
 
 class OrdersList(APIView):
+    def get(self, format=None):
+        orders = Order.objects.all()
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
+    
+class OrdersDetails(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+class MyOrdersList(APIView):
     def get(self, request, format=None):
         orders = Order.objects.filter(user=request.user)
         serializer = MyOrderSerializer(orders, many=True)
         return Response(serializer.data)
 
-class OrderDetails(generics.RetrieveUpdateDestroyAPIView):  
+class MyOrderDetails(generics.RetrieveUpdateDestroyAPIView):  
     queryset = Order.objects.all()
     serializer_class = MyOrderSerializer
 

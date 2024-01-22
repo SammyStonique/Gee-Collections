@@ -6,9 +6,11 @@ urlpatterns = [
     # path('checkout/', views.CheckOut.as_view()),
     path('checkout/', views.checkout),
     path('mpesa-payments/',views.MpesaDetails.as_view()),
-    path('my-orders/', views.OrdersList.as_view()),
+    path('orders/', views.OrdersList.as_view()),
+    path('orders/<str:user>/', views.OrdersDetails.as_view()),
+    path('my-orders/', views.MyOrdersList.as_view()),
     # path('my-orders-pagination/', views.OrdersPagination.as_view()),
-    path('my-orders/<str:pk>/', views.OrderDetails.as_view()),
+    path('my-orders/<str:pk>/', views.MyOrderDetails.as_view()),
     path('access/token/',views.getAccessToken),
     path('online/lipa/', views.lipa_na_mpesa_online, name='lipa_na_mpesa'),
     # register, confirmation, validation and callback urls

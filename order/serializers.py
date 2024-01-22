@@ -31,7 +31,7 @@ class OrderSerializer(serializers.ModelSerializer):
     # coupon_order = serializers.PrimaryKeyRelatedField(queryset=Coupon.objects.all())
     class Meta:
         model = Order
-        fields = ['id','user','first_name','last_name','email','phone_number','county','city','address','items','created_at','order_total','paid','payment_reference','delivery_fee']
+        fields = ['id','user','first_name','last_name','email','phone_number','county','city','address','items','created_at','order_total','paid','payment_reference','delivery_fee','invoice_no']
 
     def create(self, validated_data):
         items_data = validated_data.pop('items')

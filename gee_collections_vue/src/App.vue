@@ -171,6 +171,8 @@
     :showLoader="showLoader"
     :hideLoader="hideLoader"
     :loaderIndex="loaderIndex"
+    :getAllCustomers="getAllCustomers"
+    :customersArray="customersArray"
   />
   <!-- <p>{{ isIdle }}</p> -->
   <!-- Footer Start -->
@@ -345,6 +347,8 @@ export default {
       subscribedEmails: [],
       loader: "none",
       loaderIndex: 1,
+      customersArray: [],
+      custArray: [],
     };
   },
   beforeMount() {
@@ -625,6 +629,24 @@ export default {
     hideLoader(){
         this.loader = "none";
         this.loaderIndex = 1;
+    },
+  
+    getAllCustomers(){
+  
+      this.axios
+      .get("api/v1/user-list/")
+      .then((response)=>{
+          this.custArray = response.data;
+          for( let i = 0; i < this.custArray.length; i++){
+            this.customersArray.push(this.custArray[i]);
+          }
+      })
+      .catch((error)=>{
+
+      })
+      .finally(()=>{
+        
+      })
     }
   },
 };
