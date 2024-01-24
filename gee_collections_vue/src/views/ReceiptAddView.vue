@@ -13,7 +13,7 @@
     <!-- Checkout Start -->
     <div class="receipt-add w-full px-16 py-10">
         <div class="bg-white py-10">
-            <form action="" @submit.prevent="">
+            <form action="" @submit.prevent="createReceipt">
                 <div class="flex">
                     <div class="basis-1/2 px-20">
                         <div class="flex">
@@ -21,8 +21,7 @@
                                 <p><strong>Customer :</strong></p>
                             </div>
                             <div class="basis-1/2">
-                                <!-- <select name="customer" ref="customerSelect" id="selectCustomer" class="form-control" onchange="showOrders" onfocus="this.selectedIndex = -1;"> -->
-                                <select name="customer" ref="customerSelect" id="selectCustomer" class="form-control" @change="showOrders" onfocus="this.selectedIndex = -1;">
+                                <select name="customer" ref="customerSelect" id="selectCustomer" class="form-control" @change="showOrders" onfocus="this.selectedIndex = -1;" v-model="customer">
                                     <option value="" disabled="true" selected>--Select Customer--</option>
                                     <option v-for="cust in customersArray">{{ cust.first_name }} {{ cust.last_name }}</option> 
                                 </select>
@@ -33,7 +32,7 @@
                                 <p><strong>Receipt Date :</strong></p>
                             </div>
                             <div class="basis-1/2">
-                                <input type="date" name="" id="" class="form-control">
+                                <input type="date" name="" id="" class="form-control" v-model="receipt_date">
                             </div>
                         </div>
                         <div class="flex">
@@ -41,7 +40,7 @@
                                 <p><strong>Payment Method :</strong></p>
                             </div>
                             <div class="basis-1/2">
-                                <select name="payment-method" id="" class="form-control" aria-placeholder="Select Payment Method">
+                                <select name="payment-method" id="" class="form-control" v-model="payment_method">
                                     <option value="" disabled="true">--Select Payment Method--</option>
                                     <option value="Cash">Cash</option>
                                     <option value="Mpesa">Mpesa</option>
@@ -49,6 +48,11 @@
                                     <option value="EFT">EFT</option>
                                 </select>
                             </div>
+                        </div>
+                        <div class="col-md-12 notification is-danger" v-if="errors.length">
+                            <p style="color: red" v-for="error in errors" v-bind:key="error">
+                                {{ error }}
+                            </p>
                         </div>
                         <div class="flex">
                             <div class="basis-1/2">
@@ -65,7 +69,7 @@
                                 <p><strong>Customer Order:</strong></p>
                             </div>
                             <div class="basis-1/2">
-                                <select name="customer" id="" class="form-control" aria-placeholder="Select Customer Order">
+                                <select name="order" ref="orderSelect" id="" class="form-control" @change="setOrderID" onfocus="this.selectedIndex = -1;" v-model="customer_order">
                                     <option value="" disabled="true" selected>--Select Order--</option>
                                     <option v-for="ord in cstOrders">{{ ord.invoice_no }} [{{ord.id}} ({{ ord.order_total }})]</option> 
                                 </select>
@@ -76,7 +80,7 @@
                                 <p><strong>Reference No:</strong></p>
                             </div>
                             <div class="basis-1/2">
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" v-model="reference_no">
                             </div>
                         </div>
                         <div class="flex">
@@ -84,7 +88,7 @@
                                 <p><strong>Amount Received:</strong></p>
                             </div>
                             <div class="basis-1/2">
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" v-model="amount_received">
                             </div>
                         </div>
                     </div>
@@ -137,9 +141,20 @@ export default{
     data(){
         return{
             email: "",
+            customerID: "",
             selectedCust: 0,
+            selectedOrd: 0,
             orders: [],
-            cstOrders: []
+            cstOrders: [],
+            errors: [],
+            receipt_date: "",
+            payment_method: "",
+            reference_no: "",
+            amount_received: 0,
+            customer: "",
+            customer_order: "",
+            balance: 0,
+            order_id: ""
         }
     },
     methods :{
@@ -147,21 +162,82 @@ export default{
             this.cstOrders = [];
             this.selectedCust = this.$refs.customerSelect.selectedIndex - 1;
             this.email = this.customersArray[this.selectedCust].email;
+            this.customerID = this.customersArray[this.selectedCust].id;
     
             this.axios
             .get(`api/v1/orders/?=${this.email}/`)
             .then((response) => {
                 this.orders = response.data;
                 for(let i=0; i<this.orders.length; i++){
-                    if(this.orders[i].user == this.email){
+                    if(this.orders[i].user == this.email && this.orders[i].paid == false){
                         this.cstOrders.push(this.orders[i]);
                     }
                 }
-                console.log("The customer orders are ", this.cstOrders)
             })
             .catch((error) => {
             console.log(error);
             });
+        },
+        setOrderID(){
+            this.order_id = "";
+            this.selectedOrd = this.$refs.orderSelect.selectedIndex - 1;
+            this.order_id = this.cstOrders[this.selectedOrd].id;
+        },
+        createReceipt(){
+            this.errors = [];
+            if (
+                this.customer === "" &&
+                this.receipt_date === "" &&
+                this.payment_method === "" &&
+                this.customer_order === "" &&
+                this.reference_no === "" &&
+                this.amount_received === ""
+            ) {
+                this.errors.push("Please fill in the details!");
+            } else {
+                if (
+                this.customer === "" ||
+                this.receipt_date === "" ||
+                this.payment_method === "" ||
+                this.customer_order === "" ||
+                this.reference_no === "" ||
+                this.amount_received === "" 
+                ) {
+                this.errors.push("Some details are missing!");
+                }
+            }
+            this.balance = this.cstOrders[this.selectedOrd].order_total - this.amount_received;
+            if (!this.errors.length) {
+                let formData = {
+                    receipt_order: this.order_id,
+                    receipt_user: this.customerID,
+                    received_amount: Number(this.amount_received).toFixed(2),
+                    payment_method: this.payment_method,
+                    reference_no: this.reference_no,
+                    created_at: this.receipt_date,
+                    balance: Number(this.balance).toFixed(2)
+                }
+                this.axios
+                .post('api/v1/generate-receipt/', formData)
+                .then((response)=>{
+                    this.$toast.success("Receipt Succesfully Added", {
+                    duration: 5000,
+                    dismissible: true,
+                    });
+                })
+                .catch((error)=>{
+                    console.log(error);
+                })
+                .finally(()=>{
+                    this.customer = "";
+                    this.customer_order = "";
+                    this.amount_received = 0;
+                    this.receipt_date = "";
+                    this.payment_method = "";
+                    this.reference_no = "";
+                })
+            }
+
         }
 
     },

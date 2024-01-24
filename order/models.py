@@ -162,7 +162,7 @@ class Receipt(models.Model):
     received_by = models.CharField(max_length=250, blank=True)
     reference_no = models.CharField(max_length=250, blank=True, null=True)
     balance = models.DecimalField(max_digits=8, decimal_places=2)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateField()
 
     def __str__(self):
          return f"{self.receipt_no} - Order ({self.receipt_order.id})"

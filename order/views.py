@@ -97,6 +97,20 @@ def checkout(request):
 
         sms.send(f'Dear {customer_name},your order {order_id} has succesfully been placed. Thank you for doing business with us.',[f'{pn}'],callback=checkout)
         return Response(serializer.data)
+    
+@api_view(['POST'])
+def generate_receipt(request):
+    received_by = request.user.first_name + ' '+ request.user.last_name
+    print("The receipt has been done by ", received_by)
+    serializer = ReceiptSerializer(data=request.data)
+    print("The serialized data is ",serializer.initial_data)
+
+    if serializer.is_valid():
+        serializer.save(received_by=received_by)
+    else:
+        print(serializer.errors)    
+
+    return Response(serializer.data)
 
 class OrdersList(APIView):
     def get(self, format=None):

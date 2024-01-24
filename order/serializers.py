@@ -28,7 +28,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
     user = serializers.ReadOnlyField(source='user.email')
-    # coupon_order = serializers.PrimaryKeyRelatedField(queryset=Coupon.objects.all())
     class Meta:
         model = Order
         fields = ['id','user','first_name','last_name','email','phone_number','county','city','address','items','created_at','order_total','paid','payment_reference','delivery_fee','invoice_no']
@@ -56,7 +55,14 @@ class MpesaPaymentSerializer(serializers.ModelSerializer):
         fields=['transaction_id','phone_number','amount','transaction_time']
 
 class ReceiptSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Receipt
-        fields=['receipt_no','receipt_order','receipt_user','received_amount','payment_method','received_by','reference_no','balance']
+        fields=['receipt_no','receipt_order','receipt_user','received_amount','payment_method','received_by','reference_no','balance','created_at']
+
+    def create(self, validated_data):
+        receipt = Receipt.objects.create(**validated_data)
+            
+        return receipt
+    
 
