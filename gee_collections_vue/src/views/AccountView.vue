@@ -112,14 +112,14 @@
                         <th>Status</th>
                         <th>Payment Ref</th>
                         <th>Action</th>
-                        <th></th>
+                        <th>Invoice</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-for="(order, index) in pageOfItems" :key="index">
                         <td>{{ index + 1 }}</td>
                         <td>
-                          <a class="order-id-link" @click="showModal(order.id)">{{
+                          <a class="order-id-link" @click="showModal(order.id)" title="View Order">{{
                             order.id.substring(0, 7)
                           }}</a>
                         </td>
@@ -130,8 +130,8 @@
                         <td v-if="order.paid">{{ order.payment_reference }}</td>
                         <td v-else>-</td>
                         <td v-if="order.paid">
-                          <button class="btn" @click="showModal(order.id)">
-                            View Order
+                          <button class="btn" @click="printOrderReceipt(order.id)">
+                            Print Receipt
                           </button>
                         </td>
                         <td v-else>
@@ -1469,6 +1469,30 @@ export default {
       let orderID = arguments[0];
       this.axios
         .get(`api/v1/invoice-pdf/${orderID}/`, { responseType: 'blob' })
+        .then((response) => {
+          if(response.status == 200){
+              const url = window.URL.createObjectURL(new Blob([response.data]));
+              const link = document.createElement('a');
+              link.href = url;
+              link.setAttribute('download', 'Invoice.pdf');
+              document.body.appendChild(link);
+              link.click();
+          }
+         
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(()=>{
+          this.hideLoader();
+        });
+        
+    },
+    printOrderReceipt() {
+      this.showLoader();
+      let orderID = arguments[0];
+      this.axios
+        .get(`api/v1/receipt-pdf/${orderID}/`, { responseType: 'blob' })
         .then((response) => {
           if(response.status == 200){
               const url = window.URL.createObjectURL(new Blob([response.data]));

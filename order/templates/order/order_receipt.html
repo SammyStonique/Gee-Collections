@@ -1,66 +1,55 @@
 <html>
-    <head>
-        <style>
-            body {
-                font-size: 12px;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                border-radius: 30%;
-                border: 1px solid white;
-            }
-            
-            table tr td {
-                padding-left: 6px;
-                text-align: left;
-            }
-            table thead{
-                background-color: #ff6f61;
-                color: white;
-                font-weight: bold;
-            }
-
-            table tr:nth-child(even){
-                background-color: #f2f2f2;
-            }
-        </style>
-    </head>
     <body>
-        <div class="flex mb-6">
-            <div class="basis-1/2">
-                <h2 class="font-bold text-2xl">Receipt</h2>
-            </div>
-            <div class="basis-1/2">
-                <img style="height: 50px; width: auto;" src="/home/sammyb/gee_collections/gee_collections_vue/src/assets/img/new-logo.png" />
-            </div>
-        </div>
-        <div class="flex mb-6">
-            <div class="basis-1/2">
-                <p><strong>Receipt No: </strong>{{receipt_no}}</p>
-                <p><strong>Date: </strong>{{date}}</p>
-                <p><strong>Payment Method: </strong>{{payment_method}}</p>
-                <p><strong>Reference No: </strong>{{reference_no}}</p>
-                <p><strong>Amount: </strong>{{amount}}</p>
-                <p><strong>Balance: </strong>{{balance}}</p>
-            </div>
-            <div class="basis-1/2">
-                <div class="flex">
-                    <div class="basis-1/2">
-                        <p><strong>Received From: </strong></p>
-                    </div>
-                    <div class="basis-1/2">
-                        <p>{{customer_name}}</p>
-                        <p>{{phone_number}}</p>
-                        <p>{{address}}, {{city}}</p>
-                        <p>{{county}}</p>
-                        <p>{{email}}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <table class="receipt-info-container">
+            <tbody>
+                <tr>
+                    <td class="receipt-title" rowspan="2">Receipt</td>
+                    <td><img style="height: 50px; width: auto;" src="/home/sammyb/gee_collections/gee_collections_vue/src/assets/img/new-logo.png" /></td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="customer-info-container">
+            <tbody>
+                <tr>
+                    <td><strong>Receipt No: </strong></td>
+                    <td>{{receipt_no}}</td>
+                    <td><strong>Received From: </strong></td>
+                    <td>{{customer_name}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Date: </strong></td>
+                    <td>{{date}}</td>
+                    <td></td>
+                    <td>{{phone_number}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Payment Method: </strong></td>
+                    <td>{{payment_method}}</td>
+                    <td></td>
+                    <td>{{address}}, {{city}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Reference No: </strong></td>
+                    <td>{{reference_no}}</td>
+                    <td></td>
+                    <td>{{county}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Amount: </strong></td>
+                    <td>{{amount}}</td>
+                    <td></td>
+                    <td>{{email}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Balance: </strong></td>
+                    <td>{{balance}}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
         <div class="mb-6">
-            <table>
+            <table class="order-items-table">
                 <thead>
                     <tr>
                         <th>Item</th>
@@ -73,11 +62,11 @@
                 <tbody>
                     {% for orderItem in orderItems %}
                     <tr>
-                        <td></td>
+                        <td>{{ orderItems.id }}</td>
                         <td>{{orderItem.product.name}}</td>
                         <td>{{orderItem.quantity}}</td>
                         <td>{{orderItem.price}}</td>
-                        <td>{{ orderItem.getTotal()}}</td>
+                        <td><strong>{{ orderItem.getTotal()}}</strong></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -86,29 +75,36 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>Total</td>
-                        <td>{{order_total}}</td>
+                        <td><strong>Total</strong></td>
+                        <td><strong>{{order_total}}</strong></td>
                     </tr>
                     <tr>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>Amount Paid</td>
-                        <td>{{amount}}</td>
+                        <td><strong>Amount Paid</strong></td>
+                        <td><strong>{{amount}}</strong></td>
                     </tr>
                 </tfoot>
             </table>
         </div>
-        <div class="flex mb-4">
-            <div class="basis-1/2">
-                <p><strong>Received By: </strong>{{received_by}}</p>
-            </div>
-            <div class="basis-1/2">
-                <p><strong>Signature: </strong><img style="height: 25px; width: auto;" src="/home/sammyb/gee_collections/gee_collections_vue/src/assets/img/signature.jpg" /></p>
-            </div>
+        <div>
+            <p><strong>Amount In Words : </strong>{{amount_in_words}} Shillings Only.</p>
         </div>
-        <div class="">
-            <p><strong>Thank You For Doing Business With Us</strong><img src="https://github.com/anvilco/html-pdf-invoice-template/raw/main/img/heart.png" alt="heart" /></p>
+        <div>
+            <table class="receipted-by-container">
+                <tbody>
+                    <tr>
+                        <td><strong>Receipted By: </strong></td>
+                        <td>{{received_by}}</td>
+                        <td><strong>Signature: </strong></td>
+                        <td><img style="height: 100px; width: auto;" src="/home/sammyb/gee_collections/gee_collections_vue/src/assets/img/signature.jpg" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="footer">
+            <p><strong>Thank You For Doing Business With Us </strong><img style="height: 20px; width: auto; margin-left: 6px;" src="https://github.com/anvilco/html-pdf-invoice-template/raw/main/img/heart.png" alt="heart" /></p>
         </div>
     </body>
 </html>

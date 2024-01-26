@@ -41,13 +41,40 @@ class OrderSerializer(serializers.ModelSerializer):
             
         return order
     
+    def update(self, instance, validated_data):
+        items_data = validated_data.pop('items')
+        itemArr = []
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
+        instance.county = validated_data.get('county', instance.county)
+        instance.email = validated_data.get('email', instance.email)
+        instance.city = validated_data.get('city', instance.city)
+        instance.address = validated_data.get('address', instance.address)
+        instance.order_total = validated_data.get('order_total', instance.order_total)
+        instance.paid = validated_data.get('paid', instance.paid)
+        instance.payment_reference = validated_data.get('payment_reference', instance.payment_reference)
+        instance.delivery_fee = validated_data.get('delivery_fee', instance.delivery_fee)
+
+        for item_data in items_data:
+            itemArr.append(item_data)
+        print("The itemArr consists of ", itemArr)
+        
+        OrderItem.objects.filter(order=instance.id).update(order=instance, **itemArr)
+
+        instance.save()
+        return instance
+    
 class CouponSerializer(serializers.ModelSerializer):
-    # coupon_order = serializers.PrimaryKeyRelatedField(queryset = Order.objects.all())
-    coupon_order = serializers.ReadOnlyField(source='coupon_order.id')
-    user = serializers.ReadOnlyField(source='user.email')
+
     class Meta:
         model = Coupon
-        fields=['coupon_code','coupon_amount','user','coupon_order','created_at']
+        fields=['coupon_code','coupon_amount','coupon_user','coupon_order','created_at']
+
+    def create(self, validated_data):
+        coupon = Coupon.objects.create(**validated_data)
+            
+        return coupon
 
 class MpesaPaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,5 +91,6 @@ class ReceiptSerializer(serializers.ModelSerializer):
         receipt = Receipt.objects.create(**validated_data)
             
         return receipt
+    
     
 

@@ -403,7 +403,7 @@ export default {
     "cartSubTotal",
     "shippingCost",
     "cartTotalUSD",
-    'loader','showLoader','hideLoader','loaderIndex'
+    'loader','showLoader','hideLoader','loaderIndex',
 
   ],
   el: "#selector",
@@ -449,6 +449,11 @@ export default {
       unknownVal: "",
       showStripe: false,
       coupon_amount: 0,
+      placedOrders: [],
+      placedOrder: [],
+      placedOrderID: "",
+      placedOrderUser: 0,
+      isOrderPlaced: false,
     };
   },
   watch: {
@@ -695,6 +700,7 @@ export default {
       this.showStripe = !this.showStripe;
     },
     placeOrder() {
+      this.isOrderPlaced = false;
       this.showLoader();
       const items = [];
       for (let i = 0; i < this.cart.cartItems.length; i++) {
@@ -733,46 +739,65 @@ export default {
           console.log(error);
         })
         .finally(()=>{
-          this.generateOrderCoupon();
           this.hideLoader();
+          this.isOrderPlaced = true;
         });
     },
     generateOrderCoupon(){
-      if (this.cartSubTotal >= 10000 && this.cartSubTotal < 20000){
-            this.coupon_amount = 500;
-          }else if(this.cartSubTotal >= 20000 && this.cartSubTotal < 30000){
-            this.coupon_amount = 1000;
-          }else if(this.cartSubTotal >= 30000 && this.cartSubTotal < 40000){
-            this.coupon_amount = 1500;
-          }else if(this.cartSubTotal >= 40000 && this.cartSubTotal < 50000){
-            this.coupon_amount = 2000;
-          }else if(this.cartSubTotal >= 50000 && this.cartSubTotal < 60000){
-            this.coupon_amount = 2500;
-          }else if(this.cartSubTotal >= 60000 && this.cartSubTotal < 70000){
-            this.coupon_amount = 3000;
-          }else if(this.cartSubTotal >= 70000 && this.cartSubTotal < 80000){
-            this.coupon_amount = 3500;
-          }else if(this.cartSubTotal >= 80000 && this.cartSubTotal < 90000){
-            this.coupon_amount = 4000;
-          }else if(this.cartSubTotal >= 90000 && this.cartSubTotal < 100000){
-            this.coupon_amount = 4500;
-          }else if(this.cartSubTotal >= 100000){
-            this.coupon_amount = 5000;
-          }else{
-            this.coupon_amount = 0;
-          }
-          if(this.coupon_amount > 0){
-            let formData = {
-              coupon_amount: Number(this.coupon_amount).toFixed(2),
-            };
-            this.axios.post("api/v1/generate-coupon/",formData)
-            .then((response)=>{
-              console.log("The coupon amount is ",this.coupon_amount)
-            })
-            .catch((error)=>{
-              console.log(error);
-            })
-          }
+      if(this.isOrderPlaced == true){
+        this.axios
+        .get("/api/v1/my-orders/")
+        .then((response)=>{
+          this.placedOrders = response.data;
+          console.log("The placed orders are ", this.placedOrders);
+          this.placedOrder = this.placedOrders[0];
+          this.placedOrderID = this.placedOrder.id;
+          this.placedOrderUser = this.placedOrder.user.id;
+        })
+        .catch((error)=>{
+          console.log(error.message);
+        })
+        .finally(()=>{
+          if (this.cartSubTotal >= 10000 && this.cartSubTotal < 20000){
+              this.coupon_amount = 500;
+            }else if(this.cartSubTotal >= 20000 && this.cartSubTotal < 30000){
+              this.coupon_amount = 1000;
+            }else if(this.cartSubTotal >= 30000 && this.cartSubTotal < 40000){
+              this.coupon_amount = 1500;
+            }else if(this.cartSubTotal >= 40000 && this.cartSubTotal < 50000){
+              this.coupon_amount = 2000;
+            }else if(this.cartSubTotal >= 50000 && this.cartSubTotal < 60000){
+              this.coupon_amount = 2500;
+            }else if(this.cartSubTotal >= 60000 && this.cartSubTotal < 70000){
+              this.coupon_amount = 3000;
+            }else if(this.cartSubTotal >= 70000 && this.cartSubTotal < 80000){
+              this.coupon_amount = 3500;
+            }else if(this.cartSubTotal >= 80000 && this.cartSubTotal < 90000){
+              this.coupon_amount = 4000;
+            }else if(this.cartSubTotal >= 90000 && this.cartSubTotal < 100000){
+              this.coupon_amount = 4500;
+            }else if(this.cartSubTotal >= 100000){
+              this.coupon_amount = 5000;
+            }else{
+              this.coupon_amount = 0;
+            }
+            if(this.coupon_amount > 0){
+              let formData = {
+                coupon_user: this.placedOrderUser,
+                coupon_order: this.placedOrderID,
+                coupon_amount: Number(this.coupon_amount).toFixed(2),
+              };
+              this.axios.post("api/v1/generate-coupon/",formData)
+              .then((response)=>{
+                console.log("The coupon amount is ",this.coupon_amount)
+              })
+              .catch((error)=>{
+                console.log(error.message);
+              })
+            }
+        })
+      }
+      
     },
     requestDelivery() {
       this.deliveryOption = !this.deliveryOption;

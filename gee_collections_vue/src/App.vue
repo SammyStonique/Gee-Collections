@@ -349,6 +349,7 @@ export default {
       loaderIndex: 1,
       customersArray: [],
       custArray: [],
+
     };
   },
   beforeMount() {

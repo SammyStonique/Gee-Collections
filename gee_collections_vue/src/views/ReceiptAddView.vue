@@ -29,14 +29,6 @@
                         </div>
                         <div class="flex">
                             <div class="basis-1/2">
-                                <p><strong>Receipt Date :</strong></p>
-                            </div>
-                            <div class="basis-1/2">
-                                <input type="date" name="" id="" class="form-control" v-model="receipt_date">
-                            </div>
-                        </div>
-                        <div class="flex">
-                            <div class="basis-1/2">
                                 <p><strong>Payment Method :</strong></p>
                             </div>
                             <div class="basis-1/2">
@@ -47,6 +39,15 @@
                                     <option value="Cheque">Cheque</option>
                                     <option value="EFT">EFT</option>
                                 </select>
+                            </div>
+                            
+                        </div>
+                        <div class="flex">
+                            <div class="basis-1/2">
+                                <p><strong>Receipt Date :</strong></p>
+                            </div>
+                            <div class="basis-1/2">
+                                <input type="date" name="" id="" class="form-control" v-model="receipt_date">
                             </div>
                         </div>
                         <div class="col-md-12 notification is-danger" v-if="errors.length">
@@ -154,7 +155,18 @@ export default{
             customer: "",
             customer_order: "",
             balance: 0,
-            order_id: ""
+            order_id: "",
+            payment_status: false,
+            order_first_name: "",
+            order_last_name: "",
+            order_email: "",
+            order_phone_number: "",
+            order_county: "",
+            order_city: "",
+            order_address: "",
+            order_items: [],
+            order_order_total: 0,
+            order_delivery_fee: 0,
         }
     },
     methods :{
@@ -180,8 +192,30 @@ export default{
         },
         setOrderID(){
             this.order_id = "";
+            this.order_first_name = "";
+            this.order_last_name = "";
+            this.order_email = "";
+            this.order_phone_number = "";
+            this.order_county = "";
+            this.order_city = "";
+            this.order_address = "";
+            this.order_order_total = 0;
+            this.order_delivery_fee = 0;
+            this.order_items = [];
+            this.payment_status = false;
             this.selectedOrd = this.$refs.orderSelect.selectedIndex - 1;
             this.order_id = this.cstOrders[this.selectedOrd].id;
+            this.payment_status = this.cstOrders[this.selectedOrd].paid;
+            this.order_first_name = this.cstOrders[this.selectedOrd].first_name;
+            this.order_last_name = this.cstOrders[this.selectedOrd].last_name;
+            this.order_email = this.cstOrders[this.selectedOrd].email;
+            this.order_phone_number = this.cstOrders[this.selectedOrd].phone_number;
+            this.order_county = this.cstOrders[this.selectedOrd].county;
+            this.order_city = this.cstOrders[this.selectedOrd].city;
+            this.order_address = this.cstOrders[this.selectedOrd].address;
+            this.order_order_total = this.cstOrders[this.selectedOrd].order_total;
+            this.order_delivery_fee = this.cstOrders[this.selectedOrd].delivery_fee;
+            this.order_items = this.cstOrders[this.selectedOrd].items;
         },
         createReceipt(){
             this.errors = [];
@@ -220,6 +254,7 @@ export default{
                 this.axios
                 .post('api/v1/generate-receipt/', formData)
                 .then((response)=>{
+                    this.payment_status = true;
                     this.$toast.success("Receipt Succesfully Added", {
                     duration: 5000,
                     dismissible: true,
@@ -229,12 +264,42 @@ export default{
                     console.log(error);
                 })
                 .finally(()=>{
-                    this.customer = "";
-                    this.customer_order = "";
-                    this.amount_received = 0;
-                    this.receipt_date = "";
-                    this.payment_method = "";
-                    this.reference_no = "";
+ 
+                    let formData = {
+                        first_name: this.order_first_name,
+                        last_name: this.order_first_name,
+                        email: this.order_email,
+                        phone_number: this.order_phone_number,
+                        county: this.order_county,
+                        city: this.order_city,
+                        address: this.order_address,
+                        order_total: this.order_order_total,
+                        delivery_fee: this.order_delivery_fee,
+                        items: this.order_items,
+                        paid : this.payment_status,
+                        payment_reference : this.reference_no
+                    }
+                    
+                    this.axios
+                    .put("/api/v1/orders/" + this.order_id + "/", formData)
+                    .then((response)=>{
+                        console.log(response);
+                    })
+                    .catch((error)=>{
+                        console.log(error.message);
+                        // console.log(error.response.data);  
+                        // console.log(error.response.status);  
+                        // console.log(error.response.headers);
+                    })
+                    .finally(()=>{
+                        this.customer = "";
+                        this.customer_order = "";
+                        this.amount_received = 0;
+                        this.receipt_date = "";
+                        this.payment_method = "";
+                        this.reference_no = "";
+                    })
+                    
                 })
             }
 

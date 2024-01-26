@@ -39,7 +39,7 @@ import pdfkit
 
 
 
-# Create your views here.
+#PLACING AN ORDER
 @api_view(['POST'])
 def checkout(request):
     serializer = OrderSerializer(data=request.data)
@@ -47,7 +47,6 @@ def checkout(request):
     if serializer.is_valid():
         serializer.save(user=request.user)
         qset = Order.objects.filter(user=request.user)
-        # orderItems = OrderItem.objects.get(order=qset)
 
         email = qset[0].user
         phone_number = qset[0].phone_number
@@ -60,11 +59,6 @@ def checkout(request):
         payment_status = qset[0].paid
         subtotal = qset[0].order_total
         total_due = qset[0].order_total + qset[0].delivery_fee
-        # for orderItem in orderItems:
-        #     product_name = orderItem.product.name
-        #     quantity = orderItem.quantity
-        #     price = orderItem.price
-        #     price_total = quantity * price
 
         vat = 0
         if(phone_number.startswith("+254")):
@@ -79,10 +73,6 @@ def checkout(request):
         subject = f'Order Invoice - [{order_id}]'
         template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
         template_env = jinja2.Environment(loader=template_loader)
-        # output_text = {"customer_name": customer_name, "order_id": order_id, "billing_address": billing_address, "city": city,
-        #                "shipping_cost": shipping_cost, "transaction_id": transaction_id, "payment_status": payment_status,
-        #                 "total_due": total_due, "subtotal": subtotal, "vat": vat,  "product_name": product_name,
-        #                 "quantity": quantity, "price": price, "price_total": price_total}
         output_text = {"customer_name": customer_name, "order_id": order_id, "billing_address": billing_address, "city": city,
                        "shipping_cost": shipping_cost, "transaction_id": transaction_id, "payment_status": payment_status,
                         "total_due": total_due, "subtotal": subtotal, "vat": vat}
@@ -97,16 +87,18 @@ def checkout(request):
 
         sms.send(f'Dear {customer_name},your order {order_id} has succesfully been placed. Thank you for doing business with us.',[f'{pn}'],callback=checkout)
         return Response(serializer.data)
-    
+
+ #GENEARTING CUSTOMER RECEIPT   
 @api_view(['POST'])
 def generate_receipt(request):
     received_by = request.user.first_name + ' '+ request.user.last_name
-    print("The receipt has been done by ", received_by)
+    # print("The receipt has been done by ", received_by)
     serializer = ReceiptSerializer(data=request.data)
-    print("The serialized data is ",serializer.initial_data)
+    # print("The serialized data is ",serializer.initial_data)
 
     if serializer.is_valid():
         serializer.save(received_by=received_by)
+        
     else:
         print(serializer.errors)    
 
@@ -132,18 +124,20 @@ class MyOrderDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = MyOrderSerializer
 
+#A VIEW TO GENERATE COUPONS
 @api_view(['POST'])
 def couponGen(request):
-    coupon_amount = request.data.get('coupon_amount')
-    print("The coupon amount is ", coupon_amount)
     serializer = CouponSerializer(data=request.data)
+    print("The serialized data is ",serializer.initial_data)
 
     if serializer.is_valid():
-        serializer.save(user=request.user)
-        qset = Coupon.objects.filter(user=request.user)
+        # serializer.save(coupon_user=request.user)
+        serializer.save()
+        qset = Coupon.objects.filter(coupon_user=request.user)
         customer_name = qset[0].user.first_name
         phone_number = qset[0].coupon_order.phone_number
         coupon_code = qset[0].coupon_code
+        coupon_amount = qset[0].coupon_amount
 
         if(phone_number.startswith("+254")):
             pn = phone_number
@@ -155,22 +149,29 @@ def couponGen(request):
             pn = "+"+phone_number
         
         sms.send(f'Dear {customer_name},as a token of our appreciation, we are thrilled to present you with an exclusive coupon code to use on your next purchase. The code is {coupon_code} and is worth {coupon_amount}',[f'{pn}'],callback=couponGen)
-        return Response(serializer.data)
+        
     else:
-        return Response('Coupon not generated')
+        print(serializer.errors)
 
+    return Response(serializer.data)
+
+#GENERATING A LIST OF COUPONS
 class CouponsList(generics.ListCreateAPIView):
     queryset = Coupon.objects.all()
     serializer_class = CouponSerializer
+
 
 class CouponDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Coupon.objects.all()
     serializer_class = CouponSerializer
 
+#LISTING M-PESA PAYMENTS
 class MpesaDetails(generics.ListAPIView):
     queryset = MpesaPayment.objects.all()
     serializer_class = MpesaPaymentSerializer
 
+
+#MPESA STK PUSH
 def getAccessToken(request):
     consumer_key = os.environ.get('CONSUMER_KEY')
     consumer_secret = os.environ.get('CONSUMER_SECRET')
@@ -279,7 +280,7 @@ def confirmation(request):
     }
     return JsonResponse(dict(context))
 
-
+#GENERATING A PDF INVOICE AS AN EMAIL ATTACHMENT
 def orderEmailInvoicePDF(request,order_id):
     myOrder = get_object_or_404(Order, pk=order_id)
     orderItems = OrderItem.objects.filter(order=myOrder)
@@ -314,13 +315,11 @@ def orderEmailInvoicePDF(request,order_id):
     with open(path, 'rb') as pdf:
         contents = pdf.read()
 
-    # response = HttpResponse(contents, content_type='application/pdf')
-
-    # response['Content-Disposition'] = 'attachment; filename=Invoice.pdf'
     pdf.close()
     os.remove("Invoice.pdf")  # remove the locally created pdf file.
     return contents  
 
+#GENERATING A PDF INVOICE
 def orderInvoicePDF(request,order_id):
     myOrder = get_object_or_404(Order, pk=order_id)
     orderItems = OrderItem.objects.filter(order=myOrder)
@@ -364,7 +363,7 @@ def orderInvoicePDF(request,order_id):
     return response
 
 
-
+#GENERATING A PDF RECEIPT
 def orderReceiptPDF(request,order_id):
     myOrder = get_object_or_404(Order, pk=order_id)
     orderItems = OrderItem.objects.filter(order=myOrder)
@@ -372,8 +371,10 @@ def orderReceiptPDF(request,order_id):
 
     receipt_no = myReceipt.receipt_no
     received_by = myReceipt.received_by
+    received_amount = myReceipt.received_amount
     balance = myReceipt.balance
     reference_no = myReceipt.reference_no
+    payment_method = myReceipt.payment_method
     customer_name = myOrder.last_name + myOrder.first_name
     phone_number = myOrder.user.phone_number
     email = myOrder.email
@@ -382,12 +383,14 @@ def orderReceiptPDF(request,order_id):
     county = myOrder.county
     order_total = myOrder.order_total
     receipt_date = myReceipt.created_at.strftime("%d %b, %Y")
-    month = myOrder.created_at.strftime("%B")
+    month = myReceipt.created_at.strftime("%B")
+    amount_in_words = myReceipt.myConverter()
 
     context={"orderItems": orderItems,"receipt_no":receipt_no, "customer_name":customer_name, "phone_number":phone_number,
-              "payment_method":address, "reference_no":reference_no, "amount":county, 
-              "balance ":balance, "month":month , "date":receipt_date , "address":address,
-              "county":county, "email":email, "received_by": received_by,"order_total":order_total}
+              "payment_method":payment_method, "reference_no":reference_no, "amount":received_amount, 
+              "balance ":balance, "month":month , "date":receipt_date , "address":address, "city": city,
+              "county":county, "email":email, "received_by": received_by,"order_total":order_total,
+              "amount_in_words": amount_in_words}
 
     template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
     template_env = jinja2.Environment(loader=template_loader)
@@ -399,7 +402,7 @@ def orderReceiptPDF(request,order_id):
     options={"enable-local-file-access": None,
              }
 
-    pdfkit.from_string(output_text, 'Receipt.pdf', configuration=config, options=options, css="/home/sammyb/gee_collections/order/static/order/invoice-pdf.css")
+    pdfkit.from_string(output_text, 'Receipt.pdf', configuration=config, options=options, css="/home/sammyb/gee_collections/order/static/order/receipt-pdf.css")
 
     path = 'Receipt.pdf'
     with open(path, 'rb') as pdf:

@@ -141,8 +141,8 @@ class MpesaPayment(BaseModel):
 class Coupon(models.Model):
     coupon_code = models.CharField(default=coupon_generator,primary_key=True,max_length=100)
     coupon_amount = models.DecimalField(max_digits=8, decimal_places=2)
-    coupon_order = models.ForeignKey(Order,related_name='coupon_order',on_delete=models.CASCADE)
-    user = models.ForeignKey(UserModel,related_name='user', on_delete=models.CASCADE)
+    coupon_order = models.ForeignKey(Order,related_name='coupon_orders',on_delete=models.CASCADE)
+    coupon_user = models.ForeignKey(UserModel,related_name='coupon_users', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -166,6 +166,49 @@ class Receipt(models.Model):
 
     def __str__(self):
          return f"{self.receipt_no} - Order ({self.receipt_order.id})"
+    
+    def myConverter(self):
+        ones = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]  
+        tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]  
+        teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"] 
+        
+        words = ""
+        amount = int(self.received_amount)
+        if amount == 0:  
+            return "zero"
+        
+        if amount>=10 and amount<=19:
+            words += teens[amount -10]
+        if amount >= 100000 and amount <= 999999:
+            if amount%100000 == 0:
+             words += ones[amount //100000] + " hundred thousand "
+            else:
+             words += ones[amount //100000] + " hundred and "
+            amount%=100000
+        if amount >=20000 and amount<=99999:
+            if amount%10000 == 0:
+             words += tens[amount //10000] + " thousand "
+            else:
+             words += tens[amount //10000] + " "
+            amount%=10000
+        if amount >=10000 and amount<=19999:
+            words += teens[amount //1000 - 10] + " thousand "
+            amount %= 1000
+        if amount >=1000 and amount<=9999:
+            words += ones[amount //1000] + " thousand "
+            amount %= 1000
+        if amount>=100 and amount<=999:
+            if amount%100 == 0:
+             words += ones[amount // 100] + " hundred "
+            else:
+                words += ones[amount // 100] + " hundred and "
+            amount %= 100
+        if amount>=20 and amount<=99:
+            words += tens[amount // 10] + " "
+            amount %= 10
+        if amount>=1 and amount<=9:
+            words += ones[amount]
+        return words.strip().title()
 
 
 

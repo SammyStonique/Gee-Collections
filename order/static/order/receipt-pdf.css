@@ -1,0 +1,72 @@
+
+body {
+    font-size: 16px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 30%;
+    border: 1px solid white;
+}
+
+table tr td {
+    padding-left: 6px;
+    text-align: left;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+/* table tr th {
+  padding-left: 6px;
+  text-align: left;
+} */
+
+table thead{
+    background-color: #ff6f61;
+    color: white;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 6px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+/* table tr:nth-child(even){
+    background-color: #f2f2f2;
+} */
+
+
+.logo-container {
+    margin: 20px 0 70px 0;
+  }
+  
+  .receipt-info-container {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    width: 100%;
+  }
+  .receipt-info-container td {
+    width: 100%;
+    padding-right: 12px;
+  }
+  .customer-info-container{
+    width: 100%;
+    margin-bottom: 40px;
+    font-size: medium;
+    border-top: #ff6f61 1px solid;
+    border-width: 100%;
+    padding-top: 30px;
+  }
+
+  .order-items-table{
+    margin-bottom: 60px;
+  }
+
+  .receipted-by-container{
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  .footer{
+    text-align: center;
+    font-size: 16px;
+  }
