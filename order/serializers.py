@@ -56,20 +56,14 @@ class OrderSerializer(serializers.ModelSerializer):
         instance.payment_reference = validated_data.get('payment_reference', instance.payment_reference)
         instance.delivery_fee = validated_data.get('delivery_fee', instance.delivery_fee)
 
-        for item_data in items_data:
-            itemArr.append(item_data)
-        print("The itemArr consists of ", itemArr)
-        
-        OrderItem.objects.filter(order=instance.id).update(order=instance, **itemArr)
-
         instance.save()
         return instance
     
 class CouponSerializer(serializers.ModelSerializer):
-
+    coupon_user = serializers.ReadOnlyField(source='coupon_user.email')
     class Meta:
         model = Coupon
-        fields=['coupon_code','coupon_amount','coupon_user','coupon_order','created_at']
+        fields=['coupon_code','coupon_amount','coupon_user','coupon_order','created_at','activation_status']
 
     def create(self, validated_data):
         coupon = Coupon.objects.create(**validated_data)

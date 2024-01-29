@@ -144,12 +144,15 @@ class Coupon(models.Model):
     coupon_order = models.ForeignKey(Order,related_name='coupon_orders',on_delete=models.CASCADE)
     coupon_user = models.ForeignKey(UserModel,related_name='coupon_users', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    activation_status = models.BooleanField(default=False)
 
     class Meta:
         ordering = ('-created_at',)
 
     def __str__(self):
         return f"{self.coupon_order.email}({'%s' % self.coupon_order.id}) - {'%s' % self.coupon_code}"
+    
+    
     
 class Receipt(models.Model):
     PAYMETHOD = (('','Payment Method'),('Cash','Cash'),('Mpesa','Mpesa'),('Cheque','Cheque'),('EFT','EFT'))

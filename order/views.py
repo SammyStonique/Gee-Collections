@@ -83,10 +83,13 @@ def checkout(request):
         mail.attach_alternative(content, "text/html")
         pdf = orderEmailInvoicePDF(request, order_id)
         mail.attach('Invoice.pdf', pdf, 'application/pdf')
-        mail.send(fail_silently = False)
+        # mail.send(fail_silently = False)
 
         sms.send(f'Dear {customer_name},your order {order_id} has succesfully been placed. Thank you for doing business with us.',[f'{pn}'],callback=checkout)
-        return Response(serializer.data)
+    else:
+        print(serializer.errors)    
+        
+    return Response(serializer.data)
 
  #GENEARTING CUSTOMER RECEIPT   
 @api_view(['POST'])
@@ -131,10 +134,9 @@ def couponGen(request):
     print("The serialized data is ",serializer.initial_data)
 
     if serializer.is_valid():
-        # serializer.save(coupon_user=request.user)
-        serializer.save()
+        serializer.save(coupon_user=request.user)
         qset = Coupon.objects.filter(coupon_user=request.user)
-        customer_name = qset[0].user.first_name
+        customer_name = qset[0].coupon_order.first_name
         phone_number = qset[0].coupon_order.phone_number
         coupon_code = qset[0].coupon_code
         coupon_amount = qset[0].coupon_amount
@@ -148,7 +150,7 @@ def couponGen(request):
         elif(phone_number.startswith('254')):
             pn = "+"+phone_number
         
-        sms.send(f'Dear {customer_name},as a token of our appreciation, we are thrilled to present you with an exclusive coupon code to use on your next purchase. The code is {coupon_code} and is worth {coupon_amount}',[f'{pn}'],callback=couponGen)
+        sms.send(f'Dear {customer_name},as a token of our appreciation, we are thrilled to present you with an exclusive coupon code to use on your next purchase. The code is {coupon_code} and is worth {coupon_amount}ksh',[f'{pn}'],callback=couponGen)
         
     else:
         print(serializer.errors)
@@ -375,7 +377,8 @@ def orderReceiptPDF(request,order_id):
     balance = myReceipt.balance
     reference_no = myReceipt.reference_no
     payment_method = myReceipt.payment_method
-    customer_name = myOrder.last_name + myOrder.first_name
+    first_name = myOrder.first_name
+    last_name = myOrder.last_name 
     phone_number = myOrder.user.phone_number
     email = myOrder.email
     address = myOrder.address
@@ -386,7 +389,7 @@ def orderReceiptPDF(request,order_id):
     month = myReceipt.created_at.strftime("%B")
     amount_in_words = myReceipt.myConverter()
 
-    context={"orderItems": orderItems,"receipt_no":receipt_no, "customer_name":customer_name, "phone_number":phone_number,
+    context={"orderItems": orderItems,"receipt_no":receipt_no, "first_name":first_name, "last_name":last_name, "phone_number":phone_number,
               "payment_method":payment_method, "reference_no":reference_no, "amount":received_amount, 
               "balance ":balance, "month":month , "date":receipt_date , "address":address, "city": city,
               "county":county, "email":email, "received_by": received_by,"order_total":order_total,

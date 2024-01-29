@@ -267,7 +267,7 @@ export default{
  
                     let formData = {
                         first_name: this.order_first_name,
-                        last_name: this.order_first_name,
+                        last_name: this.order_last_name,
                         email: this.order_email,
                         phone_number: this.order_phone_number,
                         county: this.order_county,

@@ -449,11 +449,9 @@ export default {
       unknownVal: "",
       showStripe: false,
       coupon_amount: 0,
-      placedOrders: [],
       placedOrder: [],
       placedOrderID: "",
       placedOrderUser: 0,
-      isOrderPlaced: false,
     };
   },
   watch: {
@@ -700,7 +698,6 @@ export default {
       this.showStripe = !this.showStripe;
     },
     placeOrder() {
-      this.isOrderPlaced = false;
       this.showLoader();
       const items = [];
       for (let i = 0; i < this.cart.cartItems.length; i++) {
@@ -729,8 +726,11 @@ export default {
       this.axios
         .post("/api/v1/checkout/", formData)
         .then((response) => {
+          this.placedOrder = response.data;
           this.$store.commit("clearCart");
           this.$toast.success("Order succesfully placed");
+          this.placedOrderID = this.placedOrder.id;
+          this.placedOrderUser = this.placedOrder.user;
           this.$router.push("/");
           this.$store.commit("reloadingPage");
           this.$router.push("/");
@@ -740,63 +740,47 @@ export default {
         })
         .finally(()=>{
           this.hideLoader();
-          this.isOrderPlaced = true;
+          this.generateOrderCoupon();
         });
     },
     generateOrderCoupon(){
-      if(this.isOrderPlaced == true){
-        this.axios
-        .get("/api/v1/my-orders/")
-        .then((response)=>{
-          this.placedOrders = response.data;
-          console.log("The placed orders are ", this.placedOrders);
-          this.placedOrder = this.placedOrders[0];
-          this.placedOrderID = this.placedOrder.id;
-          this.placedOrderUser = this.placedOrder.user.id;
-        })
-        .catch((error)=>{
-          console.log(error.message);
-        })
-        .finally(()=>{
-          if (this.cartSubTotal >= 10000 && this.cartSubTotal < 20000){
-              this.coupon_amount = 500;
-            }else if(this.cartSubTotal >= 20000 && this.cartSubTotal < 30000){
-              this.coupon_amount = 1000;
-            }else if(this.cartSubTotal >= 30000 && this.cartSubTotal < 40000){
-              this.coupon_amount = 1500;
-            }else if(this.cartSubTotal >= 40000 && this.cartSubTotal < 50000){
-              this.coupon_amount = 2000;
-            }else if(this.cartSubTotal >= 50000 && this.cartSubTotal < 60000){
-              this.coupon_amount = 2500;
-            }else if(this.cartSubTotal >= 60000 && this.cartSubTotal < 70000){
-              this.coupon_amount = 3000;
-            }else if(this.cartSubTotal >= 70000 && this.cartSubTotal < 80000){
-              this.coupon_amount = 3500;
-            }else if(this.cartSubTotal >= 80000 && this.cartSubTotal < 90000){
-              this.coupon_amount = 4000;
-            }else if(this.cartSubTotal >= 90000 && this.cartSubTotal < 100000){
-              this.coupon_amount = 4500;
-            }else if(this.cartSubTotal >= 100000){
-              this.coupon_amount = 5000;
-            }else{
-              this.coupon_amount = 0;
-            }
-            if(this.coupon_amount > 0){
-              let formData = {
-                coupon_user: this.placedOrderUser,
-                coupon_order: this.placedOrderID,
-                coupon_amount: Number(this.coupon_amount).toFixed(2),
-              };
-              this.axios.post("api/v1/generate-coupon/",formData)
-              .then((response)=>{
-                console.log("The coupon amount is ",this.coupon_amount)
-              })
-              .catch((error)=>{
-                console.log(error.message);
-              })
-            }
-        })
-      }
+      if (this.cartSubTotal >= 10000 && this.cartSubTotal < 20000){
+          this.coupon_amount = 500;
+        }else if(this.cartSubTotal >= 20000 && this.cartSubTotal < 30000){
+          this.coupon_amount = 1000;
+        }else if(this.cartSubTotal >= 30000 && this.cartSubTotal < 40000){
+          this.coupon_amount = 1500;
+        }else if(this.cartSubTotal >= 40000 && this.cartSubTotal < 50000){
+          this.coupon_amount = 2000;
+        }else if(this.cartSubTotal >= 50000 && this.cartSubTotal < 60000){
+          this.coupon_amount = 2500;
+        }else if(this.cartSubTotal >= 60000 && this.cartSubTotal < 70000){
+          this.coupon_amount = 3000;
+        }else if(this.cartSubTotal >= 70000 && this.cartSubTotal < 80000){
+          this.coupon_amount = 3500;
+        }else if(this.cartSubTotal >= 80000 && this.cartSubTotal < 90000){
+          this.coupon_amount = 4000;
+        }else if(this.cartSubTotal >= 90000 && this.cartSubTotal < 100000){
+          this.coupon_amount = 4500;
+        }else if(this.cartSubTotal >= 100000){
+          this.coupon_amount = 5000;
+        }else{
+          this.coupon_amount = 0;
+        }
+        if(this.coupon_amount > 0){
+          let formData = {
+            coupon_order: this.placedOrderID,
+            coupon_amount: Number(this.coupon_amount).toFixed(2),
+            activation_status: this.is_paid,
+          };
+          this.axios.post("api/v1/generate-coupon/",formData)
+          .then((response)=>{
+            console.log("The coupon amount is ",this.coupon_amount)
+          })
+          .catch((error)=>{
+            console.log(error.message);
+          })
+        }
       
     },
     requestDelivery() {
