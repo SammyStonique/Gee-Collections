@@ -23,5 +23,6 @@ urlpatterns = [
     path('receipt-pdf/<str:order_id>/',views.orderReceiptPDF, name="receipt"),
     path('generate-coupon/', views.couponGen),
     path('coupons/', views.CouponsList.as_view()),
-    path('coupons/<str:pk>/', views.CouponDetails.as_view()),
+    path('coupons/<str:coupon_order>/', views.CouponDetails.as_view()),
+    path('coupons-list/<str:pk>/', views.CouponDetails.as_view()),
 ]

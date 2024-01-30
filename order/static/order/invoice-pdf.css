@@ -4,7 +4,7 @@
 */
 
 body {
-    font-size: 25px;
+    font-size: 20px;
   }
   
   table {
@@ -59,7 +59,7 @@ body {
   
   .line-items-container th {
     text-align: left;
-    color: #999;
+    color: #ff6f61;
     border-bottom: 2px solid #ddd;
     padding: 10px 0 15px 0;
     font-size: 0.75em;
@@ -93,11 +93,12 @@ body {
   }
   .line-items-container th.heading-price {
     text-align: right;
-    width: 100px;
+    width: 200px;
     padding-right: 20px;
   }
   .line-items-container th.heading-subtotal {
-    width: 100px;
+    width: 200px;
+    text-align: right;
   }
   
   .payment-info {

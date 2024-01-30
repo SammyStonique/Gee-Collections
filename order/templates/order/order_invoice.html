@@ -40,18 +40,6 @@
             <td class="bold">{{ orderItem.getTotal()}}</td>
         </tr>
         {% endfor %}
-        <tr>
-            <td>&nbsp;</td>
-            <td>{{item2}}</td>
-            <td class="right">&nbsp;</td>
-            <td class="bold">{{subtotal2}}</td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-            <td>{{item3}}</td>
-            <td class="right">&nbsp;</td>
-            <td class="bold">{{subtotal3}}</td>
-        </tr>
     </tbody>
 </table>
 <table class="line-items-container has-bottom-border">
@@ -69,7 +57,7 @@
                 <div>Account Name: <strong>Grace Adhiambo Odhiambo</strong></div>
                 <div>Account N0: <strong>120000547</strong></div>
             </td>
-            <td class="large">{{month}}</td>
+            <td class="large">{{due_date}}</td>
             <td class="large total">{{order_total}}</td>
         </tr>
     </tbody>

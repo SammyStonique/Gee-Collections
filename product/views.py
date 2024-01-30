@@ -6,10 +6,7 @@ from .models import *
 from django_filters import rest_framework as filters
 from django_filters import CharFilter
 from .serializers import *
-from djoser.views import UserViewSet
 from rest_framework.decorators import api_view
-import requests
-import smtplib
 from django.core.mail import send_mail
 
 # Create your views here.
@@ -41,27 +38,6 @@ class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
-class UserList(generics.ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-class UserDetails(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-class ActivateUser(UserViewSet):
-    def get_serializer(self, *args, **kwargs):
-        serializer_class = self.get_serializer_class()
-        kwargs.setdefault('context', self.get_serializer_context())
- 
-        # this line is the only change from the base implementation.
-        kwargs['data'] = {"uid": self.kwargs['uid'], "token": self.kwargs['token']}
- 
-        return serializer_class(*args, **kwargs)
- 
-    def activation(self, request, uid, token, *args, **kwargs):
-        super().activation(request, *args, **kwargs)
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['POST'])
 def newsletter_email(request):

@@ -1,100 +1,110 @@
 <template>
-    <!-- Breadcrumb Start -->
-    <div class="breadcrumb-wrap">
-      <div class="container-fluid">
-        <ul class="breadcrumb">
-          <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
-          <li class="breadcrumb-item"><router-link to="/cart">Receipts</router-link></li>
-          <li class="breadcrumb-item active">New Receipt</li>
-        </ul>
-      </div>
-    </div>
-    <!-- Breadcrumb End -->
-    <!-- Checkout Start -->
-    <div class="receipt-add w-full px-16 py-10">
-        <div class="bg-white py-10">
-            <form action="" @submit.prevent="createReceipt">
-                <div class="flex">
-                    <div class="basis-1/2 px-20">
-                        <div class="flex">
-                            <div class="basis-1/2">
-                                <p><strong>Customer :</strong></p>
+    <!-- Loading Animation for Printing Invoice -->
+  <LoadingView
+    :loader="loader"
+    :showLoader="showLoader"
+    :hideLoader="hideLoader"
+  />
+
+    <div :style="{zIndex: this.loaderIndex}">
+
+        <!-- Breadcrumb Start -->
+        <div class="breadcrumb-wrap">
+        <div class="container-fluid">
+            <ul class="breadcrumb">
+            <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
+            <li class="breadcrumb-item"><router-link to="/cart">Receipts</router-link></li>
+            <li class="breadcrumb-item active">New Receipt</li>
+            </ul>
+        </div>
+        </div>
+        <!-- Breadcrumb End -->
+        <!-- Checkout Start -->
+        <div class="receipt-add w-full px-16 py-10">
+            <div class="bg-white py-10">
+                <form action="" @submit.prevent="createReceipt">
+                    <div class="flex">
+                        <div class="basis-1/2 px-20">
+                            <div class="flex">
+                                <div class="basis-1/2">
+                                    <p><strong>Customer :</strong></p>
+                                </div>
+                                <div class="basis-1/2">
+                                    <select name="customer" ref="customerSelect" id="selectCustomer" class="form-control" @change="showOrders" onfocus="this.selectedIndex = -1;" v-model="customer">
+                                        <option value="" disabled="true" selected>--Select Customer--</option>
+                                        <option v-for="cust in customersArray">{{ cust.first_name }} {{ cust.last_name }}</option> 
+                                    </select>
+                                </div>
                             </div>
-                            <div class="basis-1/2">
-                                <select name="customer" ref="customerSelect" id="selectCustomer" class="form-control" @change="showOrders" onfocus="this.selectedIndex = -1;" v-model="customer">
-                                    <option value="" disabled="true" selected>--Select Customer--</option>
-                                    <option v-for="cust in customersArray">{{ cust.first_name }} {{ cust.last_name }}</option> 
-                                </select>
+                            <div class="flex">
+                                <div class="basis-1/2">
+                                    <p><strong>Payment Method :</strong></p>
+                                </div>
+                                <div class="basis-1/2">
+                                    <select name="payment-method" id="" class="form-control" v-model="payment_method">
+                                        <option value="" disabled="true">--Select Payment Method--</option>
+                                        <option value="Cash">Cash</option>
+                                        <option value="Mpesa">Mpesa</option>
+                                        <option value="Cheque">Cheque</option>
+                                        <option value="EFT">EFT</option>
+                                    </select>
+                                </div>
+                                
+                            </div>
+                            <div class="flex">
+                                <div class="basis-1/2">
+                                    <p><strong>Receipt Date :</strong></p>
+                                </div>
+                                <div class="basis-1/2">
+                                    <input type="date" name="" id="" class="form-control" v-model="receipt_date">
+                                </div>
+                            </div>
+                            <div class="col-md-12 notification is-danger" v-if="errors.length">
+                                <p style="color: red" v-for="error in errors" v-bind:key="error">
+                                    {{ error }}
+                                </p>
+                            </div>
+                            <div class="flex">
+                                <div class="basis-1/2">
+                                    <button type="submit" class="save-button rounded w-24 px-3 py-2">Save</button>
+                                </div>
+                                <div class="basis-1/2">
+                                    <button type="reset" class="reset-button rounded w-24 px-3 py-2">Reset</button>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex">
-                            <div class="basis-1/2">
-                                <p><strong>Payment Method :</strong></p>
+                        <div class="basis-1/2 px-20">
+                            <div class="flex">
+                                <div class="basis-1/2">
+                                    <p><strong>Customer Order:</strong></p>
+                                </div>
+                                <div class="basis-1/2">
+                                    <select name="order" ref="orderSelect" id="" class="form-control" @change="setOrderID" onfocus="this.selectedIndex = -1;" v-model="customer_order">
+                                        <option value="" disabled="true" selected>--Select Order--</option>
+                                        <option v-for="ord in cstOrders">{{ ord.invoice_no }} [{{ord.id}} ({{ ord.order_total }})]</option> 
+                                    </select>
+                                </div>
                             </div>
-                            <div class="basis-1/2">
-                                <select name="payment-method" id="" class="form-control" v-model="payment_method">
-                                    <option value="" disabled="true">--Select Payment Method--</option>
-                                    <option value="Cash">Cash</option>
-                                    <option value="Mpesa">Mpesa</option>
-                                    <option value="Cheque">Cheque</option>
-                                    <option value="EFT">EFT</option>
-                                </select>
+                            <div class="flex">
+                                <div class="basis-1/2">
+                                    <p><strong>Reference No:</strong></p>
+                                </div>
+                                <div class="basis-1/2">
+                                <input type="text" class="form-control" v-model="reference_no">
+                                </div>
                             </div>
-                            
-                        </div>
-                        <div class="flex">
-                            <div class="basis-1/2">
-                                <p><strong>Receipt Date :</strong></p>
-                            </div>
-                            <div class="basis-1/2">
-                                <input type="date" name="" id="" class="form-control" v-model="receipt_date">
-                            </div>
-                        </div>
-                        <div class="col-md-12 notification is-danger" v-if="errors.length">
-                            <p style="color: red" v-for="error in errors" v-bind:key="error">
-                                {{ error }}
-                            </p>
-                        </div>
-                        <div class="flex">
-                            <div class="basis-1/2">
-                                <button type="submit" class="save-button rounded w-24 px-3 py-2">Save</button>
-                            </div>
-                            <div class="basis-1/2">
-                                <button type="reset" class="reset-button rounded w-24 px-3 py-2">Reset</button>
+                            <div class="flex">
+                                <div class="basis-1/2">
+                                    <p><strong>Amount Received:</strong></p>
+                                </div>
+                                <div class="basis-1/2">
+                                <input type="text" class="form-control" v-model="amount_received">
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="basis-1/2 px-20">
-                        <div class="flex">
-                            <div class="basis-1/2">
-                                <p><strong>Customer Order:</strong></p>
-                            </div>
-                            <div class="basis-1/2">
-                                <select name="order" ref="orderSelect" id="" class="form-control" @change="setOrderID" onfocus="this.selectedIndex = -1;" v-model="customer_order">
-                                    <option value="" disabled="true" selected>--Select Order--</option>
-                                    <option v-for="ord in cstOrders">{{ ord.invoice_no }} [{{ord.id}} ({{ ord.order_total }})]</option> 
-                                </select>
-                            </div>
-                        </div>
-                        <div class="flex">
-                            <div class="basis-1/2">
-                                <p><strong>Reference No:</strong></p>
-                            </div>
-                            <div class="basis-1/2">
-                            <input type="text" class="form-control" v-model="reference_no">
-                            </div>
-                        </div>
-                        <div class="flex">
-                            <div class="basis-1/2">
-                                <p><strong>Amount Received:</strong></p>
-                            </div>
-                            <div class="basis-1/2">
-                            <input type="text" class="form-control" v-model="amount_received">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -102,8 +112,13 @@
 
 <script>
 import {ref, reactive} from "vue"
+import LoadingView from "@/components/LoadingView.vue"
+
 export default{
-    props: ["getAllCustomers", "customersArray", 'showClientOrders','myOrders'],
+    props: ["getAllCustomers", "customersArray", 'showClientOrders','myOrders','loader','showLoader','hideLoader','loaderIndex'],
+    components:{
+        LoadingView
+    },
     // setup(){
 
     //     const selectedCustomer = ref(null)
@@ -167,6 +182,9 @@ export default{
             order_items: [],
             order_order_total: 0,
             order_delivery_fee: 0,
+            order_coupon: [],
+            generated_receipt: [],
+            coupon_code : "",
         }
     },
     methods :{
@@ -218,6 +236,7 @@ export default{
             this.order_items = this.cstOrders[this.selectedOrd].items;
         },
         createReceipt(){
+            this.showLoader();
             this.errors = [];
             if (
                 this.customer === "" &&
@@ -254,7 +273,8 @@ export default{
                 this.axios
                 .post('api/v1/generate-receipt/', formData)
                 .then((response)=>{
-                    this.payment_status = true;
+                    this.generated_receipt = response.data;
+  
                     this.$toast.success("Receipt Succesfully Added", {
                     duration: 5000,
                     dismissible: true,
@@ -264,7 +284,7 @@ export default{
                     console.log(error);
                 })
                 .finally(()=>{
- 
+                    this.payment_status = true;
                     let formData = {
                         first_name: this.order_first_name,
                         last_name: this.order_last_name,
@@ -277,7 +297,8 @@ export default{
                         delivery_fee: this.order_delivery_fee,
                         items: this.order_items,
                         paid : this.payment_status,
-                        payment_reference : this.reference_no
+                        payment_reference : this.reference_no,
+                        receipt_no : this.generated_receipt.receipt_no
                     }
                     
                     this.axios
@@ -292,12 +313,41 @@ export default{
                         // console.log(error.response.headers);
                     })
                     .finally(()=>{
-                        this.customer = "";
-                        this.customer_order = "";
-                        this.amount_received = 0;
-                        this.receipt_date = "";
-                        this.payment_method = "";
-                        this.reference_no = "";
+                        this.axios
+                        .get(`/api/v1/coupons/?=${ this.order_id }/`)
+                        .then((response)=>{
+                            this.order_coupon = response.data;
+                            this.coupon_code = this.order_coupon[0].coupon_code;
+                            console.log("The generated coupon is ", this.order_coupon);                           
+                        })
+                        .catch((error)=>{
+                            console.log(error.message);
+                        })
+                        .finally(()=>{
+                            let formData = {
+                                coupon_amount : this.order_coupon[0].coupon_amount,
+                                coupon_order : this.order_coupon[0].coupon_order,
+                                activation_status : this.payment_status,
+                            }
+                            this.axios
+                            .put(`/api/v1/coupons-list/${this.coupon_code}/`, formData)
+                            .then((response)=>{
+
+                            })
+                            .catch((error)=>{
+                                console.log(error.message);
+                            })
+                            .finally(()=>{
+                                this.hideLoader();
+                                this.customer = "";
+                                this.customer_order = "";
+                                this.amount_received = 0;
+                                this.receipt_date = "";
+                                this.payment_method = "";
+                                this.reference_no = "";
+                            })
+                        })
+                    
                     })
                     
                 })

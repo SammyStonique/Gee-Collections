@@ -14,6 +14,7 @@ from requests.auth import HTTPBasicAuth
 import json
 from .mpesa_credentials import MpesaAccessToken, LipanaMpesaPpassword
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime,timedelta
 
 ##Send Email
 from django.core.mail import EmailMessage, EmailMultiAlternatives
@@ -46,12 +47,17 @@ def checkout(request):
 
     if serializer.is_valid():
         serializer.save(user=request.user)
+        
         qset = Order.objects.filter(user=request.user)
+        orderItems = qset[0].items
 
         email = qset[0].user
         phone_number = qset[0].phone_number
+        order_date = qset[0].created_at.strftime("%d %b, %Y")
+        due_date = (datetime.strptime(order_date, "%d %b, %Y")+ timedelta(days=5)).strftime("%d %b, %Y")
         customer_name = qset[0].user.first_name
         order_id = qset[0].id
+        invoice_no = qset[0].invoice_no
         billing_address = qset[0].address
         city = qset[0].city
         shipping_cost = qset[0].delivery_fee
@@ -73,9 +79,10 @@ def checkout(request):
         subject = f'Order Invoice - [{order_id}]'
         template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
         template_env = jinja2.Environment(loader=template_loader)
-        output_text = {"customer_name": customer_name, "order_id": order_id, "billing_address": billing_address, "city": city,
-                       "shipping_cost": shipping_cost, "transaction_id": transaction_id, "payment_status": payment_status,
-                        "total_due": total_due, "subtotal": subtotal, "vat": vat}
+        output_text = {"orderItems": orderItems, "customer_name": customer_name, "order_id": order_id, "billing_address": billing_address, 
+                       "city": city,"shipping_cost": shipping_cost, "transaction_id": transaction_id, "payment_status": payment_status,
+                       "total_due": total_due, "subtotal": subtotal, "vat": vat, "order_date": order_date, "invoice_no": invoice_no,
+                       "due_date": due_date}
 
         template  = template_env.get_template('invoice_email.html')
         content = template.render(output_text)
@@ -83,7 +90,7 @@ def checkout(request):
         mail.attach_alternative(content, "text/html")
         pdf = orderEmailInvoicePDF(request, order_id)
         mail.attach('Invoice.pdf', pdf, 'application/pdf')
-        # mail.send(fail_silently = False)
+        mail.send(fail_silently = False)
 
         sms.send(f'Dear {customer_name},your order {order_id} has succesfully been placed. Thank you for doing business with us.',[f'{pn}'],callback=checkout)
     else:
@@ -95,12 +102,51 @@ def checkout(request):
 @api_view(['POST'])
 def generate_receipt(request):
     received_by = request.user.first_name + ' '+ request.user.last_name
-    # print("The receipt has been done by ", received_by)
+    receipt_order = request.data.get('receipt_order')
     serializer = ReceiptSerializer(data=request.data)
     # print("The serialized data is ",serializer.initial_data)
 
     if serializer.is_valid():
         serializer.save(received_by=received_by)
+        qset = Receipt.objects.filter(receipt_order=receipt_order)
+
+        email = qset[0].receipt_order.email
+        phone_number = qset[0].receipt_order.phone_number
+        customer_name = qset[0].receipt_order.first_name
+        receipt_no = qset[0].receipt_no
+        order_id = qset[0].receipt_order.id
+        reference_no = qset[0].reference_no
+        receipt_date = qset[0].created_at
+        payment_method = qset[0].payment_method
+        received_amount = qset[0].received_amount
+        balance = qset[0].balance
+
+        if(phone_number.startswith("+254")):
+            pn = phone_number
+        elif(phone_number.startswith('0')):
+            pn = re.sub("0","+254",phone_number,1)
+        elif (phone_number.startswith('7') or phone_number.startswith('1')):
+            pn = "+254"+phone_number
+        elif(phone_number.startswith('254')):
+            pn = "+"+phone_number
+        recipient = [email]
+        subject = f'Order Receipt - [{receipt_no}]'
+        template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
+        template_env = jinja2.Environment(loader=template_loader)
+        output_text = {"receipt_no": receipt_no, "customer_name": customer_name, "reference_no": reference_no, "receipt_date": receipt_date, 
+                       "payment_method": payment_method, "amount_received": received_amount, "balance": balance,
+                       "received_by": received_by}
+
+        template  = template_env.get_template('receipt_email.html')
+        content = template.render(output_text)
+
+        mail = EmailMultiAlternatives(subject,content,os.environ.get('EMAIL_HOST_USER'),recipient)
+        mail.attach_alternative(content, "text/html")
+        pdf = orderEmailReceiptPDF(request, order_id)
+        mail.attach('Receipt.pdf', pdf, 'application/pdf')
+        mail.send(fail_silently = False)
+
+        sms.send(f'Dear {customer_name},your payment of {received_amount} has been received. Thank you for doing business with us.',[f'{pn}'],callback=generate_receipt)
         
     else:
         print(serializer.errors)    
@@ -295,11 +341,12 @@ def orderEmailInvoicePDF(request,order_id):
     county = myOrder.county
     order_total = myOrder.order_total
     invoice_date = myOrder.created_at.strftime("%d %b, %Y")
-    month = myOrder.created_at.strftime("%B")
+    # month = myOrder.created_at.strftime("%B")
+    due_date = (datetime.strptime(invoice_date, "%d %b, %Y")+ timedelta(days=5)).strftime("%d %b, %Y")
 
     context={"orderItems": orderItems, "invoice_no":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
               "order_address":address, "order_city":city, "order_county":county, 
-              "order_total ":order_total, "month":month , "invoice_date":invoice_date }
+              "order_total":order_total, "due_date":due_date , "invoice_date":invoice_date }
 
     template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
     template_env = jinja2.Environment(loader=template_loader)
@@ -335,11 +382,11 @@ def orderInvoicePDF(request,order_id):
     county = myOrder.county
     order_total = myOrder.order_total
     invoice_date = myOrder.created_at.strftime("%d %b, %Y")
-    month = myOrder.created_at.strftime("%B")
+    due_date = (datetime.strptime(invoice_date, "%d %b, %Y")+ timedelta(days=5)).strftime("%d %b, %Y")
 
     context={"orderItems": orderItems,"invoice_no":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
               "order_address":address, "order_city":city, "order_county":county, 
-              "order_total ":order_total, "month":month , "invoice_date":invoice_date}
+              "order_total":order_total, "due_date":due_date , "invoice_date":invoice_date}
 
     template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
     template_env = jinja2.Environment(loader=template_loader)
@@ -391,7 +438,7 @@ def orderReceiptPDF(request,order_id):
 
     context={"orderItems": orderItems,"receipt_no":receipt_no, "first_name":first_name, "last_name":last_name, "phone_number":phone_number,
               "payment_method":payment_method, "reference_no":reference_no, "amount":received_amount, 
-              "balance ":balance, "month":month , "date":receipt_date , "address":address, "city": city,
+              "balance":balance, "month":month , "date":receipt_date , "address":address, "city": city,
               "county":county, "email":email, "received_by": received_by,"order_total":order_total,
               "amount_in_words": amount_in_words}
 
@@ -418,3 +465,54 @@ def orderReceiptPDF(request,order_id):
     os.remove("Receipt.pdf")  # remove the locally created pdf file.
     return response
 
+
+#ATTACHING A PDF RECEIPT WHEN SENDING EMAIL
+def orderEmailReceiptPDF(request,order_id):
+    myOrder = get_object_or_404(Order, pk=order_id)
+    orderItems = OrderItem.objects.filter(order=myOrder)
+    myReceipt = get_object_or_404(Receipt, receipt_order=myOrder)
+
+    receipt_no = myReceipt.receipt_no
+    received_by = myReceipt.received_by
+    received_amount = myReceipt.received_amount
+    balance = myReceipt.balance
+    reference_no = myReceipt.reference_no
+    payment_method = myReceipt.payment_method
+    first_name = myOrder.first_name
+    last_name = myOrder.last_name 
+    phone_number = myOrder.user.phone_number
+    email = myOrder.email
+    address = myOrder.address
+    city = myOrder.city
+    county = myOrder.county
+    order_total = myOrder.order_total
+    receipt_date = myReceipt.created_at.strftime("%d %b, %Y")
+    month = myReceipt.created_at.strftime("%B")
+    amount_in_words = myReceipt.myConverter()
+
+    context={"orderItems": orderItems,"receipt_no":receipt_no, "first_name":first_name, "last_name":last_name, "phone_number":phone_number,
+              "payment_method":payment_method, "reference_no":reference_no, "amount":received_amount, 
+              "balance":balance, "month":month , "date":receipt_date , "address":address, "city": city,
+              "county":county, "email":email, "received_by": received_by,"order_total":order_total,
+              "amount_in_words": amount_in_words}
+
+    template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
+    template_env = jinja2.Environment(loader=template_loader)
+
+    template  = template_env.get_template('order_receipt.html')
+    output_text = template.render(context)
+
+    config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
+    options={"enable-local-file-access": None,
+             }
+
+    pdfkit.from_string(output_text, 'Receipt.pdf', configuration=config, options=options, css="/home/sammyb/gee_collections/order/static/order/receipt-pdf.css")
+
+    path = 'Receipt.pdf'
+    with open(path, 'rb') as pdf:
+        contents = pdf.read()
+
+
+    pdf.close()
+    os.remove("Receipt.pdf")  # remove the locally created pdf file.
+    return contents

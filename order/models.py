@@ -1,7 +1,8 @@
 from django.db import models
 from product.models import * 
+from users.models import * 
 from django.contrib.auth import get_user_model
-from product.models import User
+from users.models import User
 import random
 import string
 
@@ -71,6 +72,7 @@ class Order(models.Model):
     order_total = models.DecimalField(max_digits=8, decimal_places=2)
     payment_reference = models.CharField(max_length=100, blank=True, null=True)
     delivery_fee = models.DecimalField(max_digits=8, decimal_places=2)
+    receipt_no = models.CharField(max_length=250, blank=True, null=True)
 
     class Meta:
         ordering = ('-created_at',)
@@ -161,9 +163,9 @@ class Receipt(models.Model):
     receipt_order = models.ForeignKey(Order, related_name = "receipt_order", on_delete=models.CASCADE)
     receipt_user = models.ForeignKey(UserModel,related_name='receipt_user', on_delete=models.CASCADE)
     received_amount = models.DecimalField(max_digits=8, decimal_places=2)
-    payment_method = models.CharField(max_length=250, choices=PAYMETHOD ,default='', blank=True)
+    payment_method = models.CharField(max_length=250, choices=PAYMETHOD ,default='Cash')
     received_by = models.CharField(max_length=250, blank=True)
-    reference_no = models.CharField(max_length=250, blank=True, null=True)
+    reference_no = models.CharField(max_length=250)
     balance = models.DecimalField(max_digits=8, decimal_places=2)
     created_at = models.DateField()
 

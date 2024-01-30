@@ -3,12 +3,6 @@ import jsonpickle
 from .models import *
 
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id','first_name','last_name','email','phone_number','gender','birthdate','city','county','address']
-
-
 class ProductSerializer(serializers.ModelSerializer):
     categories = Category.objects.all()
     category = jsonpickle.encode(serializers.ChoiceField(choices=categories))   

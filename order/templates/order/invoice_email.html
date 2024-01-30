@@ -27,6 +27,7 @@
                 background-color: #ff6f61;
                 color: white;
                 font-weight: bold;
+                text-align: left;
             }
 
             table tr:nth-child(even){
@@ -34,6 +35,9 @@
             }
             .salutation{
                 margin-bottom: 10px;
+            }
+            .itemized-list{
+                margin-bottom: 15px;
             }
             .subheading{
                 margin-top: 5px;
@@ -50,12 +54,13 @@
         <p>Thank you for choosing Gee Collections! We appreciate your business and are pleased to provide you with the invoice for your recent order. 
             Below, you'll find a detailed breakdown of the items you purchased and the total amount due.
         </p>
-        <p class="bold subheading">Order Details:</p>
-        <p class="bold">Order Number: <span class="normal"> {{order_id}}</span></p>
+        <p class="bold subheading">Order Details</p>
+        <p class="bold">Order ID: <span class="normal"> {{order_id}}</span></p>
+        <p class="bold">Invoice Number: <span class="normal"> {{invoice_no}}</span></p>
         <p class="bold">Order Date: <span class="normal"> {{order_date}}</span></p>
         <p class="bold">Shipping Address: <span class="normal"> {{billing_address}}, {{city}}</span></p>
-        <p class="bold subheading">Itemized List:</p>
-        <table>
+        <p class="bold subheading salutation">Itemized List:</p>
+        <table class="itemized-list">
             <thead>
                 <tr>
                     <th>Item</th>
@@ -66,26 +71,26 @@
                 </tr>
             </thead>
             <tbody>
-                {% for orderItem in orderItems %}
+                {% for orderItem in orderItems.all() %}
                 <tr>
                     <td></td>
                     <td>{{orderItem.product.name}}</td>
                     <td>{{orderItem.quantity}}</td>
                     <td>{{orderItem.price}}</td>
-                    <td>{{ orderItem.getTotal()}}</td>
+                    <td><strong>{{ orderItem.getTotal()}}</strong></td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <p>Subtotal: kshs. <span class="normal"> {{subtotal}}</span></p>
-        <p>Shipping Cost: <span class="normal"> {{shipping_cost}}</span></p>
-        <p>VAT (16%): <span class="normal"> {{vat}}</span></p>
-        <p>Total Amount Due: <span class="normal"> {{total_due}}</span></p>
+        <p>Subtotal: kshs. <span > <strong>{{subtotal}}</strong></span></p>
+        <p>Shipping Cost: <span > <strong>{{shipping_cost}}</strong></span></p>
+        <p>VAT (16%): <span > <strong>{{vat}}</strong></span></p>
+        <p>Total Amount Due: <span > <strong>{{total_due}}</strong></span></p>
         <p class="bold subheading">Payment Information:</p>
         <p>Payment Method:<span class="normal"> {{payment_method}}</span><br />
         <p>Transaction ID: <span class="normal"> {{transaction_id}}</span></p>
         <p>Payment Status: <span class="normal"> {{payment_status}}</span></p>
-        <p>Please ensure that the total amount due is paid by {{due_date}}. 
+        <p>Please ensure that the total amount due is paid by <strong>{{due_date}}</strong>. 
             If you have already made the payment, we sincerely appreciate your promptness.
         </p>
         <p class="bold">Payment Instructions</p>

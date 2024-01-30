@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <style>
+            body {
+                font-size: 12px;
+            }
+            .bold{
+                font-weight: bold;
+                font-size: 12px;
+            }
+            .normal{
+                font-weight: lighter;
+                font-size: 12px;
+            }
+            .salutation{
+                margin-bottom: 10px;
+            }
+            .subheading{
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+            .footer{
+                opacity: 0.5;
+            }
+        </style>
+    </head>
+    <body>
+
+        <p class="salutation">Dear {{customer_name}},</p>
+        <p>Thank you for choosing Gee Collections! We appreciate your business and are pleased to provide you with the receipt for your payment.
+        </p>
+        <p class="bold subheading">Receipt Details</p>
+        <p class="bold">Receipt No: <span class="normal"> {{receipt_no}}</span></p>
+        <p class="bold">Reference Number: <span class="normal"> {{reference_no}}</span></p>
+        <p class="bold">Receipt Date: <span class="normal"> {{receipt_date}}</span></p>
+        <p class="bold">Payment Method: <span class="normal"> {{payment_method}}</span></p>
+        <p class="bold">Amount Received: <span class="normal"> {{amount_received}}</span></p>
+        <p class="bold">Balance: <span class="normal"> {{balance}}</span></p>
+        <p class="bold">Received By: <span class="normal"> {{received_by}}</span></p>
+
+        
+
+        <p class="subheading">If you have any questions or concerns regarding your order or this receipt,
+            please feel free to contact our customer service team at info@geecollections.com. 
+            We are here to assist you.
+        </p>
+        <p>Thank you once again for choosing Gee Collections. We look forward to serving you again in the future.</p>
+        <p class="subheading">Best regards,</p>
+        <p class="footer">Gee Collections</p>
+        <p class="footer">geecollections@gmail.com</p>
+        <p class="footer">+254711171607</p>
+    </body>
+</html>

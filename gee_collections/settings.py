@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'product',
     'order',
+    'users',
     'jsonpickle',
     'django_filters'
 ]
@@ -86,7 +87,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'product.User'
+AUTH_USER_MODEL = 'users.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
