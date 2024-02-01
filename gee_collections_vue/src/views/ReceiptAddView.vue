@@ -185,6 +185,7 @@ export default{
             order_coupon: [],
             generated_receipt: [],
             coupon_code : "",
+            coupon_status: "Activated",
         }
     },
     methods :{
@@ -234,6 +235,7 @@ export default{
             this.order_order_total = this.cstOrders[this.selectedOrd].order_total;
             this.order_delivery_fee = this.cstOrders[this.selectedOrd].delivery_fee;
             this.order_items = this.cstOrders[this.selectedOrd].items;
+            this.coupon_applied = this.cstOrders[this.selectedOrd].coupon_applied;
         },
         createReceipt(){
             this.showLoader();
@@ -298,7 +300,8 @@ export default{
                         items: this.order_items,
                         paid : this.payment_status,
                         payment_reference : this.reference_no,
-                        receipt_no : this.generated_receipt.receipt_no
+                        receipt_no : this.generated_receipt.receipt_no,
+                        coupon_applied: this.coupon_applied,
                     }
                     
                     this.axios
@@ -317,8 +320,7 @@ export default{
                         .get(`/api/v1/coupons/?=${ this.order_id }/`)
                         .then((response)=>{
                             this.order_coupon = response.data;
-                            this.coupon_code = this.order_coupon[0].coupon_code;
-                            console.log("The generated coupon is ", this.order_coupon);                           
+                            this.coupon_code = this.order_coupon[0].coupon_code;                          
                         })
                         .catch((error)=>{
                             console.log(error.message);
@@ -327,7 +329,7 @@ export default{
                             let formData = {
                                 coupon_amount : this.order_coupon[0].coupon_amount,
                                 coupon_order : this.order_coupon[0].coupon_order,
-                                activation_status : this.payment_status,
+                                status: this.coupon_status,
                             }
                             this.axios
                             .put(`/api/v1/coupons-list/${this.coupon_code}/`, formData)
@@ -345,6 +347,7 @@ export default{
                                 this.receipt_date = "";
                                 this.payment_method = "";
                                 this.reference_no = "";
+                                this.payment_status = false;
                             })
                         })
                     

@@ -100,7 +100,12 @@ body {
     width: 200px;
     text-align: right;
   }
-  
+  .coupon{
+    text-align: right;
+    color: #ff6f61;
+    font-size: 0.75em;
+    text-transform: uppercase;
+  }
   .payment-info {
     width: 38%;
     font-size: 0.75em;

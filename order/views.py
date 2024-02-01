@@ -63,8 +63,9 @@ def checkout(request):
         shipping_cost = qset[0].delivery_fee
         transaction_id = qset[0].payment_reference
         payment_status = qset[0].paid
-        subtotal = qset[0].order_total
-        total_due = qset[0].order_total + qset[0].delivery_fee
+        subtotal = qset[0].orderSubtotal()
+        coupon_applied = qset[0].coupon_applied
+        total_due = subtotal + shipping_cost - coupon_applied
 
         vat = 0
         if(phone_number.startswith("+254")):
@@ -82,7 +83,7 @@ def checkout(request):
         output_text = {"orderItems": orderItems, "customer_name": customer_name, "order_id": order_id, "billing_address": billing_address, 
                        "city": city,"shipping_cost": shipping_cost, "transaction_id": transaction_id, "payment_status": payment_status,
                        "total_due": total_due, "subtotal": subtotal, "vat": vat, "order_date": order_date, "invoice_no": invoice_no,
-                       "due_date": due_date}
+                       "due_date": due_date, "coupon_applied": coupon_applied}
 
         template  = template_env.get_template('invoice_email.html')
         content = template.render(output_text)
@@ -339,14 +340,18 @@ def orderEmailInvoicePDF(request,order_id):
     address = myOrder.address
     city = myOrder.city
     county = myOrder.county
-    order_total = myOrder.order_total
+    subtotal = myOrder.orderSubtotal()
+    shipping_cost = myOrder.delivery_fee
+    coupon_applied = myOrder.coupon_applied
+    total_due = subtotal + shipping_cost - coupon_applied
     invoice_date = myOrder.created_at.strftime("%d %b, %Y")
     # month = myOrder.created_at.strftime("%B")
     due_date = (datetime.strptime(invoice_date, "%d %b, %Y")+ timedelta(days=5)).strftime("%d %b, %Y")
 
     context={"orderItems": orderItems, "invoice_no":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
-              "order_address":address, "order_city":city, "order_county":county, 
-              "order_total":order_total, "due_date":due_date , "invoice_date":invoice_date }
+            "order_address":address, "order_city":city, "order_county":county, "coupon_applied":coupon_applied,
+            "order_total":total_due, "due_date":due_date , "invoice_date":invoice_date, "shipping_cost":shipping_cost,
+            "subtotal": subtotal, }
 
     template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
     template_env = jinja2.Environment(loader=template_loader)
@@ -380,13 +385,17 @@ def orderInvoicePDF(request,order_id):
     address = myOrder.address
     city = myOrder.city
     county = myOrder.county
-    order_total = myOrder.order_total
+    subtotal = myOrder.orderSubtotal()
+    shipping_cost = myOrder.delivery_fee
+    coupon_applied = myOrder.coupon_applied
+    total_due = subtotal + shipping_cost - coupon_applied
     invoice_date = myOrder.created_at.strftime("%d %b, %Y")
     due_date = (datetime.strptime(invoice_date, "%d %b, %Y")+ timedelta(days=5)).strftime("%d %b, %Y")
 
     context={"orderItems": orderItems,"invoice_no":invoice_no, "order_first_name":first_name, "order_last_name":last_name,
-              "order_address":address, "order_city":city, "order_county":county, 
-              "order_total":order_total, "due_date":due_date , "invoice_date":invoice_date}
+              "order_address":address, "order_city":city, "order_county":county, "coupon_applied":coupon_applied, 
+              "order_total":total_due, "due_date":due_date , "invoice_date":invoice_date, "subtotal":subtotal,
+              "shipping_cost":shipping_cost}
 
     template_loader = jinja2.FileSystemLoader('/home/sammyb/gee_collections/order/templates/order/')
     template_env = jinja2.Environment(loader=template_loader)

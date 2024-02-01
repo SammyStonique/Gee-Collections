@@ -65,7 +65,7 @@
                         <td>{{ orderItems.id }}</td>
                         <td>{{orderItem.product.name}}</td>
                         <td>{{orderItem.quantity}}</td>
-                        <td>{{orderItem.price}}</td>
+                        <td>{{orderItem.product.price}}</td>
                         <td><strong>{{ orderItem.getTotal()}}</strong></td>
                     </tr>
                     {% endfor %}

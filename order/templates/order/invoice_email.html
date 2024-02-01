@@ -76,7 +76,7 @@
                     <td></td>
                     <td>{{orderItem.product.name}}</td>
                     <td>{{orderItem.quantity}}</td>
-                    <td>{{orderItem.price}}</td>
+                    <td>{{orderItem.product.price}}</td>
                     <td><strong>{{ orderItem.getTotal()}}</strong></td>
                 </tr>
                 {% endfor %}
@@ -85,6 +85,7 @@
         <p>Subtotal: kshs. <span > <strong>{{subtotal}}</strong></span></p>
         <p>Shipping Cost: <span > <strong>{{shipping_cost}}</strong></span></p>
         <p>VAT (16%): <span > <strong>{{vat}}</strong></span></p>
+        <p>Coupon Applied: kshs. <span > <strong>{{coupon_applied}}</strong></span></p>
         <p>Total Amount Due: <span > <strong>{{total_due}}</strong></span></p>
         <p class="bold subheading">Payment Information:</p>
         <p>Payment Method:<span class="normal"> {{payment_method}}</span><br />

@@ -173,6 +173,12 @@
     :loaderIndex="loaderIndex"
     :getAllCustomers="getAllCustomers"
     :customersArray="customersArray"
+    :couponArr="couponArr"
+    :couponCodes="couponCodes"
+    :coupon_code="coupon_code"
+    :coupon_applied="coupon_applied"
+    :cartTotal="cartTotal"
+    :applyCouponCode="applyCouponCode"
   />
   <!-- <p>{{ isIdle }}</p> -->
   <!-- Footer Start -->
@@ -349,7 +355,10 @@ export default {
       loaderIndex: 1,
       customersArray: [],
       custArray: [],
-
+      couponArr : [],
+      coupon_code: "",
+      couponCodes: [],
+      coupon_applied: 0,
     };
   },
   beforeMount() {
@@ -453,6 +462,9 @@ export default {
     },
     cartGrandTotal() {
       return parseFloat(this.cartSubTotal) + this.shippingCost;
+    },
+    cartTotal(){
+      return parseFloat(this.cartSubTotal) - this.coupon_applied;
     },
     cartTotalUSD() {
       return (parseFloat(this.cartGrandTotal) / 110).toFixed(2);
@@ -648,8 +660,47 @@ export default {
       .finally(()=>{
         
       })
-    }
+    },
+    applyCouponCode(coupon){
+      this.couponArr = [];
+      if( coupon != ""){
+        this.axios
+        .get("/api/v1/coupons/")
+        .then((response)=>{
+          this.couponArr = response.data;
+          for(let i=0; i<this.couponArr.length; i++){
+            this.couponCodes.push(this.couponArr[i]);
+          }
+          return this.couponCodes;
+          
+        })
+        .catch((error)=>{
+          console.log(error.message);
+        })
+        .finally(()=>{
+          for(let i=0; i<this.couponCodes.length; i++){
+            if(this.couponCodes[i].coupon_code == coupon && this.couponCodes[i].status == "Activated"){
+              this.coupon_applied = this.couponCodes[i].coupon_amount ;
+              this.coupon_code = coupon;
+            }
+            else{
+              this.coupon_applied = 0 ;
+              this.$toast.error("Invalid Coupon Code", {
+                duration: 3000,
+              });
+              // this.coupon_code = "";
+            }
+          }
+        })
+      }
+      else{
+        this.$toast.error("Please Enter A Coupon Code", {
+          duration: 3000,
+        });
+      }
+    },
   },
+  
 };
 </script>
 

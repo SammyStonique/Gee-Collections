@@ -76,8 +76,8 @@
               <div class="row">
                 <div class="col-md-12">
                   <div class="coupon">
-                    <input type="text" placeholder="Coupon Code" />
-                    <button>Apply Code</button>
+                    <input type="text" placeholder="Coupon Code" v-model="coupon_code" />
+                    <button @click="applyCouponCode(coupon_code)">Apply Code</button>
                   </div>
                 </div>
                 <div class="col-md-12">
@@ -89,14 +89,19 @@
                           >ksh. {{ Number(cartSubTotal).toLocaleString() }}</span
                         >
                       </p>
-                      <p class="mb-2">
+                      <p class="mb-4">
                         Delivery Fee(varies)<span
                           >ksh. {{ Number(shippingCost).toLocaleString() }}</span
                         >
                       </p>
+                      <p class="mb-2">
+                        Coupon Applied<span
+                          >ksh. {{ Number(coupon_applied).toLocaleString() }}</span
+                        >
+                      </p>
                       <h2>
                         Grand Total<span>{{
-                          Number(cartGrandTotal).toLocaleString()
+                          Number(cartTotal).toLocaleString()
                         }}</span>
                       </h2>
                     </div>
@@ -133,6 +138,11 @@ export default {
     return {
       myEmoji: "\u{1F62D}",
       pageOfItems: [],
+      // couponArr : [],
+      coupon_code: "",
+      // couponCodes: [],
+      // coupon_amount: 0,
+      // cartTotal: 0,
     };
   },
   props: [
@@ -142,6 +152,11 @@ export default {
     "cartItemTotal",
     "cartSubTotal",
     "shippingCost",
+    "couponArr",
+    "couponCodes",
+    "coupon_applied",
+    "cartTotal",
+    "applyCouponCode"
   ],
   components: {
     Pagination,
@@ -201,6 +216,7 @@ export default {
         }
       });
     },
+    
   },
   mounted() {},
 };

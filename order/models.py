@@ -73,12 +73,16 @@ class Order(models.Model):
     payment_reference = models.CharField(max_length=100, blank=True, null=True)
     delivery_fee = models.DecimalField(max_digits=8, decimal_places=2)
     receipt_no = models.CharField(max_length=250, blank=True, null=True)
+    coupon_applied = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     class Meta:
         ordering = ('-created_at',)
     
     def __str__(self):
         return f"{self.user.email} ({'%s' % self.id}) Order"
+    
+    def orderSubtotal(self):
+        return self.order_total - self.delivery_fee + self.coupon_applied
 
 
 class OrderItem(models.Model) :
@@ -89,7 +93,7 @@ class OrderItem(models.Model) :
     price = models.DecimalField(max_digits=8, decimal_places=2,null=True,blank=True)
 
     def getTotal(self):
-         return self.quantity * self.price
+         return self.quantity * self.product.price
 
     def __str__(self):
         return f"{self.order.email} OrderItem({'%s' % self.order.id})"
@@ -141,12 +145,15 @@ class MpesaPayment(BaseModel):
         return self.transaction_id
 
 class Coupon(models.Model):
+
+    STATUS = (('','Coupon Status'),('Inactive','Inactive'),('Activated','Activated'),('Used','Used'),('Expired','Expired'))
+
     coupon_code = models.CharField(default=coupon_generator,primary_key=True,max_length=100)
     coupon_amount = models.DecimalField(max_digits=8, decimal_places=2)
     coupon_order = models.ForeignKey(Order,related_name='coupon_orders',on_delete=models.CASCADE)
     coupon_user = models.ForeignKey(UserModel,related_name='coupon_users', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    activation_status = models.BooleanField(default=False)
+    status = models.CharField(max_length=250, choices=STATUS ,default='Inactive')  
 
     class Meta:
         ordering = ('-created_at',)

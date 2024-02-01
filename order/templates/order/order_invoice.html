@@ -1,6 +1,5 @@
 <div class="page-container">Page of</div>
 <div class="logo-container">
-    <!-- <img style="height: 40px; width: auto;" src="@/assets/img/new-logo.png" /> -->
     <img style="height: 50px; width: auto;" src="/home/sammyb/gee_collections/gee_collections_vue/src/assets/img/new-logo.png" />
 </div>
 <table class="invoice-info-container">
@@ -36,10 +35,28 @@
         <tr>
             <td>{{ orderItem.quantity }}</td>
             <td>{{ orderItem.product.name }}</td>
-            <td class="right">{{ orderItem.price}}</td>
+            <td class="right">{{orderItem.product.price}}</td>
             <td class="bold">{{ orderItem.getTotal()}}</td>
         </tr>
         {% endfor %}
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="coupon bold">SUBTOTAL</td>
+            <td class="bold">{{subtotal}}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="coupon bold">DELIVERY FEES</td>
+            <td class="bold">{{shipping_cost}}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="coupon bold">COUPON APPLIED</td>
+            <td class="bold">{{coupon_applied}}</td>
+        </tr>
     </tbody>
 </table>
 <table class="line-items-container has-bottom-border">

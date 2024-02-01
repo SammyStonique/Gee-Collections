@@ -262,13 +262,16 @@
                   <p class="sub-total">
                     Sub Total<span>ksh. {{ Number(cartSubTotal).toLocaleString() }}</span>
                   </p>
-                  <!-- <p class="ship-cost">Shipping Cost<span>ksh. {{Number(shippingCost).toLocaleString()}}</span></p> -->
                   <p class="ship-cost">
                     Delivery Fee<span
                       >ksh. {{ Number(setShippingCost).toLocaleString() }}</span
                     >
                   </p>
-                  <!-- <h2>Grand Total<span>{{Number(cartGrandTotal).toLocaleString()}}</span></h2> -->
+                  <p class="ship-cost">
+                        Coupon Applied<span
+                          >ksh. {{ Number(coupon_applied).toLocaleString() }}</span
+                        >
+                      </p>
                   <h2>
                     Grand Total<span>{{ Number(checkoutTotal).toLocaleString() }}</span>
                   </h2>
@@ -404,7 +407,7 @@ export default {
     "shippingCost",
     "cartTotalUSD",
     'loader','showLoader','hideLoader','loaderIndex',
-
+    "coupon_applied", "coupon_code"
   ],
   el: "#selector",
   components: {
@@ -452,6 +455,9 @@ export default {
       placedOrder: [],
       placedOrderID: "",
       placedOrderUser: 0,
+      couponArr: [],
+      coupon_status: "Inactive",
+      new_coupon_status: "Used",
     };
   },
   watch: {
@@ -541,7 +547,7 @@ export default {
       return this.shipCost;
     },
     checkoutTotal() {
-      return this.cartSubTotal + this.setShippingCost;
+      return this.cartSubTotal + this.setShippingCost - this.coupon_applied;
     },
   },
   methods: {
@@ -718,51 +724,80 @@ export default {
         phone_number: this.phone_number,
         email: this.email,
         items: items,
-        order_total: this.cartSubTotal,
+        order_total: this.checkoutTotal,
         payment_reference: this.payment_ref,
         paid: this.is_paid,
         delivery_fee: this.setShippingCost,
+        coupon_applied: this.coupon_applied,
       };
       this.axios
         .post("/api/v1/checkout/", formData)
         .then((response) => {
           this.placedOrder = response.data;
-          this.$store.commit("clearCart");
-          this.$toast.success("Order succesfully placed");
           this.placedOrderID = this.placedOrder.id;
           this.placedOrderUser = this.placedOrder.user;
-          this.$router.push("/");
-          this.$store.commit("reloadingPage");
-          this.$router.push("/");
+          this.generateOrderCoupon();
         })
         .catch((error) => {
           console.log(error);
         })
         .finally(()=>{
-          this.hideLoader();
-          this.generateOrderCoupon();
-        });
+          this.axios
+          .get(`/api/v1/coupons-list/${this.coupon_code}/`)
+          .then((response)=>{
+              this.couponArr = response.data;
+          })
+          .catch((error)=>{
+            console.log(error.message);
+          })
+          .finally(()=>{
+            let formData = {
+              coupon_amount: this.couponArr.coupon_amount,
+              coupon_order: this.couponArr.coupon_order,
+              coupon_user: this.couponArr.coupon_user,
+              created_at: this.couponArr.created_at,
+              status: this.new_coupon_status,
+            }
+            this.axios
+            .put("/api/v1/coupons-list/"+this.coupon_code+"/", formData)
+            .then((response)=>{
+              console.log("The status of the coupon is ", response.data);
+            })
+            .catch((error)=>{
+              console.log(error.message);
+            })
+            .finally(()=>{
+              this.hideLoader();
+              this.$store.commit("clearCart");
+              this.$toast.success("Order succesfully placed");
+              this.$router.push("/");
+              this.$store.commit("reloadingPage");
+              this.$router.push("/");
+            })
+            });
+          })
+          
     },
     generateOrderCoupon(){
-      if (this.cartSubTotal >= 10000 && this.cartSubTotal < 20000){
+      if (this.checkoutTotal >= 10000 && this.checkoutTotal < 20000){
           this.coupon_amount = 500;
-        }else if(this.cartSubTotal >= 20000 && this.cartSubTotal < 30000){
+        }else if(this.checkoutTotal >= 20000 && this.checkoutTotal < 30000){
           this.coupon_amount = 1000;
-        }else if(this.cartSubTotal >= 30000 && this.cartSubTotal < 40000){
+        }else if(this.checkoutTotal >= 30000 && this.checkoutTotal < 40000){
           this.coupon_amount = 1500;
-        }else if(this.cartSubTotal >= 40000 && this.cartSubTotal < 50000){
+        }else if(this.checkoutTotal >= 40000 && this.checkoutTotal < 50000){
           this.coupon_amount = 2000;
-        }else if(this.cartSubTotal >= 50000 && this.cartSubTotal < 60000){
+        }else if(this.checkoutTotal >= 50000 && this.checkoutTotal < 60000){
           this.coupon_amount = 2500;
-        }else if(this.cartSubTotal >= 60000 && this.cartSubTotal < 70000){
+        }else if(this.checkoutTotal >= 60000 && this.checkoutTotal < 70000){
           this.coupon_amount = 3000;
-        }else if(this.cartSubTotal >= 70000 && this.cartSubTotal < 80000){
+        }else if(this.checkoutTotal >= 70000 && this.checkoutTotal < 80000){
           this.coupon_amount = 3500;
-        }else if(this.cartSubTotal >= 80000 && this.cartSubTotal < 90000){
+        }else if(this.checkoutTotal >= 80000 && this.checkoutTotal < 90000){
           this.coupon_amount = 4000;
-        }else if(this.cartSubTotal >= 90000 && this.cartSubTotal < 100000){
+        }else if(this.checkoutTotal >= 90000 && this.checkoutTotal < 100000){
           this.coupon_amount = 4500;
-        }else if(this.cartSubTotal >= 100000){
+        }else if(this.checkoutTotal >= 100000){
           this.coupon_amount = 5000;
         }else{
           this.coupon_amount = 0;
@@ -771,11 +806,12 @@ export default {
           let formData = {
             coupon_order: this.placedOrderID,
             coupon_amount: Number(this.coupon_amount).toFixed(2),
-            activation_status: this.is_paid,
+            status: this.coupon_status,
           };
           this.axios.post("api/v1/generate-coupon/",formData)
           .then((response)=>{
-            console.log("The coupon amount is ",this.coupon_amount)
+            console.log("The coupon amount is ",this.coupon_amount);
+            console.log("The generated coupon is ", response.data);
           })
           .catch((error)=>{
             console.log(error.message);

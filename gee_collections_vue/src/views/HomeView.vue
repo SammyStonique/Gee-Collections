@@ -80,7 +80,7 @@
                 <div class="swiper-slide">
                   <div class="relative">
                     <img
-                      src="@/assets/img/main3.jpg"
+                      src="@/assets/img/main5.jpg"
                       alt="Slider Image"
                       style="width: 500px; height: 400px"
                     />
@@ -353,9 +353,10 @@
                   <i class="fa fa-star"></i>
                   <i class="fa fa-star"></i>
                 </div>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vitae
-                  nunc eget leo finibus luctus et vitae lorem
+                <p class="text-sm">
+                  " I recently purchased from this e-commerce website, and I am absolutely delighted with my purchase. 
+                   The ordering process was seamless, and my products arrived promptly and securely packaged. 
+                   I highly recommend both the product and the excellent service provided by this website! "
                 </p>
               </div>
             </div>
@@ -373,19 +374,21 @@
                   <i class="fa fa-star"></i>
                   <i class="fa fa-star"></i>
                 </div>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vitae
-                  nunc eget leo finibus luctus et vitae lorem
+                <p class="text-sm">
+                  " I had a fantastic experience shopping on this e-commerce website. 
+                  The user-friendly interface made it easy to browse and find exactly what I was looking for. 
+                  The ordering process was quick, and I appreciated the regular updates on the shipping status. 
+                   I'll definitely be returning for more purchases in the future. "
                 </p>
               </div>
             </div>
             <div class="swiper-slide review-slider-item">
               <div class="review-img">
-                <img src="@/assets/img/mike-review.jpg" alt="Image" class="review-img" />
+                <img src="@/assets/img/freddy-review.jpeg" alt="Image" class="review-img" />
               </div>
               <div class="review-text">
-                <h2>Mike Bavon</h2>
-                <h3>C.E.O - Ezen</h3>
+                <h2>Sir Fred Maninga</h2>
+                <h3>C.E.O - Maninga Ltd</h3>
                 <div class="ratting">
                   <i class="fa fa-star"></i>
                   <i class="fa fa-star"></i>
@@ -393,9 +396,10 @@
                   <i class="fa fa-star"></i>
                   <i class="fa fa-star"></i>
                 </div>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vitae
-                  nunc eget leo finibus luctus et vitae lorem
+                <p class="text-sm">
+                  "I couldn't be happier with my overall experience shopping on this e-commerce website. 
+                  The product descriptions are detailed, the checkout process is straightforward and delivery was prompt. 
+                  I highly recommend this website to anyone looking for a seamless online shopping experience."
                 </p>
               </div>
             </div>
