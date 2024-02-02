@@ -21,6 +21,16 @@
                             <h1 style="text-align: center; margin-bottom: 20px;">Sign Up</h1>
                                 <div class="row">
                                     <div class="col-md-6">
+                                        <label>First Name<em>*</em></label>
+                                        <input class="form-control" type="text" placeholder="First Name" v-model="first_name" :style="{borderColor: fStyle,borderWidth: bWidth+'px' }">
+                                        <span v-if="watcherMsg.first_name" :style="{color: fStyle, fontSize:10 + 'px'}">{{watcherMsg.first_name}}</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Last Name<em>*</em></label>
+                                        <input class="form-control" type="text" placeholder="Last Name" v-model="last_name" :style="{borderColor: lStyle,borderWidth: bWidth+'px' }">
+                                        <span v-if="watcherMsg.last_name" :style="{color: lStyle, fontSize:10 + 'px'}">{{watcherMsg.last_name}}</span>
+                                    </div>
+                                    <div class="col-md-6">
                                         <label>E-mail<em>*</em></label>
                                         <input class="form-control" type="email" placeholder="E-mail" v-model="email" :style="{borderColor: eStyle,borderWidth: bWidth+'px' }" required>
                                         <span v-if="watcherMsg.email" :style="{color: eStyle, fontSize:10 + 'px'}">{{watcherMsg.email}}</span>
@@ -29,6 +39,82 @@
                                         <label>Mobile No<em>*</em></label>
                                         <input class="form-control" type="text" placeholder="e.g 07XXXXXXXX" v-model="phone_number" :style="{borderColor: nStyle,borderWidth: bWidth+'px' }" required>
                                         <span v-if="watcherMsg.phone_number" :style="{color: nStyle, fontSize:10 + 'px'}">{{watcherMsg.phone_number}}</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Gender<em>*</em></label>
+                                        <select name="gender" class="form-control" v-model="gender" :style="{ borderColor: gStyle, borderWidth: bWidth + 'px' }">
+                                            <option value="" disabled="true">--Select your Gender--</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>City<em>*</em></label>
+                                        <select name="city" class="form-control" v-model="city" :style="{ borderColor: cStyle, borderWidth: bWidth + 'px' }">
+                                            <option value="" disabled="true">--Select your City--</option>
+                                            <option value="Nairobi">Nairobi</option>
+                                            <option value="Kisumu">Kisumu</option>
+                                            <option value="Mombasa">Mombasa</option>
+                                            <option value="Nakuru">Nakuru</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>County<em>*</em></label>
+                                        <select name="county" class="form-control" v-model="county" :style="{ borderColor: ccStyle, borderWidth: bWidth + 'px' }">
+                                            <option value="" disabled="true">--Select your County--</option>
+                                            <option value="Baringo">Baringo</option>
+                                            <option value="Bomet">Bomet</option>
+                                            <option value="Bungoma">Bungoma</option>
+                                            <option value="Busia">Busia</option>
+                                            <option value="Elgeyo Marakwet">Elgeyo Marakwet</option>
+                                            <option value="Embu">Embu</option>
+                                            <option value="Garissa">Garissa</option>
+                                            <option value="Homa Bay">Homa Bay</option>
+                                            <option value="Isiolo">Isiolo</option>
+                                            <option value="Kajiado">Kajiado</option>
+                                            <option value="Kakamega">Kakamega</option>
+                                            <option value="Kericho">Kericho</option>
+                                            <option value="Kiambu">Kiambu</option>
+                                            <option value="Kilifi">Kilifi</option>
+                                            <option value="Kirinyaga">Kirinyaga</option>
+                                            <option value="Kisii">Kisii</option>
+                                            <option value="Kisumu">Kisumu</option>
+                                            <option value="Kitui">Kitui</option>
+                                            <option value="Kwale">Kwale</option>
+                                            <option value="Laikipia">Laikipia</option>
+                                            <option value="Lamu">Lamu</option>
+                                            <option value="Machakos">Machakos</option>
+                                            <option value="Makueni">Makueni</option>
+                                            <option value="Mandera">Mandera</option>
+                                            <option value="Meru">Meru</option>
+                                            <option value="Migori">Migori</option>
+                                            <option value="Marsabit">Marsabit</option>
+                                            <option value="Muranga">Muranga</option>
+                                            <option value="Nairobi">Nairobi</option>
+                                            <option value="Nakuru">Nakuru</option>
+                                            <option value="Nandi">Nandi</option>
+                                            <option value="Narok">Narok</option>
+                                            <option value="Nyamira">Nyamira</option>
+                                            <option value="Nyandarua">Nyandarua</option>
+                                            <option value="Nyeri">Nyeri</option>
+                                            <option value="Samburu">Samburu</option>
+                                            <option value="Siaya">Siaya</option>
+                                            <option value="Taita Taveta">Taita Taveta</option>
+                                            <option value="Tana River">Tana River</option>
+                                            <option value="Tharaka Nithi">Tharaka Nithi</option>
+                                            <option value="Trans Nzoia">Trans Nzoia</option>
+                                            <option value="Turkana">Turkana</option>
+                                            <option value="Uasin Gishu">Uasin Gishu</option>
+                                            <option value="Vihiga">Vihiga</option>
+                                            <option value="Wajir">Wajir</option>
+                                            <option value="West Pokot">West Pokot</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Address<em>*</em></label>
+                                        <input class="form-control" type="text" placeholder="e.g 734" v-model="address" :style="{ borderColor: aStyle, borderWidth: bWidth + 'px' }"/>
+                                        <span v-if="watcherMsg.address" :style="{ color: aStyle, fontSize: 10 + 'px' }">{{ watcherMsg.address }}</span>
                                     </div>
                                     <div class="col-md-6">
                                         <label>Password<em>*</em></label>
@@ -71,12 +157,19 @@ export default {
     data(){
         return{
             email: '',
+            first_name: [],
+            last_name: [],
+            gender: '',
+            city: '',
+            county: '',
+            address: '',
             password: '',
             password2: '',
             phone_number: '',
             errors:[],
             watcherMsg:[],
             eStyle: null,
+            fStyle: null,lStyle: null,gStyle: null,cStyle: null,ccStyle: null,aStyle: null,
             nStyle: null,
             pStyle: null,
             passStyle: null,
@@ -194,14 +287,32 @@ export default {
         },    
         createUser(){
             this.errors = []
-            if(this.email === ''&&this.password === ''&&this.password2 === ''&& this.phone_number===''){
+            if(this.first_name.length < 1 && this.last_name.length < 1 && this.email === ''&&this.password === ''&&this.password2 === ''&& this.phone_number===''){
                 this.errors.push('Please fill in the details!')
             }else{
+                if(this.first_name.length < 1){
+                    this.errors.push('First Name is missing')
+                }
+                if(this.last_name.length < 1){
+                    this.errors.push('Last Name is missing')
+                }
                 if(this.email === ''){
                     this.errors.push('Email is missing')
                 }
                 if(this.phone_number === ''){
                     this.errors.push('Phone number required')
+                }
+                if(this.gender === ''){
+                    this.errors.push('Gender is missing')
+                }
+                if(this.city === ''){
+                    this.errors.push('City is missing')
+                }
+                if(this.county === ''){
+                    this.errors.push('County is missing')
+                }
+                if(this.address === ''){
+                    this.errors.push('Address is missing')
                 }
                 if(this.password === ''){
                     this.errors.push('Password is too short')
@@ -216,18 +327,27 @@ export default {
             }
 
             if(!this.errors.length){
+                let new_first_name = this.first_name[0].toUpperCase() + this.first_name.slice(1);
+                let new_last_name = this.last_name[0].toUpperCase() + this.last_name.slice(1);
                 let formData = new FormData();
+                formData.append('first_name', new_first_name);
+                formData.append('last_name', new_last_name);
                 formData.append('email', this.email);
+                formData.append('gender', this.gender);
+                formData.append('city', this.city);
+                formData.append('county', this.county);
+                formData.append('address', this.address);
                 formData.append('password', this.password);
                 formData.append('phone_number', this.phone_number)
+
 
                 this.axios.post('/api/v1/users/', formData)
                 .then((response)=>{
                     this.$toast.success('Account Created Succesfully',{
-                        duration: 10000,
+                        duration: 5000,
                         dismissible: true
                     })
-                    this.$router.push('/login');
+                    // this.$router.push('/login');
                 })
                 .catch((error)=>{
                     if (error.response) {
@@ -243,6 +363,9 @@ export default {
                         this.errors.push('Something went wrong. Please try again')
                         console.log(JSON.stringify(error))
                     }
+                })
+                .finally(()=>{  
+                    
                 })
             }
             

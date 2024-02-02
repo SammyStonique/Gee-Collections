@@ -679,7 +679,7 @@ export default {
         })
         .finally(()=>{
           for(let i=0; i<this.couponCodes.length; i++){
-            if(this.couponCodes[i].coupon_code == coupon && this.couponCodes[i].status == "Activated"){
+            if(this.couponCodes[i].coupon_code === coupon && this.couponCodes[i].status === "Activated"){
               this.coupon_applied = this.couponCodes[i].coupon_amount ;
               this.coupon_code = coupon;
             }
