@@ -117,20 +117,20 @@ export default {
                         this.$toast.success('Login Succesful',{
                             duration: 5000
                         })
-                        this.$router.push('/')
-                        this.$store.commit('reloadingPage')
+                        this.$router.push('/');
+                        this.$store.commit('reloadingPage');
                     })    
                     .catch((error)=>{
                         if (error.response) {
                             for (const property in error.response.data) {
                                 this.errors.push(`${error.response.data[property]}`)
                             }
-                            console.log(JSON.stringify(error.response.data))
+                            console.log(JSON.stringify(error.response.data));
                             this.$toast.error('Invalid Login Credentials!',{
                                 duration:5000
                             })
                         } else if (error.message) {
-                            this.errors.push('Something went wrong. Please try again')
+                            this.errors.push('Something went wrong. Please try again');
                             console.log(JSON.stringify(error))
                         }
                     })

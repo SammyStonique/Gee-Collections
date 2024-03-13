@@ -1,1 +1,6 @@
-{}
+{
+  "dependencies": {
+    "vue-multiselect": "^2.1.8",
+    "vue-search-select": "^3.2.0"
+  }
+}

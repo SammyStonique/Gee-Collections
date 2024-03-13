@@ -13,7 +13,8 @@ import '@/lib/easing/easing.js';
 import '@/lib/slick/slick.js';
 import '@/lib/slick/slick.min.js';
 import '@/js/main.js';
-import './index.css'
+import './index.css';
+import "vue-search-select/dist/VueSearchSelect.css";
 
 axios.defaults.baseURL = 'http://127.0.0.1:8000/'
 // axios.defaults.baseURL = 'https://d94b-197-248-34-79.ngrok.io/'

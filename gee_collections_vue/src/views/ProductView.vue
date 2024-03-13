@@ -243,6 +243,9 @@ export default {
         });
     },
   },
+  // beforeCreate(){
+  //   this.getProducts();
+  // },
   mounted() {
     this.getProducts();
     this.exampleItems = this.items;

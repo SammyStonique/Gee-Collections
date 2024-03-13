@@ -59,6 +59,9 @@
             <router-link to="/my-account" class="nav-item nav-link"
               >My Account</router-link
             >
+            <router-link to="/receipt-add" class="nav-item nav-link"
+              >Receipting</router-link
+            >
             <div class="nav-item dropdown">
               <router-link to="#" class="nav-link dropdown-toggle" data-toggle="dropdown"
                 >More Pages</router-link
@@ -89,7 +92,7 @@
                 >WELCOME,{{ userDetails.email }}</router-link
               >
               <div class="dropdown-menu">
-                <router-link to="/logout" class="dropdown-item">Logout</router-link>
+                <button @click="logout" class="dropdown-item">Logout</button>
               </div>
             </div>
           </div>
@@ -482,6 +485,7 @@ export default {
         .get("/api/v1/latest-products/")
         .then((response) => {
           this.items = response.data;
+          console.log("The products list consists of ", this.items);
           for (let i = 0; i < this.items.length; i++) {
             this.prodID = this.items[i].id;
           }
@@ -515,7 +519,7 @@ export default {
         quantity: this.quantity,
       };
       this.$store.commit("addToCart", cartItem);
-      console.log(this.searchItem);
+
       this.$toast.success(`${this.searchItem.name} added to cart`);
     },
     async getSearchedProduct() {
@@ -679,17 +683,17 @@ export default {
         })
         .finally(()=>{
           for(let i=0; i<this.couponCodes.length; i++){
-            if(this.couponCodes[i].coupon_code === coupon && this.couponCodes[i].status === "Activated"){
-              this.coupon_applied = this.couponCodes[i].coupon_amount ;
+            if(this.couponCodes[i].coupon_code == coupon && this.couponCodes[i].status == "Activated"){
+              this.coupon_applied = this.couponCodes[i].coupon_amount;
               this.coupon_code = coupon;
             }
-            else{
-              this.coupon_applied = 0 ;
-              this.$toast.error("Invalid Coupon Code", {
-                duration: 3000,
-              });
-              // this.coupon_code = "";
-            }
+            // else{
+            //   this.coupon_applied = 0 ;
+            //   this.$toast.error("Invalid Coupon Code", {
+            //     duration: 3000,
+            //   });
+            //   // this.coupon_code = "";
+            // }
           }
         })
       }
@@ -698,6 +702,21 @@ export default {
           duration: 3000,
         });
       }
+    },
+    logout(){
+      this.axios
+      .post('/api/v1/token/logout/')
+      .then((response)=>{      
+          this.$store.commit('removeToken');
+          const token = "";
+          localStorage.setItem('token',token);
+          this.$router.push('/logout');
+          this.$store.commit('reloadingPage');
+          this.$router.push('/logout');
+      })
+      .catch((error)=>{
+        console.log(error.message);
+      })
     },
   },
   

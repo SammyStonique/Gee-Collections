@@ -46,11 +46,11 @@ export default createStore({
       if (localStorage.getItem('reloaded')) {
         // The page was just reloaded. Clear the value from local storage
         // so that it will reload the next time this page is visited.
-        localStorage.removeItem('reloaded', 'false');
+        localStorage.removeItem('reloaded', false);
         console.log('Value of reload in store set to false')
         } else {
             // Set a flag so that we know not to reload the page twice.
-            localStorage.setItem('reloaded', 'true');
+            localStorage.setItem('reloaded', true);
             console.log(state.reloaded,'Reload')
             window.location.reload();
         }
@@ -83,8 +83,6 @@ export default createStore({
     },
     //ADDING AN ITEM TO THE CART
     addToCart(state, cartItem){
-
-      console.log(cartItem);
       //Checking if the cart has an item
       if(state.cart.cartItems.length > 0){
         //Checking if an item exists in a cart
@@ -176,7 +174,7 @@ export default createStore({
     getUserDetails({commit}){
       axios.get('/api/v1/users/me/')
       .then((response)=>{
-          commit('setLoggedInUser',response.data)
+          commit('setLoggedInUser',response.data);
       })
       .catch((error)=>{
         console.log(error)

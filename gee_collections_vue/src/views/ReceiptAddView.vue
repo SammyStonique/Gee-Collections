@@ -101,6 +101,16 @@
                                 <input type="text" class="form-control" v-model="amount_received">
                                 </div>
                             </div>
+                            <div>
+                                <Multiselect
+                                :options="this.options"
+                                v-model="customer"
+                                @search-change="showOrders"
+                                :searchable="true"
+                                placeholder="Select A Customer"
+                                >   
+                                </Multiselect>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -113,11 +123,13 @@
 <script>
 import {ref, reactive} from "vue"
 import LoadingView from "@/components/LoadingView.vue"
+import Multiselect from 'vue-multiselect'
 
 export default{
     props: ["getAllCustomers", "customersArray", 'showClientOrders','myOrders','loader','showLoader','hideLoader','loaderIndex'],
     components:{
-        LoadingView
+        LoadingView,
+        Multiselect
     },
     // setup(){
 
@@ -186,6 +198,7 @@ export default{
             generated_receipt: [],
             coupon_code : "",
             coupon_status: "Activated",
+            options: []
         }
     },
     methods :{
@@ -361,10 +374,16 @@ export default{
     },
     mounted(){
         this.getAllCustomers();
+        this.options = [];
+        for(let i=0; i<this.customersArray.length; i++){
+            this.options.push(this.customersArray[i].first_name+ " "+this.customersArray[i].last_name);
+        }
     }
 }
 
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style scoped>
  .save-button{

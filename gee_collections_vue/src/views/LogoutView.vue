@@ -39,7 +39,8 @@ export default {
     const token = this.$store.state.token;
     localStorage.setItem("token", token);
   },
-  mounted() {},
+  mounted() {
+  },
 };
 </script>
 

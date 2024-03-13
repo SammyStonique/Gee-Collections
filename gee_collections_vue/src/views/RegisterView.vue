@@ -177,7 +177,7 @@ export default {
             showPass: false,
             passType: false,
             showPass2: false,
-            pass2Type : false          
+            pass2Type : false,       
         }
     },
     watch: {
@@ -347,7 +347,7 @@ export default {
                         duration: 5000,
                         dismissible: true
                     })
-                    // this.$router.push('/login');
+                    this.$router.push('/login');
                 })
                 .catch((error)=>{
                     if (error.response) {
